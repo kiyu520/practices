@@ -1,7 +1,7 @@
 package com.Entity;
 
+import org.junit.Test;
+
 public class test {
-    public static void main(String[] args) {
-        System.out.println("xaioshuai250");
-    }
+
 }
