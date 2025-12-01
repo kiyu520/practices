@@ -15,13 +15,13 @@ public class CSVUtil {
 
     public static <T>  boolean CSV_out(String output_name, List<T> data) {
         if(data==null|| data.isEmpty()){
-            //log.severe("data数据为空");
+            log.severe("data数据为空");
             return false;
         }
         clazz = data.get(0).getClass();
-        //log.info("准备输出CSV，数据类型:" + clazz.getName());
+        log.info("准备输出CSV，数据类型:" + clazz.getName());
         try(BufferedOutputStream out=new BufferedOutputStream(new FileOutputStream("Output_CSV/"+output_name+".csv"));) {
-            //log.info("准备输出数据");
+            log.info("准备输出数据");
             Field[] fields = clazz.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 if (i != fields.length - 1) out.write((fields[i].getName() + ",").getBytes());
@@ -36,12 +36,12 @@ public class CSVUtil {
                 }
                 out.write("\r\n".getBytes());
             }
-           // log.info("CSV输出成功,文件名:" + output_name + ".csv");
+            log.info("CSV输出成功,文件名:" + output_name + ".csv");
             out.flush();
         }
         catch (Exception e){
             System.out.println(e.getMessage());
-            //log.severe("输出流创建异常");
+            log.severe("输出流创建异常");
             return false;
         }
         return true;
