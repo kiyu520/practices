@@ -8,8 +8,8 @@ import lombok.Data;
 public class Product {
     int pro_id;
     String pro_name;
-    int price;
+    float price;
     String type;
-    double quantity;
+    float quantity;
     int sup_id;
 }
