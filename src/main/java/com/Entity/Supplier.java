@@ -9,6 +9,10 @@ public class Supplier {
     private String supplieremail;
     private String supplierfax;
     private String supplierrelationer;
+    public Supplier(){
+
+    }
+    public Supplier(int supplierid,String supplyname,String supplieraddress,String supplierpostcode,String supplierphone,String supplierfax,String supplieremail,String supplierrelationer) {}
     public String getSupplyname() {
         return supplyname;
     }
