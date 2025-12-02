@@ -1,6 +1,7 @@
 package com.Frame;
 
 import com.Entity.User;
+import com.Service.ProductService;
 import com.Tools.DateUtil;
 
 import javax.swing.*;
@@ -21,7 +22,7 @@ public class MainFrame extends JFrame {
         this.loginUser = user;
 
         // 窗口配置
-        setTitle("仓库管理系统 - 欢迎您，" + user.getuName());
+        setTitle("仓库管理系统 - 欢迎您，" +user.getUsername());
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -98,10 +99,10 @@ public class MainFrame extends JFrame {
         supplierItem.addActionListener(e -> new SupplierManageFrame().setVisible(true));
         stockInItem.addActionListener(e -> new StockInFrame().setVisible(true));
         stockOutItem.addActionListener(e -> new StockOutFrame().setVisible(true));
-        productQueryItem.addActionListener(e -> new ProductQueryFrame().setVisible(true));
-        supplierQueryItem.addActionListener(e -> new SupplierQueryFrame().setVisible(true));
-        changePwdItem.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
-        settingItem.addActionListener(e -> new SystemSettingFrame().setVisible(true));
+        productQueryItem.addActionListener(e -> new ProductView().setVisible(true));
+        supplierQueryItem.addActionListener(e -> new SupplierManageFrame().setVisible(true));
+        //changePwdItem.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
+        settingItem.addActionListener(e -> new SystemManageFrame().setVisible(true));
         exitItem.addActionListener(e -> System.exit(0));
     }
 
