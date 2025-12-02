@@ -2,6 +2,7 @@ package com.Service;
 
 import com.Entity.Product;
 import com.Mappers.pro_mapper;
+import com.Tools.SqlUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
@@ -9,20 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProductService {
-    private SqlSessionFactory sqlSessionFactory;
     private pro_mapper proMapper;
-
-    public ProductService(SqlSessionFactory sqlSessionFactory) {
-        this.sqlSessionFactory = sqlSessionFactory;
-
-        SqlSession sqlSession = sqlSessionFactory.openSession(true);
-        this.proMapper = sqlSession.getMapper(pro_mapper.class);
-    }
 
     public ProductService() {
 
+        SqlSession sqlSession = SqlUtil.getSession();
+        this.proMapper = sqlSession.getMapper(pro_mapper.class);
     }
-
     //添加产品，编号唯一
     public boolean addProduct(Product product) {
 //        1.合法性校验

@@ -3,6 +3,7 @@ package com.Service;
 import com.Entity.User;
 import com.Mappers.user_mapper;
 import com.Tools.MyBatisUtil;
+import com.Tools.SqlUtil;
 import org.apache.ibatis.session.SqlSession;
 
 public class UserService {
@@ -10,7 +11,7 @@ public class UserService {
 
     public User login(String username, String password) {
         // 1. 通过工具类获取 SqlSession
-        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        SqlSession sqlSession = SqlUtil.getSession();
         user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
 
         // 2. 调用Mapper查询用户
