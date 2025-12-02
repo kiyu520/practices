@@ -260,7 +260,7 @@ public class ProductManageFrame extends JFrame {
 
     // 加载所有供应商ID到下拉框
     private void loadSupplierIds() {
-        List<Supplier> suppliers = supplierService.findAllSuppliers();
+        List<Supplier> suppliers = supplierService.findAllSupplier();
         for (Supplier supplier : suppliers) {
             supIdCombo.addItem(supplier.getExesConId());
         }
