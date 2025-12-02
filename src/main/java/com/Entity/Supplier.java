@@ -1,10 +1,12 @@
 package com.Entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Supplier {
     private Integer exesConId;         // 供应商ID（主键）
     private String supName;            // 供应商名称
