@@ -65,4 +65,12 @@ public class ProductService {
     public List<Product> findAllproducts(){
         return productDAO.findAll();
     }
+
+    public Product getProductById(int prodId) {
+        return productDAO.findById(prodId);
+    }
+
+    public List<Product> queryProducts(Object o, Object o1, Object o2, Object o3, Object o4, Object o5) {
+        return productDAO.queryProducts(o,o1,o2,o3,o4,o5);
+    }
 }
