@@ -12,6 +12,12 @@ public class ProductService {
     private SqlSessionFactory sqlSessionFactory;
     private pro_mapper proMapper;
 
+    public ProductService() {
+        // 从工具类获取SqlSessionFactory
+        SqlSessionFactory factory = com.Tools.SqlUtil.sqlSessionFactory;
+        SqlSession sqlSession = factory.openSession(true);
+        this.proMapper = sqlSession.getMapper(pro_mapper.class);
+    }
     public ProductService(SqlSessionFactory sqlSessionFactory) {
         this.sqlSessionFactory = sqlSessionFactory;
 
