@@ -6,7 +6,7 @@ public class UserService {
     private UserDAO userdao = new UserDAO();
     public User login(String username, String password){
 //        1.调用mapper查询用户
-        User user = userDAO.findByUsername(username)
+        User user = userDAO.findByUsername(username);
 //        2.密码匹配
         if(user != null && user.getPassword().equals(password)){
             return user;
