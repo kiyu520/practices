@@ -45,9 +45,9 @@ public class ProductView extends JFrame{
         JPanel queryPanel = new JPanel(new GridLayout(3,4,5,5));
         queryPanel.add(new JLabel("产品编号"));
         queryPanel.add(new JLabel("产品名称"));
-        queryPanel.add(new JLabel("价格区间（起/止）"));
+        queryPanel.add(new JLabel("价格"));
         queryPanel.add(new JLabel("类别"));
-        queryPanel.add(new JLabel("库存量区间（起/止）"));
+        queryPanel.add(new JLabel("库存量"));
         queryPanel.add(new JLabel("供应商编号"));
         queryPanel.add(new JLabel(""));
 
@@ -88,6 +88,9 @@ public class ProductView extends JFrame{
         this.add(funcPanel, BorderLayout.CENTER);
         this.add(tableScroll, BorderLayout.SOUTH);
 
-
+        btnQuery.addActionListener(e -> doQuery());//执行查询的函数
+        btnReset.addActionListener(e -> resetQuery());//重置查询的函数
+        btnExport.addActionListener(e -> exportData());//执行导出数据的函数
+        btnImport.addActionListener(e -> importData());//执行导入数据的函数
     }
 }
