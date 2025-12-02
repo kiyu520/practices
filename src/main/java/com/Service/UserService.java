@@ -11,8 +11,9 @@ public class UserService {
         if(user != null && user.getPassword().equals(password)){
             return user;
         }
+        return null;
     }
-    return null;
+
 }
 //原密码正确才能修改密码
 public boolean changePassword(String username.String oldPwd String newPwd){
