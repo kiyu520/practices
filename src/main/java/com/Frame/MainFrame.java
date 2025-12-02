@@ -227,4 +227,5 @@ public class MainFrame extends JFrame {
             quantityField.setText("");
         }
     }
+
 }
