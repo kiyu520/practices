@@ -25,4 +25,7 @@ public class SqlUtil {
         log.info("获取数据库连接");
         return session;
     }
+    public static void destroy(){
+        session.close();
+    }
 }

@@ -67,7 +67,7 @@ public class SystemManageFrame extends JFrame {
         intSettingPanel();
 
     // 初始化退出按钮
-        intExitBtn();
+        initExitBtn();
         mainPanel.add(passwordPanel);
         mainPanel.add(settingPanel);
         mainPanel.add(exitBtn);

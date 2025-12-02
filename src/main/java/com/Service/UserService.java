@@ -2,15 +2,13 @@ package com.Service;
 
 import com.Entity.User;
 import com.Mappers.user_mapper;
-import com.Tools.MyBatisUtil;
+import com.Tools.SqlUtil;
 import org.apache.ibatis.session.SqlSession;
 
 public class UserService {
-
-
     public User login(String username, String password) {
         // 1. 通过工具类获取 SqlSession
-        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        SqlSession sqlSession = SqlUtil.getSession();
         user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
 
         // 2. 调用Mapper查询用户
@@ -18,11 +16,9 @@ public class UserService {
 
         // 3. 密码匹配校验
         if (user != null && user.getPassword().equals(password)) {
-            MyBatisUtil.closeSqlSession(sqlSession);
             return user;
         }
 
-        MyBatisUtil.closeSqlSession(sqlSession);
         return null;
     }
 
@@ -33,13 +29,12 @@ public class UserService {
         }
 
         // 2. 获取 SqlSession
-        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        SqlSession sqlSession = SqlUtil.getSession();
         user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
 
         // 3. 查询用户并校验原密码
         User user = usermapper.select_user_by_name(username);
         if (user == null || !user.getPassword().equals(oldPwd)) {
-            MyBatisUtil.closeSqlSession(sqlSession);
             return false;
         }
 
@@ -50,7 +45,6 @@ public class UserService {
         updateUser.setUserRole(user.getUserRole());
 
         int rows = usermapper.update_user_by_name(updateUser);
-        MyBatisUtil.closeSqlSession(sqlSession);
 
         // 5. 返回结果
         return rows > 0;
