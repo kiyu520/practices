@@ -18,7 +18,12 @@ public class ProductService {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         this.proMapper = sqlSession.getMapper(pro_mapper.class);
     }
-//添加产品，编号唯一
+
+    public ProductService() {
+
+    }
+
+    //添加产品，编号唯一
     public boolean addProduct(Product product) {
 //        1.合法性校验
         if(product.getPro_id() <= 0 || product.getPro_name().isEmpty() || product.getPrice() < 0 || product.getQuantity() < 0){
