@@ -2,10 +2,12 @@ package com.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Product {
     int pro_id;
     String pro_name;

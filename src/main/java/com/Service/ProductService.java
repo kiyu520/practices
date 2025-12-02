@@ -7,48 +7,59 @@ import java.util.List;
 public class ProductService {
     private ProductDAO productDAO = new ProductDAO();
 //添加产品，编号唯一
-    public String addProduct(Product product) {
+    public boolean addProduct(Product product) {
 //        1.合法性校验
         if(product.getPro_id() <= 0 || product.getPro_name().isEmpty() || product.getPrice() < 0 || product.getQuantity() < 0){
-            return "参数错误；编号/名称不能为空，价格/库存不能为负！";
+            return false;
         }
 //        2.编号唯一性校验
         if(productDAO.findById(product.getPro_id()) != null){
-            return "产品编号已存在！";
+            return false;
         }
 //        3.调用DAO添加
-        boolean success = productDAO.add(product);
-        return success ? "添加成功！" : "添加失败！";
+        return productDAO.add(product);
     }
 //    删除产品，库存为0时
-    public String deleteProduct(int pro_id) {
+    public boolean deleteProduct(int pro_id) {
 //        1.查询产品
         Product product = productDAO.findById(pro_id);
         if(product == null){
-            return "产品不存在！";
+            return false;
         }
         if(product.getQuantity() != 0){
-            return "库存不为0，无法删除！";
+            return false;
         }
 //        3.调用DAO删除
-        boolean success = productDAO.delete(pro_id);
-        return success ? "删除成功！" : "删除失败！";
+        return productDAO.delete(pro_id);
     }
 //    商品进货，进货量>0
-    public String stockIn(int pro_id, float outquantity) {
-        if(outquantity <= 0){
-            return "进货量必须大于0！";
+    public boolean stockIn(int pro_id, float inquantity) {
+        if(inquantity <= 0){
+            return false;
         }
+//        查询商品是否存在
         Product product = productDAO.finfById(pro_id);
         if(product == null){
-            return " 产品不存在！";
+            return false;
         }
-        if(outquantity > product.getQuantity()){
-            return "库存不足！当前库存：" + product.getQuantity();
+//        计算库存并更新
+        double newStock = product.getQuantity() + inquantity;
+        return productDAO.updateStock(pro_id,newStock);
+
+    }
+    public boolean stockOut(int pro_id, float outquantity) {
+        if(outquantity <= 0) {
+            return false;
+        }
+        Product product = productDAO.findById(pro_id);
+        if(product == null){
+            return false;
+        }
+        if(outquantity >= product.getQuantity()){
+            return false;
         }
         double newStock = product.getQuantity() - outquantity;
-        boolean success = productDAO.updateStock(pro_id,newStock);
-        return success ? "出货成功！新库存：" + newStock : "出货失败！";
+        return productDAO.updateStock(pro_id,newStock);
     }
 //    查询所有产品
     public List<Product> findAllproducts(){

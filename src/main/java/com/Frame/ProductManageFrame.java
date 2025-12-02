@@ -273,12 +273,12 @@ public class ProductManageFrame extends JFrame {
         List<Product> products = productService.queryProducts(null, null, null, null, null, null);
         for (Product product : products) {
             Object[] rowData = {
-                    product.getProdId(),
-                    product.getProdName(),
+                    product.getPro_id(),
+                    product.getPro_name(),
                     String.format("%.2f", product.getPrice()), // 价格保留2位小数
                     product.getType(),
                     product.getQuantity(),
-                    product.getSupId()
+                    product.getSup_id()
             };
             tableModel.addRow(rowData);
         }
