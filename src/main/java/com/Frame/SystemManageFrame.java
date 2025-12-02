@@ -293,11 +293,11 @@ public class SystemManageFrame extends JFrame {
     /**
      * 测试入口（可选，用于单独调试界面布局）
      */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SystemManageFrame frame = new SystemManageFrame();
-            frame.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            SystemManageFrame frame = new SystemManageFrame();
+//            frame.setVisible(true);
+//        });
+//    }
 }
 
