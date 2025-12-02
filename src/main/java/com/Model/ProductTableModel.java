@@ -1,4 +1,4 @@
-package com.Frame;
+package com.Model;
 
 import com.Entity.Product;
 

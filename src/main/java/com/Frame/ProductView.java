@@ -1,11 +1,10 @@
 package com.Frame;
 
-import jdk.jfr.Label;
+import com.Model.ProductTableModel;
 import lombok.extern.java.Log;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 @Log
 public class ProductView extends JFrame{
