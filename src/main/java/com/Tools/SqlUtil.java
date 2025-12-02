@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Log
 public class SqlUtil {
-    private static  SqlSessionFactory  sqlSessionFactory;
+    public static  SqlSessionFactory  sqlSessionFactory;
     public static SqlSession session;
     static{
         try {
