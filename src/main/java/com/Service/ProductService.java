@@ -18,14 +18,7 @@ public class ProductService {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         this.proMapper = sqlSession.getMapper(pro_mapper.class);
     }
-    public ProductService() {
-        // 从工具类获取SqlSessionFactory
-        SqlSessionFactory factory = com.Tools.SqlUtil.sqlSessionFactory;
-        SqlSession sqlSession = factory.openSession(true);
-        this.proMapper = sqlSession.getMapper(pro_mapper.class);
-    }
-
-    //添加产品，编号唯一
+//添加产品，编号唯一
     public boolean addProduct(Product product) {
 //        1.合法性校验
         if(product.getPro_id() <= 0 || product.getPro_name().isEmpty() || product.getPrice() < 0 || product.getQuantity() < 0){
