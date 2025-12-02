@@ -1,5 +1,8 @@
 package com.Entity;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class User {
     private String username;
     private String password;
