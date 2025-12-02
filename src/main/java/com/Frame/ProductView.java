@@ -16,11 +16,13 @@ public class ProductView extends JFrame{
     private JTextField tfQuantity;
     private JTextField tfSupId;
 
+// 私有成员变量，用于存储产品表格模型对象
+// ProductTableModel 是一个自定义的表格模型类，用于管理表格的数据和结构
     private ProductTableModel tableModel;
     private JTable productTable;
 
     // 供应商编号列表（放空，不实现数据库查询）
-    private final List<Integer> existSupplierIds = new ArrayList<>();
+    private final List existSupplierIds = new List();
 
 /**
  * 产品视图类的构造方法
@@ -93,4 +95,21 @@ public class ProductView extends JFrame{
         btnExport.addActionListener(e -> exportData());//执行导出数据的函数
         btnImport.addActionListener(e -> importData());//执行导入数据的函数
     }
+
+    private void doQuery() {
+
+    }
+
+    private void resetQuery() {
+
+    }
+
+    private void exportData() {
+
+    }
+
+    private void importData() {
+
+    }
+
 }
