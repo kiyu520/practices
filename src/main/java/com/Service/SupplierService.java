@@ -2,6 +2,7 @@ package com.Service;
 
 import com.Entity.Supplier;
 import com.Mappers.sup_mapper;
+import com.Tools.SqlUtil;
 import org.apache.ibatis.session.SqlSession;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class SupplierService {
     private sup_mapper supMapper;
 
     public SupplierService() {
-        SqlSession sqlSession = sqlSessionFactory.openSession(true);
+        SqlSession sqlSession = SqlUtil.getSession();
         this.supMapper = sqlSession.getMapper(sup_mapper.class);
     }
     //    添加供应商，编号唯一
