@@ -11,15 +11,18 @@ import java.io.IOException;
 @Log
 public class SqlUtil {
     private static  SqlSessionFactory  sqlSessionFactory;
+    public static SqlSession session;
     static{
         try {
             sqlSessionFactory= new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("mybatis-config.xml"));
+            session=sqlSessionFactory.openSession(true);
+            log.info("数据库初始化完成");
         } catch (IOException e) {
             log.severe("数据库工具连接失败");
         }
     }
-    public static SqlSession getSession(boolean autoCommit) {
-        log.info("获取数据库连接，自动提交:"+autoCommit);
-        return  sqlSessionFactory.openSession(autoCommit);
+    public static SqlSession getSession() {
+        log.info("获取数据库连接");
+        return session;
     }
 }
