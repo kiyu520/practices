@@ -12,32 +12,23 @@ import com.Model.ProductTableModel;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.List;
+import com.Tools.RoundButtonUtil;
 
-/**
- * 仓库管理系统主窗口（完善商品信息管理按钮调用）
- */
+import static com.Tools.RoundButtonUtil.loadLocalIcon;
+
+
 public class MainFrame extends JFrame {
     private User loginUser;
     private JLabel timeLabel;
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
-
     public MainFrame(User user) {
         this.loginUser = user;
         initFrame();
         initTabbedPane();
         initTimeLabel();
     }
-
-    public MainFrame() {
-
-    }
-
     private void initFrame() {
         String title = "仓库管理系统欢迎你--" + loginUser.getUsername();
         setTitle(title);
@@ -47,183 +38,8 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
     }
 
-    /**
-     * 自定义圆弧按钮
-     */
-    private JButton createRoundedButton(String mainText, String suffixText, String iconPath) {
-        ImageIcon icon = loadLocalIcon(iconPath, 60, 60);
 
-        String buttonText = String.format(
-                "<html><body style='padding:0 5px; line-height:18px;'>%s<br/><small style='color:#666;'>%s</small></body></html>",
-                mainText, suffixText
-        );
 
-        JButton button = new JButton(buttonText, icon) {
-            private final int CORNER_RADIUS = 15;
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, CORNER_RADIUS, CORNER_RADIUS));
-                super.paintComponent(g2);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintBorder(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(new Color(200, 200, 200));
-                g2.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, CORNER_RADIUS, CORNER_RADIUS));
-                g2.dispose();
-            }
-        };
-
-        button.setIconTextGap(12);
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setFont(new Font("宋体", Font.BOLD, 12));
-        button.setBackground(new Color(230, 240, 250));
-        button.setPreferredSize(new Dimension(150, 100));
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-
-        return button;
-    }
-
-    /**
-     * 本地图片加载工具方法
-     */
-    private ImageIcon loadLocalIcon(String localPath, int iconWidth, int iconHeight) {
-        try {
-            File iconFile = new File(localPath);
-            if (!iconFile.exists()) {
-                System.out.println("⚠️  图标不存在：" + localPath);
-                return new ImageIcon();
-            }
-            ImageIcon icon = new ImageIcon(iconFile.getAbsolutePath());
-            Image scaledImage = icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
-            return new ImageIcon(scaledImage);
-        } catch (Exception e) {
-            System.out.println("⚠️  图标加载失败：" + localPath);
-            return new ImageIcon();
-        }
-    }
-
-    /**
-     * 初始化选项卡（核心修改：调用独立的ProductManageFrame类）
-     */
-    private void initTabbedPane() {
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
-        tabbedPane.setBackground(Color.WHITE);
-
-        // ========== 1. 基本数据选项卡 ==========
-        JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
-        dataPanel.setBackground(Color.WHITE);
-
-        // 供应商信息管理按钮：调用独立的SupplierManageFrame
-        JButton supplierBtn = createRoundedButton(
-                "供应商信息管理",
-                "supplierManagement",
-                "D:/java/tu1.png"
-        );
-        supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
-
-        // 核心修改：商品信息管理按钮→调用独立的ProductManageFrame（你的完整功能类）
-        JButton productBtn = createRoundedButton(
-                "商品信息管理",
-                "productManage",
-                "D:/java/tu2.png"
-        );
-        productBtn.addActionListener(e -> {
-            // 直接实例化你提供的独立ProductManageFrame类
-            new ProductManageFrame().setVisible(true);
-        });
-
-        dataPanel.add(supplierBtn);
-        dataPanel.add(productBtn);
-        tabbedPane.addTab("基本数据", dataPanel);
-
-        // ========== 2. 进货出货管理选项卡 ==========
-        JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
-        stockPanel.setBackground(Color.WHITE);
-
-        JButton stockInBtn = createRoundedButton(
-                "商品进货",
-                "stockIn",
-                "D:/java/tu3.png"
-        );
-        stockInBtn.addActionListener(e -> new StockInFrame().setVisible(true));
-
-        JButton stockOutBtn = createRoundedButton(
-                "商品出货",
-                "stockOut",
-                "D:/java/tu4.png"
-        );
-        stockOutBtn.addActionListener(e -> new StockOutFrame().setVisible(true));
-
-        stockPanel.add(stockInBtn);
-        stockPanel.add(stockOutBtn);
-        tabbedPane.addTab("进货出货管理", stockPanel);
-
-        // ========== 3. 查询视图选项卡 ==========
-        JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
-        queryPanel.setBackground(Color.WHITE);
-
-        JButton productQueryBtn = createRoundedButton(
-                "产品查询",
-                "productQuery",
-                "D:/java/tu5.png"
-        );
-        productQueryBtn.addActionListener(e -> new ProductQueryFrame().setVisible(true));
-
-        JButton supplierQueryBtn = createRoundedButton(
-                "供应商查询",
-                "supplierQuery",
-                "D:/java/tu6.png"
-        );
-        supplierQueryBtn.addActionListener(e -> new SupplierQueryFrame().setVisible(true));
-
-        queryPanel.add(productQueryBtn);
-        queryPanel.add(supplierQueryBtn);
-        tabbedPane.addTab("查询视图", queryPanel);
-
-        // ========== 4. 系统管理选项卡 ==========
-        JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
-        systemPanel.setBackground(Color.WHITE);
-
-        JButton changePwdBtn = createRoundedButton(
-                "更改密码",
-                "changePwd",
-                "D:/java/tu7.png"
-        );
-        changePwdBtn.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
-
-        JButton settingBtn = createRoundedButton(
-                "系统设置",
-                "systemSetting",
-                "D:/java/tu8.png"
-        );
-        settingBtn.addActionListener(e -> new SystemManageFrame().setVisible(true));
-
-        JButton exitBtn = createRoundedButton(
-                "退出系统",
-                "exitSystem",
-                "D:/java/tu9.png"
-        );
-        exitBtn.addActionListener(e -> System.exit(0));
-
-        systemPanel.add(changePwdBtn);
-        systemPanel.add(settingBtn);
-        systemPanel.add(exitBtn);
-        tabbedPane.addTab("系统管理", systemPanel);
-
-        add(tabbedPane, BorderLayout.CENTER);
-    }
 
     /**
      * 初始化实时时钟
@@ -246,8 +62,120 @@ public class MainFrame extends JFrame {
             }
         }).start();
     }
+    private void initTabbedPane() {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
+        tabbedPane.setBackground(Color.WHITE);
+       JPanel userPanel = new JPanel();
+       userPanel.setBackground(Color.WHITE);
+       userPanel.setLayout(new BorderLayout(5, 5));
+       userPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+       userPanel.add(ProListPanel.get());
+       tabbedPane.addTab("测试", userPanel);
+        tabbedPane.addTab("用户列表",new JPanel());
+        // ========== 1. 基本数据选项卡 ==========
+        JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        dataPanel.setBackground(Color.WHITE);
 
-    // ========== 子窗口代码（保持不变） ==========
+        // 供应商信息管理按钮：调用独立的SupplierManageFrame
+        JButton supplierBtn = RoundButtonUtil.createRoundedButton(
+                "供应商信息管理",
+                "supplierManagement",
+                "/static/image/img1.png"
+        );
+        supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
+        // 核心修改：商品信息管理按钮→调用独立的ProductManageFrame（你的完整功能类）
+        JButton productBtn = RoundButtonUtil.createRoundedButton(
+                "商品信息管理",
+                "productManage",
+                "/static/image/img2.png"
+        );
+        productBtn.addActionListener(e -> {
+            // 直接实例化你提供的独立ProductManageFrame类
+            new ProductManageFrame().setVisible(true);
+        });
+
+        dataPanel.add(supplierBtn);
+        dataPanel.add(productBtn);
+        tabbedPane.addTab("基本数据", dataPanel);
+
+        // ========== 2. 进货出货管理选项卡 ==========
+        JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        stockPanel.setBackground(Color.WHITE);
+
+        JButton stockInBtn = RoundButtonUtil.createRoundedButton(
+                "商品进货",
+                "stockIn",
+                "/static/image/img3.png"
+        );
+        stockInBtn.addActionListener(e -> new MainFrame.StockInFrame().setVisible(true));
+
+        JButton stockOutBtn = RoundButtonUtil.createRoundedButton(
+                "商品出货",
+                "stockOut",
+                "/static/image/img4.png"
+        );
+        stockOutBtn.addActionListener(e -> new MainFrame.StockOutFrame().setVisible(true));
+
+        stockPanel.add(stockInBtn);
+        stockPanel.add(stockOutBtn);
+        tabbedPane.addTab("进货出货管理", stockPanel);
+
+        // ========== 3. 查询视图选项卡 ==========
+        JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        queryPanel.setBackground(Color.WHITE);
+
+        JButton productQueryBtn = RoundButtonUtil.createRoundedButton(
+                "产品查询",
+                "productQuery",
+                "/static/image/img5.png"
+        );
+        productQueryBtn.addActionListener(e -> new MainFrame.ProductQueryFrame().setVisible(true));
+
+        JButton supplierQueryBtn = RoundButtonUtil.createRoundedButton(
+                "供应商查询",
+                "supplierQuery",
+                "/static/image/img6.png"
+        );
+        supplierQueryBtn.addActionListener(e -> new MainFrame.SupplierQueryFrame().setVisible(true));
+
+        queryPanel.add(productQueryBtn);
+        queryPanel.add(supplierQueryBtn);
+        tabbedPane.addTab("查询视图", queryPanel);
+
+        // ========== 4. 系统管理选项卡 ==========
+        JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        systemPanel.setBackground(Color.WHITE);
+
+        JButton changePwdBtn = RoundButtonUtil.createRoundedButton(
+                "更改密码",
+                "changePwd",
+                "/static/image/img7.png"
+        );
+        changePwdBtn.addActionListener(e -> new MainFrame.ChangePasswordFrame(loginUser).setVisible(true));
+
+        JButton settingBtn = RoundButtonUtil.createRoundedButton(
+                "系统设置",
+                "systemSetting",
+                "/static/image/img8.png"
+        );
+        settingBtn.addActionListener(e -> new MainFrame.SystemManageFrame().setVisible(true));
+
+        JButton exitBtn = RoundButtonUtil.createRoundedButton(
+                "退出系统",
+                "exitSystem",
+                "/static/image/img9.png"
+        );
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        systemPanel.add(changePwdBtn);
+        systemPanel.add(settingBtn);
+        systemPanel.add(exitBtn);
+        tabbedPane.addTab("系统管理", systemPanel);
+
+        add(tabbedPane, BorderLayout.CENTER);
+    }
+
     class StockInFrame extends JFrame {
         private JTextField prodIdField;
         private JTextField quantityField;
@@ -315,7 +243,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    class StockOutFrame extends JFrame {
+    public class StockOutFrame extends JFrame {
         private JTextField prodIdField;
         private JTextField quantityField;
         private JTextField customerField;
@@ -515,8 +443,4 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        User testUser = new User("admin", "123456", 1);
-        SwingUtilities.invokeLater(() -> new MainFrame(testUser).setVisible(true));
-    }
 }

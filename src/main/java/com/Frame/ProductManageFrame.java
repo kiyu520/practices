@@ -6,7 +6,6 @@ import com.Service.ProductService;
 import com.Service.SupplierService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -273,8 +272,8 @@ public class ProductManageFrame extends JFrame {
         List<Product> products = productService.queryProducts(null, null, null, null, null, null);
         for (Product product : products) {
             Object[] rowData = {
-                    product.getPro_id(),
-                    product.getPro_name(),
+                    product.getProd_id(),
+                    product.getProd_name(),
                     String.format("%.2f", product.getPrice()), // 价格保留2位小数
                     product.getType(),
                     product.getQuantity(),

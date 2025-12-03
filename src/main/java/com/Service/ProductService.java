@@ -9,8 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProductService {
-    private SqlSessionFactory sqlSessionFactory;
-    private pro_mapper proMapper;
+    private static pro_mapper proMapper;
 
     public ProductService() {
         // 从工具类获取SqlSessionFactory
@@ -18,20 +17,14 @@ public class ProductService {
         SqlSession sqlSession = factory.openSession(true);
         this.proMapper = sqlSession.getMapper(pro_mapper.class);
     }
-    public ProductService(SqlSessionFactory sqlSessionFactory) {
-        this.sqlSessionFactory = sqlSessionFactory;
-
-        SqlSession sqlSession = sqlSessionFactory.openSession(true);
-        this.proMapper = sqlSession.getMapper(pro_mapper.class);
-    }
 //添加产品，编号唯一
     public boolean addProduct(Product product) {
 //        1.合法性校验
-        if(product.getPro_id() <= 0 || product.getPro_name().isEmpty() || product.getPrice() < 0 || product.getQuantity() < 0){
+        if(product.getProd_id() <= 0 || product.getProd_name().isEmpty() || product.getPrice() < 0 || product.getQuantity() < 0){
             return false;
         }
 //        2.编号唯一性校验(用Mapper按id查询)
-        List<Product> existProduct = proMapper.select_product_id(product.getPro_id());
+        List<Product> existProduct = proMapper.select_product_id(product.getProd_id());
         if(existProduct != null && !existProduct.isEmpty()){
             return false;
         }
@@ -92,7 +85,7 @@ public class ProductService {
         return result > 0;
     }
 //    查询所有产品
-    public List<Product> findAllproducts(){
+    public static List<Product> findAllproducts(){
         return proMapper.select_product_all();
     }
 
@@ -108,25 +101,25 @@ public class ProductService {
     public List<Product> queryProducts(Object o, Object o1, Object o2, Object o3, Object o4, Object o5) {
         // 1. 优先按非空参数匹配查询维度（按需扩展其他条件）
         // 场景1：按产品ID查询
-        if (o != null && o instanceof Integer && (Integer) o > 0) {
+        if (o instanceof Integer && (Integer) o > 0) {
             return proMapper.select_product_id((Integer) o);
         }
         // 场景2：按产品名称查询
-        if (o1 != null && o1 instanceof String && !((String) o1).isEmpty()) {
+        if (o1 instanceof String && !((String) o1).isEmpty()) {
             return proMapper.select_product_name((String) o1);
         }
         // 场景3：按价格区间查询
-        if (o2 != null && o3 != null && o2 instanceof Double && o3 instanceof Double) {
+        if (o2 instanceof Double && o3 instanceof Double) {
             Double begin = (Double) o2;
             Double end = (Double) o3;
             return proMapper.select_product_price(begin, end);
         }
         // 场景4：按产品类型查询
-        if (o4 != null && o4 instanceof String && !((String) o4).isEmpty()) {
+        if (o4 instanceof String && !((String) o4).isEmpty()) {
             return proMapper.select_product_type((String) o4);
         }
         // 场景5：按供应商ID查询
-        if (o5 != null && o5 instanceof Integer && (Integer) o5 > 0) {
+        if (o5 instanceof Integer && (Integer) o5 > 0) {
             return proMapper.select_product_supid((Integer) o5);
         }
         // 无有效查询条件：返回空列表（避免null）

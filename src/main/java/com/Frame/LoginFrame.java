@@ -62,22 +62,6 @@ public class LoginFrame extends JFrame {
                 }
             }
         });
-        exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0); // 正常退出程序（状态码0表示正常退出）
-            }
-        });
-    }
-
-    // 测试主方法：启动登录页，验证跳转逻辑
-    public static void main(String[] args) {
-        // Swing组件必须在EDT（事件调度线程）中运行，避免线程安全问题
-        SwingUtilities.invokeLater(() -> {
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setVisible(true);
-            // 提示测试账号
-            JOptionPane.showMessageDialog(loginFrame, "测试账号：root  测试密码：123456", "测试提示", JOptionPane.INFORMATION_MESSAGE);
-        });
+        exitButton.addActionListener(e -> System.exit(0));
     }
 }

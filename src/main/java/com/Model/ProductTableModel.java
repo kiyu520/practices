@@ -98,8 +98,8 @@ public class ProductTableModel extends AbstractTableModel {
         Product product = products.get(rowIndex);
         // 根据列索引返回对应字段（适配你的Product实体和数据库字段）
         switch (columnIndex) {
-            case 0: return product.getPro_id();      // 产品编号（对应数据库prod_id）
-            case 1: return product.getPro_name();    // 产品名称（对应数据库prod_name）
+            case 0: return product.getProd_id();      // 产品编号（对应数据库prod_id）
+            case 1: return product.getProd_name();    // 产品名称（对应数据库prod_name）
             case 2: return product.getPrice();       // 价格（double类型，适配数据库）
             case 3: return product.getType();        // 类别（对应数据库type）
             case 4: return product.getQuantity();    // 库存量（double类型，适配数据库）
