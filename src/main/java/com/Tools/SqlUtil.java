@@ -14,7 +14,7 @@ public class SqlUtil {
     public static SqlSession session;
     static{
         try {
-            sqlSessionFactory= new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("mybatis-config.xml"));
+            sqlSessionFactory= new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("Properties/mybatis-config.xml"));
             session=sqlSessionFactory.openSession(true);
             log.info("数据库初始化完成");
         } catch (IOException e) {
