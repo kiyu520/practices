@@ -12,13 +12,14 @@ import com.Model.ProductTableModel;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
 
 /**
- * 仓库管理系统主窗口（原生组件实现，确保按钮必显示）
+ * 仓库管理系统主窗口（完善商品信息管理按钮调用）
  */
 public class MainFrame extends JFrame {
     private User loginUser;
@@ -41,51 +42,73 @@ public class MainFrame extends JFrame {
      * 窗口基础配置
      */
     private void initFrame() {
-        setTitle("仓库管理系统");
-        setSize(1200, 700); // 加宽窗口，确保按钮不拥挤
+        String title = "仓库管理系统欢迎你--" + loginUser.getUsername();
+        setTitle(title);
+        setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
     }
 
     /**
-     * 简化版按钮（用原生组件，确保必显示）
-     * 结构：图标 + 中文文本 + 英文后缀（用HTML实现文字布局）
+     * 自定义圆弧按钮
      */
-    private JButton createNormalButton(String mainText, String suffixText, String iconPath) {
-        // 1. 加载本地图标（保持你的路径）
-        ImageIcon icon = loadLocalIcon(iconPath);
+    private JButton createRoundedButton(String mainText, String suffixText, String iconPath) {
+        ImageIcon icon = loadLocalIcon(iconPath, 60, 60);
 
-        // 2. 用HTML实现「中文+英文后缀」的布局（右侧英文灰色）
         String buttonText = String.format(
-                "<html><body style='padding:0 5px;'>%s<br/><small style='color:#666;'>%s</small></body></html>",
+                "<html><body style='padding:0 5px; line-height:18px;'>%s<br/><small style='color:#666;'>%s</small></body></html>",
                 mainText, suffixText
         );
 
-        // 3. 创建原生按钮，设置图标和文本
-        JButton button = new JButton(buttonText, icon);
-        button.setIconTextGap(10); // 图标和文字间距
-        button.setVerticalTextPosition(SwingConstants.BOTTOM); // 文字在图标下方
-        button.setHorizontalTextPosition(SwingConstants.CENTER); // 文字水平居中
+        JButton button = new JButton(buttonText, icon) {
+            private final int CORNER_RADIUS = 15;
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, CORNER_RADIUS, CORNER_RADIUS));
+                super.paintComponent(g2);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(200, 200, 200));
+                g2.draw(new RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, CORNER_RADIUS, CORNER_RADIUS));
+                g2.dispose();
+            }
+        };
+
+        button.setIconTextGap(12);
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
         button.setFont(new Font("宋体", Font.BOLD, 12));
         button.setBackground(new Color(230, 240, 250));
-        button.setPreferredSize(new Dimension(120, 80)); // 按钮大小（足够容纳图标+两行文字）
+        button.setPreferredSize(new Dimension(150, 100));
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
         return button;
     }
 
     /**
-     * 本地图片加载工具方法（保持不变）
+     * 本地图片加载工具方法
      */
-    private ImageIcon loadLocalIcon(String localPath) {
+    private ImageIcon loadLocalIcon(String localPath, int iconWidth, int iconHeight) {
         try {
             File iconFile = new File(localPath);
             if (!iconFile.exists()) {
                 System.out.println("⚠️  图标不存在：" + localPath);
-                return new ImageIcon(); // 不存在返回空图标
+                return new ImageIcon();
             }
-            // 缩放图标到40x40（适合按钮大小）
             ImageIcon icon = new ImageIcon(iconFile.getAbsolutePath());
-            Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            Image scaledImage = icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
             return new ImageIcon(scaledImage);
         } catch (Exception e) {
             System.out.println("⚠️  图标加载失败：" + localPath);
@@ -94,7 +117,7 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * 初始化选项卡（保持你的路径不变）
+     * 初始化选项卡（核心修改：调用独立的ProductManageFrame类）
      */
     private void initTabbedPane() {
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -105,21 +128,24 @@ public class MainFrame extends JFrame {
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         dataPanel.setBackground(Color.WHITE);
 
-        // 供应商信息管理按钮
-        JButton supplierBtn = createNormalButton(
+        // 供应商信息管理按钮：调用独立的SupplierManageFrame
+        JButton supplierBtn = createRoundedButton(
                 "供应商信息管理",
                 "supplierManagement",
                 "D:/java/tu1.png"
         );
         supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
 
-        // 商品信息管理按钮
-        JButton productBtn = createNormalButton(
+        // 核心修改：商品信息管理按钮→调用独立的ProductManageFrame（你的完整功能类）
+        JButton productBtn = createRoundedButton(
                 "商品信息管理",
                 "productManage",
                 "D:/java/tu2.png"
         );
-        productBtn.addActionListener(e -> new ProductManageFrame().setVisible(true));
+        productBtn.addActionListener(e -> {
+            // 直接实例化你提供的独立ProductManageFrame类
+            new ProductManageFrame().setVisible(true);
+        });
 
         dataPanel.add(supplierBtn);
         dataPanel.add(productBtn);
@@ -129,16 +155,14 @@ public class MainFrame extends JFrame {
         JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         stockPanel.setBackground(Color.WHITE);
 
-        // 商品进货按钮
-        JButton stockInBtn = createNormalButton(
+        JButton stockInBtn = createRoundedButton(
                 "商品进货",
                 "stockIn",
                 "D:/java/tu3.png"
         );
         stockInBtn.addActionListener(e -> new StockInFrame().setVisible(true));
 
-        // 商品出货按钮
-        JButton stockOutBtn = createNormalButton(
+        JButton stockOutBtn = createRoundedButton(
                 "商品出货",
                 "stockOut",
                 "D:/java/tu4.png"
@@ -153,16 +177,14 @@ public class MainFrame extends JFrame {
         JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         queryPanel.setBackground(Color.WHITE);
 
-        // 产品查询按钮
-        JButton productQueryBtn = createNormalButton(
+        JButton productQueryBtn = createRoundedButton(
                 "产品查询",
                 "productQuery",
                 "D:/java/tu5.png"
         );
         productQueryBtn.addActionListener(e -> new ProductQueryFrame().setVisible(true));
 
-        // 供应商查询按钮
-        JButton supplierQueryBtn = createNormalButton(
+        JButton supplierQueryBtn = createRoundedButton(
                 "供应商查询",
                 "supplierQuery",
                 "D:/java/tu6.png"
@@ -177,24 +199,21 @@ public class MainFrame extends JFrame {
         JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         systemPanel.setBackground(Color.WHITE);
 
-        // 更改密码按钮
-        JButton changePwdBtn = createNormalButton(
+        JButton changePwdBtn = createRoundedButton(
                 "更改密码",
                 "changePwd",
                 "D:/java/tu7.png"
         );
         changePwdBtn.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
 
-        // 系统设置按钮
-        JButton settingBtn = createNormalButton(
+        JButton settingBtn = createRoundedButton(
                 "系统设置",
                 "systemSetting",
                 "D:/java/tu8.png"
         );
         settingBtn.addActionListener(e -> new SystemManageFrame().setVisible(true));
 
-        // 退出系统按钮
-        JButton exitBtn = createNormalButton(
+        JButton exitBtn = createRoundedButton(
                 "退出系统",
                 "exitSystem",
                 "D:/java/tu9.png"
@@ -206,7 +225,7 @@ public class MainFrame extends JFrame {
         systemPanel.add(exitBtn);
         tabbedPane.addTab("系统管理", systemPanel);
 
-        add(tabbedPane, BorderLayout.CENTER); // 改为CENTER布局，确保选项卡占满窗口
+        add(tabbedPane, BorderLayout.CENTER);
     }
 
     /**
@@ -231,7 +250,7 @@ public class MainFrame extends JFrame {
         }).start();
     }
 
-    // ========== 子窗口代码（同步改为原生按钮，确保显示） ==========
+    // ========== 子窗口代码（保持不变） ==========
     class StockInFrame extends JFrame {
         private JTextField prodIdField;
         private JTextField quantityField;
@@ -261,9 +280,8 @@ public class MainFrame extends JFrame {
             }
             add(supplierCombo);
 
-            // 原生按钮
-            JButton confirmBtn = new JButton("确认进货", loadLocalIcon("D:/icons/ok.png"));
-            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png"));
+            JButton confirmBtn = new JButton("确认进货", loadLocalIcon("D:/icons/ok.png", 20, 20));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             clearBtn.setIconTextGap(8);
             add(confirmBtn);
@@ -325,9 +343,8 @@ public class MainFrame extends JFrame {
             customerField = new JTextField();
             add(customerField);
 
-            // 原生按钮
-            JButton confirmBtn = new JButton("确认出货", loadLocalIcon("D:/icons/ok.png"));
-            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png"));
+            JButton confirmBtn = new JButton("确认出货", loadLocalIcon("D:/icons/ok.png", 20, 20));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             clearBtn.setIconTextGap(8);
             add(confirmBtn);
@@ -447,9 +464,8 @@ public class MainFrame extends JFrame {
             confirmPwdField = new JPasswordField();
             add(confirmPwdField);
 
-            // 原生按钮
-            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("D:/icons/ok.png"));
-            JButton cancelBtn = new JButton("取消", loadLocalIcon("D:/icons/cancel.png"));
+            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("D:/icons/ok.png", 20, 20));
+            JButton cancelBtn = new JButton("取消", loadLocalIcon("D:/icons/cancel.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             cancelBtn.setIconTextGap(8);
             add(confirmBtn);
@@ -491,8 +507,18 @@ public class MainFrame extends JFrame {
         }
     }
 
+    // 系统设置子窗口（保持不变）
+    class SystemManageFrame extends JFrame {
+        public SystemManageFrame() {
+            setTitle("系统设置");
+            setSize(400, 300);
+            setLocationRelativeTo(MainFrame.this);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            add(new JLabel("系统设置功能区域", SwingConstants.CENTER));
+        }
+    }
+
     public static void main(String[] args) {
-        // 确保User类构造方法匹配（如果报错，根据实际User类调整参数）
         User testUser = new User("admin", "123456", 1);
         SwingUtilities.invokeLater(() -> new MainFrame(testUser).setVisible(true));
     }
