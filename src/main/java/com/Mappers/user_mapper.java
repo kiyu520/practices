@@ -7,13 +7,11 @@ import java.util.List;
 
 public interface user_mapper {
     // 字段映射模板：数据库下划线字段 → 实体类属性
-    @Results(id = "userMap", value = {
+    @Results( value = {
             @Result(column = "u_name", property = "username"),
             @Result(column = "u_password", property = "password"),
             @Result(column = "u_role", property = "userRole")
     })
-
-    // 新增：传入User实体类
     @Insert("insert into practice.users(u_name, u_password, u_role) " +
             "values(#{u.username}, #{u.password}, #{u.userRole})")
     int add_user_entity(@Param("u") User u);
@@ -26,17 +24,29 @@ public interface user_mapper {
                       @Param("userRole") int userRole);
 
     // 查询所有用户（复用userMap映射）
-    @ResultMap("userMap")
+    @Results( value = {
+            @Result(column = "u_name", property = "username"),
+            @Result(column = "u_password", property = "password"),
+            @Result(column = "u_role", property = "userRole")
+    })
     @Select("select * from practice.users")
     List<User> select_user_all();
 
     // 按用户名查询
-    @ResultMap("userMap")
+    @Results( value = {
+            @Result(column = "u_name", property = "username"),
+            @Result(column = "u_password", property = "password"),
+            @Result(column = "u_role", property = "userRole")
+    })
     @Select("select * from practice.users where u_name=#{username}")
     User select_user_by_name(String username);
 
     // 按用户角色查询
-    @ResultMap("userMap")
+    @Results( value = {
+            @Result(column = "u_name", property = "username"),
+            @Result(column = "u_password", property = "password"),
+            @Result(column = "u_role", property = "userRole")
+    })
     @Select("select * from practice.users where u_role=#{userRole}")
     List<User> select_user_by_role(int userRole);
 
