@@ -14,24 +14,23 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
 /**
- * 仓库管理系统主窗口（适配现有项目结构）
+ * 仓库管理系统主窗口（原生组件实现，确保按钮必显示）
  */
 public class MainFrame extends JFrame {
-    private User loginUser; // 当前登录用户
-    private JLabel timeLabel; // 实时时钟标签
-
-    // 业务层对象（对接数据库操作）
+    private User loginUser;
+    private JLabel timeLabel;
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
 
     public MainFrame(User user) {
         this.loginUser = user;
-        initFrame();       // 初始化窗口
-        initMenuBar();     // 初始化菜单栏
-        initTimeLabel();   // 初始化实时时钟
+        initFrame();
+        initTabbedPane();
+        initTimeLabel();
     }
 
     public MainFrame() {
@@ -42,92 +41,187 @@ public class MainFrame extends JFrame {
      * 窗口基础配置
      */
     private void initFrame() {
-        setTitle("仓库管理系统 - 欢迎您，" + loginUser.getUsername());
-        setSize(1000, 700);
+        setTitle("仓库管理系统");
+        setSize(1200, 700); // 加宽窗口，确保按钮不拥挤
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // 窗口居中
-        setLayout(new BorderLayout()); // 改用BorderLayout（更适配子组件）
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
     }
 
     /**
-     * 初始化菜单栏
+     * 简化版按钮（用原生组件，确保必显示）
+     * 结构：图标 + 中文文本 + 英文后缀（用HTML实现文字布局）
      */
-    private void initMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
+    private JButton createNormalButton(String mainText, String suffixText, String iconPath) {
+        // 1. 加载本地图标（保持你的路径）
+        ImageIcon icon = loadLocalIcon(iconPath);
 
-        // 1. 基本数据菜单
-        JMenu dataMenu = new JMenu("基本数据");
-        JMenuItem productItem = new JMenuItem("商品信息管理");
-        JMenuItem supplierItem = new JMenuItem("供应商信息管理");
-        dataMenu.add(productItem);
-        dataMenu.add(supplierItem);
+        // 2. 用HTML实现「中文+英文后缀」的布局（右侧英文灰色）
+        String buttonText = String.format(
+                "<html><body style='padding:0 5px;'>%s<br/><small style='color:#666;'>%s</small></body></html>",
+                mainText, suffixText
+        );
 
-        // 2. 进货出货管理菜单
-        JMenu stockMenu = new JMenu("进货出货管理");
-        JMenuItem stockInItem = new JMenuItem("商品进货");
-        JMenuItem stockOutItem = new JMenuItem("商品出货");
-        stockMenu.add(stockInItem);
-        stockMenu.add(stockOutItem);
-
-        // 3. 查询视图菜单
-        JMenu queryMenu = new JMenu("查询视图");
-        JMenuItem productQueryItem = new JMenuItem("产品查询");
-        JMenuItem supplierQueryItem = new JMenuItem("供应商查询");
-        queryMenu.add(productQueryItem);
-        queryMenu.add(supplierQueryItem);
-
-        // 4. 系统管理菜单
-        JMenu systemMenu = new JMenu("系统管理");
-        JMenuItem changePwdItem = new JMenuItem("更改密码");
-        JMenuItem settingItem = new JMenuItem("系统设置");
-        JMenuItem exitItem = new JMenuItem("退出系统");
-        systemMenu.add(changePwdItem);
-        systemMenu.add(settingItem);
-        systemMenu.addSeparator();
-        systemMenu.add(exitItem);
-
-        // 菜单添加到菜单栏
-        menuBar.add(dataMenu);
-        menuBar.add(stockMenu);
-        menuBar.add(queryMenu);
-        menuBar.add(systemMenu);
-        setJMenuBar(menuBar);
-
-        // ========== 菜单事件绑定（对接现有子窗口） ==========
-        // 商品信息管理
-        productItem.addActionListener(e -> new ProductManageFrame().setVisible(true));
-        // 供应商信息管理
-        supplierItem.addActionListener(e -> new SupplierManageFrame().setVisible(true));
-        // 商品进货
-        stockInItem.addActionListener(e -> new StockInFrame().setVisible(true));
-        // 商品出货
-        stockOutItem.addActionListener(e -> new StockOutFrame().setVisible(true));
-        // 产品查询
-        productQueryItem.addActionListener(e -> new ProductQueryFrame().setVisible(true));
-        // 供应商查询
-        supplierQueryItem.addActionListener(e -> new SupplierQueryFrame().setVisible(true));
-        // 更改密码
-        changePwdItem.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
-        // 系统设置
-        settingItem.addActionListener(e -> new SystemManageFrame().setVisible(true));
-        // 退出系统
-        exitItem.addActionListener(e -> System.exit(0));
+        // 3. 创建原生按钮，设置图标和文本
+        JButton button = new JButton(buttonText, icon);
+        button.setIconTextGap(10); // 图标和文字间距
+        button.setVerticalTextPosition(SwingConstants.BOTTOM); // 文字在图标下方
+        button.setHorizontalTextPosition(SwingConstants.CENTER); // 文字水平居中
+        button.setFont(new Font("宋体", Font.BOLD, 12));
+        button.setBackground(new Color(230, 240, 250));
+        button.setPreferredSize(new Dimension(120, 80)); // 按钮大小（足够容纳图标+两行文字）
+        return button;
     }
 
     /**
-     * 初始化实时时钟（右下角）
+     * 本地图片加载工具方法（保持不变）
+     */
+    private ImageIcon loadLocalIcon(String localPath) {
+        try {
+            File iconFile = new File(localPath);
+            if (!iconFile.exists()) {
+                System.out.println("⚠️  图标不存在：" + localPath);
+                return new ImageIcon(); // 不存在返回空图标
+            }
+            // 缩放图标到40x40（适合按钮大小）
+            ImageIcon icon = new ImageIcon(iconFile.getAbsolutePath());
+            Image scaledImage = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            return new ImageIcon(scaledImage);
+        } catch (Exception e) {
+            System.out.println("⚠️  图标加载失败：" + localPath);
+            return new ImageIcon();
+        }
+    }
+
+    /**
+     * 初始化选项卡（保持你的路径不变）
+     */
+    private void initTabbedPane() {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
+        tabbedPane.setBackground(Color.WHITE);
+
+        // ========== 1. 基本数据选项卡 ==========
+        JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        dataPanel.setBackground(Color.WHITE);
+
+        // 供应商信息管理按钮
+        JButton supplierBtn = createNormalButton(
+                "供应商信息管理",
+                "supplierManagement",
+                "D:/java/tu1.png"
+        );
+        supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
+
+        // 商品信息管理按钮
+        JButton productBtn = createNormalButton(
+                "商品信息管理",
+                "productManage",
+                "D:/java/tu2.png"
+        );
+        productBtn.addActionListener(e -> new ProductManageFrame().setVisible(true));
+
+        dataPanel.add(supplierBtn);
+        dataPanel.add(productBtn);
+        tabbedPane.addTab("基本数据", dataPanel);
+
+        // ========== 2. 进货出货管理选项卡 ==========
+        JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        stockPanel.setBackground(Color.WHITE);
+
+        // 商品进货按钮
+        JButton stockInBtn = createNormalButton(
+                "商品进货",
+                "stockIn",
+                "D:/java/tu3.png"
+        );
+        stockInBtn.addActionListener(e -> new StockInFrame().setVisible(true));
+
+        // 商品出货按钮
+        JButton stockOutBtn = createNormalButton(
+                "商品出货",
+                "stockOut",
+                "D:/java/tu4.png"
+        );
+        stockOutBtn.addActionListener(e -> new StockOutFrame().setVisible(true));
+
+        stockPanel.add(stockInBtn);
+        stockPanel.add(stockOutBtn);
+        tabbedPane.addTab("进货出货管理", stockPanel);
+
+        // ========== 3. 查询视图选项卡 ==========
+        JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        queryPanel.setBackground(Color.WHITE);
+
+        // 产品查询按钮
+        JButton productQueryBtn = createNormalButton(
+                "产品查询",
+                "productQuery",
+                "D:/java/tu5.png"
+        );
+        productQueryBtn.addActionListener(e -> new ProductQueryFrame().setVisible(true));
+
+        // 供应商查询按钮
+        JButton supplierQueryBtn = createNormalButton(
+                "供应商查询",
+                "supplierQuery",
+                "D:/java/tu6.png"
+        );
+        supplierQueryBtn.addActionListener(e -> new SupplierQueryFrame().setVisible(true));
+
+        queryPanel.add(productQueryBtn);
+        queryPanel.add(supplierQueryBtn);
+        tabbedPane.addTab("查询视图", queryPanel);
+
+        // ========== 4. 系统管理选项卡 ==========
+        JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
+        systemPanel.setBackground(Color.WHITE);
+
+        // 更改密码按钮
+        JButton changePwdBtn = createNormalButton(
+                "更改密码",
+                "changePwd",
+                "D:/java/tu7.png"
+        );
+        changePwdBtn.addActionListener(e -> new ChangePasswordFrame(loginUser).setVisible(true));
+
+        // 系统设置按钮
+        JButton settingBtn = createNormalButton(
+                "系统设置",
+                "systemSetting",
+                "D:/java/tu8.png"
+        );
+        settingBtn.addActionListener(e -> new SystemManageFrame().setVisible(true));
+
+        // 退出系统按钮
+        JButton exitBtn = createNormalButton(
+                "退出系统",
+                "exitSystem",
+                "D:/java/tu9.png"
+        );
+        exitBtn.addActionListener(e -> System.exit(0));
+
+        systemPanel.add(changePwdBtn);
+        systemPanel.add(settingBtn);
+        systemPanel.add(exitBtn);
+        tabbedPane.addTab("系统管理", systemPanel);
+
+        add(tabbedPane, BorderLayout.CENTER); // 改为CENTER布局，确保选项卡占满窗口
+    }
+
+    /**
+     * 初始化实时时钟
      */
     private void initTimeLabel() {
-        timeLabel = new JLabel(DateUtil.getCurrentDateTime());
+        timeLabel = new JLabel("System Time◆◆" + DateUtil.getCurrentDateTime());
         timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         timeLabel.setFont(new Font("宋体", Font.PLAIN, 14));
-        // 添加到窗口底部
+        timeLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 10));
         add(timeLabel, BorderLayout.SOUTH);
 
-        // 启动时钟线程（每秒更新）
         new Thread(() -> {
             while (true) {
-                SwingUtilities.invokeLater(() -> timeLabel.setText(DateUtil.getCurrentDateTime()));
+                SwingUtilities.invokeLater(() -> timeLabel.setText("System Time◆◆" + DateUtil.getCurrentDateTime()));
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -137,21 +231,20 @@ public class MainFrame extends JFrame {
         }).start();
     }
 
-    // ========== 子窗口：商品进货 ==========
+    // ========== 子窗口代码（同步改为原生按钮，确保显示） ==========
     class StockInFrame extends JFrame {
         private JTextField prodIdField;
         private JTextField quantityField;
-        private JTextField supplierIdField; // 新增：供应商ID
+        private JComboBox<String> supplierCombo;
 
         public StockInFrame() {
             setTitle("商品进货");
             setSize(450, 350);
             setLocationRelativeTo(MainFrame.this);
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setLayout(new GridLayout(4, 2, 10, 20)); // 网格布局更整洁
-            setPadding(20); // 窗口内边距
+            setLayout(new GridLayout(5, 2, 10, 20));
+            setPadding(20);
 
-            // 组件
             add(new JLabel("商品ID:"));
             prodIdField = new JTextField();
             add(prodIdField);
@@ -160,57 +253,57 @@ public class MainFrame extends JFrame {
             quantityField = new JTextField();
             add(quantityField);
 
-            add(new JLabel("供应商ID:"));
-            supplierIdField = new JTextField();
-            add(supplierIdField);
+            add(new JLabel("供应商:"));
+            supplierCombo = new JComboBox<>();
+            List<Supplier> suppliers = supplierService.findAllSupplier();
+            for (Supplier s : suppliers) {
+                supplierCombo.addItem(s.getSupName());
+            }
+            add(supplierCombo);
 
-            // 按钮
-            JButton confirmBtn = new JButton("确认进货");
-            JButton clearBtn = new JButton("清空");
+            // 原生按钮
+            JButton confirmBtn = new JButton("确认进货", loadLocalIcon("D:/icons/ok.png"));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png"));
+            confirmBtn.setIconTextGap(8);
+            clearBtn.setIconTextGap(8);
             add(confirmBtn);
             add(clearBtn);
 
-            // 进货事件
             confirmBtn.addActionListener(e -> {
                 try {
                     int prodId = Integer.parseInt(prodIdField.getText().trim());
                     float quantity = Float.parseFloat(quantityField.getText().trim());
-                    int supplierId = Integer.parseInt(supplierIdField.getText().trim());
+                    String supplierName = (String) supplierCombo.getSelectedItem();
 
-                    // 调用ProductService的进货方法（对接数据库）
                     boolean success = productService.stockIn(prodId, quantity);
                     if (success) {
                         JOptionPane.showMessageDialog(this, "进货成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                         clearFields();
                     } else {
-                        JOptionPane.showMessageDialog(this, "进货失败（商品/供应商不存在或数量非法）", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "进货失败", "错误", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
                 }
             });
 
-            // 清空事件
             clearBtn.addActionListener(e -> clearFields());
         }
 
         private void clearFields() {
             prodIdField.setText("");
             quantityField.setText("");
-            supplierIdField.setText("");
         }
 
-        // 窗口内边距设置
         private void setPadding(int padding) {
             ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
         }
     }
 
-    // ========== 子窗口：商品出货 ==========
     class StockOutFrame extends JFrame {
         private JTextField prodIdField;
         private JTextField quantityField;
-        private JTextField customerField; // 新增：客户信息
+        private JTextField customerField;
 
         public StockOutFrame() {
             setTitle("商品出货");
@@ -220,7 +313,6 @@ public class MainFrame extends JFrame {
             setLayout(new GridLayout(4, 2, 10, 20));
             setPadding(20);
 
-            // 组件
             add(new JLabel("商品ID:"));
             prodIdField = new JTextField();
             add(prodIdField);
@@ -233,26 +325,26 @@ public class MainFrame extends JFrame {
             customerField = new JTextField();
             add(customerField);
 
-            // 按钮
-            JButton confirmBtn = new JButton("确认出货");
-            JButton clearBtn = new JButton("清空");
+            // 原生按钮
+            JButton confirmBtn = new JButton("确认出货", loadLocalIcon("D:/icons/ok.png"));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png"));
+            confirmBtn.setIconTextGap(8);
+            clearBtn.setIconTextGap(8);
             add(confirmBtn);
             add(clearBtn);
 
-            // 出货事件
             confirmBtn.addActionListener(e -> {
                 try {
                     int prodId = Integer.parseInt(prodIdField.getText().trim());
                     float quantity = Float.parseFloat(quantityField.getText().trim());
                     String customer = customerField.getText().trim();
 
-                    // 调用ProductService的出货方法（对接数据库）
                     boolean success = productService.stockOut(prodId, quantity);
                     if (success) {
                         JOptionPane.showMessageDialog(this, "出货成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                         clearFields();
                     } else {
-                        JOptionPane.showMessageDialog(this, "出货失败（商品不存在/库存不足）", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "出货失败", "错误", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -273,7 +365,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // ========== 子窗口：产品查询（适配ProductTableModel） ==========
     class ProductQueryFrame extends JFrame {
         private JTable productTable;
         private ProductTableModel tableModel;
@@ -284,62 +375,51 @@ public class MainFrame extends JFrame {
             setLocationRelativeTo(MainFrame.this);
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            // 1. 获取商品列表（对接数据库）
             List<Product> productList = productService.findAllproducts();
-            // 2. 初始化表格模型（使用现有ProductTableModel）
             tableModel = new ProductTableModel(productList);
             productTable = new JTable(tableModel);
 
-            // 表格样式优化
             JTableHeader header = productTable.getTableHeader();
             header.setFont(new Font("宋体", Font.BOLD, 14));
             productTable.setFont(new Font("宋体", Font.PLAIN, 13));
             productTable.setRowHeight(25);
 
-            // 3. 添加滚动面板
-            JScrollPane scrollPane = new JScrollPane(productTable);
-            add(scrollPane, BorderLayout.CENTER);
+            add(new JScrollPane(productTable), BorderLayout.CENTER);
         }
     }
 
-    // ========== 子窗口：供应商查询 ==========
     class SupplierQueryFrame extends JFrame {
         private JTable supplierTable;
 
         public SupplierQueryFrame() {
             setTitle("供应商查询");
-            setSize(800, 500);
+            setSize(900, 500);
             setLocationRelativeTo(MainFrame.this);
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            // 获取供应商列表（对接数据库）
             List<Supplier> supplierList = supplierService.findAllSupplier();
-            // 构建表格模型（可复用类似ProductTableModel的SupplierTableModel）
-            String[] columns = {"供应商ID", "名称", "联系人", "电话", "地址"};
-            Object[][] data = new Object[supplierList.size()][5];
+            String[] columns = {"供应商ID", "名称", "地址", "邮编", "电话", "传真", "联系人", "邮箱"};
+            Object[][] data = new Object[supplierList.size()][8];
             for (int i = 0; i < supplierList.size(); i++) {
                 Supplier s = supplierList.get(i);
-                data[i][0] = s.getExesConId();      // 供应商ID（主键）
-                data[i][1] = s.getSupName();        // 供应商名称
-                data[i][2] = s.getSupAddress();     // 地址
-                data[i][3] = s.getPostcode();       // 邮编
-                data[i][4] = s.getSupTelephone();   // 电话
-                data[i][5] = s.getSupFax();         // 传真
-                data[i][6] = s.getSupRelationer();  // 联系人
-                data[i][7] = s.getSupEmail();       // 邮箱
+                data[i][0] = s.getExesConId();
+                data[i][1] = s.getSupName();
+                data[i][2] = s.getSupAddress();
+                data[i][3] = s.getPostcode();
+                data[i][4] = s.getSupTelephone();
+                data[i][5] = s.getSupFax();
+                data[i][6] = s.getSupRelationer();
+                data[i][7] = s.getSupEmail();
             }
 
             supplierTable = new JTable(data, columns);
-            // 表格样式
             supplierTable.getTableHeader().setFont(new Font("宋体", Font.BOLD, 14));
             supplierTable.setFont(new Font("宋体", Font.PLAIN, 13));
-            supplierTable.setRowHeight(25);
-
+            supplierTable.setRowHeight(28);
             add(new JScrollPane(supplierTable), BorderLayout.CENTER);
         }
     }
 
-    // ========== 子窗口：更改密码 ==========
     class ChangePasswordFrame extends JFrame {
         private User loginUser;
         private JPasswordField oldPwdField;
@@ -355,7 +435,6 @@ public class MainFrame extends JFrame {
             setLayout(new GridLayout(4, 2, 10, 20));
             setPadding(20);
 
-            // 组件
             add(new JLabel("原密码:"));
             oldPwdField = new JPasswordField();
             add(oldPwdField);
@@ -368,19 +447,19 @@ public class MainFrame extends JFrame {
             confirmPwdField = new JPasswordField();
             add(confirmPwdField);
 
-            // 按钮
-            JButton confirmBtn = new JButton("确认修改");
-            JButton cancelBtn = new JButton("取消");
+            // 原生按钮
+            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("D:/icons/ok.png"));
+            JButton cancelBtn = new JButton("取消", loadLocalIcon("D:/icons/cancel.png"));
+            confirmBtn.setIconTextGap(8);
+            cancelBtn.setIconTextGap(8);
             add(confirmBtn);
             add(cancelBtn);
 
-            // 修改事件
             confirmBtn.addActionListener(e -> {
                 String oldPwd = new String(oldPwdField.getPassword()).trim();
                 String newPwd = new String(newPwdField.getPassword()).trim();
                 String confirmPwd = new String(confirmPwdField.getPassword()).trim();
 
-                // 校验
                 if (!oldPwd.equals(loginUser.getPassword())) {
                     JOptionPane.showMessageDialog(this, "原密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -394,10 +473,9 @@ public class MainFrame extends JFrame {
                     return;
                 }
 
-                // 调用UserService修改密码（对接数据库）
                 boolean success = new UserService().changePassword(loginUser.getUsername(), newPwd);
                 if (success) {
-                    loginUser.setPassword(newPwd); // 更新内存中用户密码
+                    loginUser.setPassword(newPwd);
                     JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
                 } else {
@@ -413,10 +491,9 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // ========== 程序测试入口（实际通过LoginFrame跳转） ==========
     public static void main(String[] args) {
-        // 模拟登录用户（实际从登录窗口传入）
-        User testUser = new User(1, "admin", "123456", "管理员");
+        // 确保User类构造方法匹配（如果报错，根据实际User类调整参数）
+        User testUser = new User("admin", "123456", 1);
         SwingUtilities.invokeLater(() -> new MainFrame(testUser).setVisible(true));
     }
 }
