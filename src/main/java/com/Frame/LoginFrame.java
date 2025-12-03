@@ -5,8 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-import com.Service.UserService;
 import com.Entity.User;
+import com.Service.UserService;
 
 public class LoginFrame extends JFrame {
     private JTextField usernameField;
@@ -14,7 +14,6 @@ public class LoginFrame extends JFrame {
     private UserService userService = new UserService();
 
     public LoginFrame() {
-
         // 创建登录界面
         setTitle("郑州轻工业大学仓库管理系统 - 登录");
         setSize(400, 300);
@@ -55,20 +54,44 @@ public class LoginFrame extends JFrame {
                 String username = usernameField.getText().trim();
                 String password = new String(passwordField.getPassword());
 
-                User user = userService.login(username, password);
-                if (user != null) {
-                    new MainFrame(user).setVisible(true);
-                    dispose();
+                // 优先测试账号：root/123456
+                User loginUser = null;
+                if ("root".equals(username) && "123456".equals(password)) {
+                    // 构造测试用户对象
+                    loginUser = new User();
+                    loginUser.setUsername("root");
+                    loginUser.setPassword("123456"); // 实际项目建议加密，此处仅测试
+                } else {
+                    // 原有业务逻辑：调用UserService验证
+                    loginUser = userService.login(username, password);
+                }
+
+                if (loginUser != null) {
+                    // 登录成功，打开主页面，关闭登录页
+                    new MainFrame(loginUser).setVisible(true);
+                    dispose(); // 销毁登录窗口
                 } else {
                     JOptionPane.showMessageDialog(LoginFrame.this, "用户名或密码错误", "错误", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0); // 正常退出程序（状态码0表示正常退出）
             }
+        });
+    }
+
+    // 测试主方法：启动登录页，验证跳转逻辑
+    public static void main(String[] args) {
+        // Swing组件必须在EDT（事件调度线程）中运行，避免线程安全问题
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+            // 提示测试账号
+            JOptionPane.showMessageDialog(loginFrame, "测试账号：root  测试密码：123456", "测试提示", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 }
