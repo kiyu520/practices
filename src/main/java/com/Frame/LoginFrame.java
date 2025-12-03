@@ -70,6 +70,5 @@ public class LoginFrame extends JFrame {
                 System.exit(0); // 正常退出程序（状态码0表示正常退出）
             }
         });
-        setVisible(true);
     }
 }
