@@ -53,29 +53,15 @@ public class LoginFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText().trim();
                 String password = new String(passwordField.getPassword());
-
-                // 优先测试账号：root/123456
-                User loginUser = null;
-                if ("root".equals(username) && "123456".equals(password)) {
-                    // 构造测试用户对象
-                    loginUser = new User();
-                    loginUser.setUsername("root");
-                    loginUser.setPassword("123456"); // 实际项目建议加密，此处仅测试
-                } else {
-                    // 原有业务逻辑：调用UserService验证
-                    loginUser = userService.login(username, password);
-                }
-
+                   User loginUser = userService.login(username, password);
                 if (loginUser != null) {
-                    // 登录成功，打开主页面，关闭登录页
+                    dispose();
                     new MainFrame(loginUser).setVisible(true);
-                    dispose(); // 销毁登录窗口
                 } else {
                     JOptionPane.showMessageDialog(LoginFrame.this, "用户名或密码错误", "错误", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

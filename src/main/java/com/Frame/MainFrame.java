@@ -37,9 +37,6 @@ public class MainFrame extends JFrame {
 
     }
 
-    /**
-     * 窗口基础配置
-     */
     private void initFrame() {
         setTitle("仓库管理系统");
         setSize(1200, 700); // 加宽窗口，确保按钮不拥挤
