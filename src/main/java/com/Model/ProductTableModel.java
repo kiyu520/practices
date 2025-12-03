@@ -21,6 +21,9 @@ public class ProductTableModel extends AbstractTableModel {
         this.products = new ArrayList<>();
     }
 
+    public ProductTableModel(List<Product> productList) {
+    }
+
     // ========== 对外提供的核心方法（适配ProductView的调用） ==========
     /**
      * 获取所有产品数据（ProductView的doQuery()会调用）

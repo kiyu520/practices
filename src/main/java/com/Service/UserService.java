@@ -22,8 +22,9 @@ public class UserService {
         return null;
     }
 
-    public boolean changePassword(String username, String oldPwd, String newPwd) {
+    public boolean changePassword(String username, String oldPwd) {
         // 1. 入参非空校验
+        String newPwd= String.valueOf(' ');
         if (username == null || oldPwd == null || newPwd == null) {
             return false;
         }
