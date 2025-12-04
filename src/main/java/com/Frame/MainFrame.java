@@ -66,13 +66,7 @@ public class MainFrame extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
         tabbedPane.setBackground(Color.WHITE);
-       JPanel userPanel = new JPanel();
-       userPanel.setBackground(Color.WHITE);
-       userPanel.setLayout(new BorderLayout(5, 5));
-       userPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-       userPanel.add(ProListPanel.get());
-       tabbedPane.addTab("测试", userPanel);
-        tabbedPane.addTab("用户列表",new JPanel());
+        tabbedPane.addTab("产品列表", new JScrollPane(ProTablePanel.get()));
         // ========== 1. 基本数据选项卡 ==========
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         dataPanel.setBackground(Color.WHITE);
