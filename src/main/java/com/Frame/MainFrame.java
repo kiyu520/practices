@@ -29,6 +29,11 @@ public class MainFrame extends JFrame {
         initTabbedPane();
         initTimeLabel();
     }
+
+    public MainFrame() {
+
+    }
+
     private void initFrame() {
         String title = "仓库管理系统欢迎你--" + loginUser.getUsername();
         setTitle(title);
@@ -122,7 +127,7 @@ public class MainFrame extends JFrame {
         JButton productQueryBtn = RoundButtonUtil.createRoundedButton(
                 "产品查询",
                 "productQuery",
-                "/static/image/img5.png"
+                "/static.image/img5.png"
         );
         productQueryBtn.addActionListener(e -> new MainFrame.ProductQueryFrame().setVisible(true));
 

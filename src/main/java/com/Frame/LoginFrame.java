@@ -50,14 +50,25 @@ public class LoginFrame extends JFrame {
 
         loginButton.addActionListener(new ActionListener() {
             @Override
+/**
+ * 重写actionPerformed方法，处理登录按钮的点击事件
+ * @param e ActionEvent事件对象，包含事件的相关信息
+ */
             public void actionPerformed(ActionEvent e) {
+    // 获取用户名输入框中的文本，并去除前后空格
                 String username = usernameField.getText().trim();
+    // 获取密码输入框中的密码，将字符数组转换为字符串
                 String password = new String(passwordField.getPassword());
+    // 调用userService的login方法进行用户登录验证
                    User loginUser = userService.login(username, password);
+    // 判断登录是否成功
                 if (loginUser != null) {
+        // 登录成功，关闭当前登录窗口
                     dispose();
+        // 创建并显示主窗口，传入登录用户信息
                     new MainFrame(loginUser).setVisible(true);
                 } else {
+        // 登录失败，显示错误提示对话框
                     JOptionPane.showMessageDialog(LoginFrame.this, "用户名或密码错误", "错误", JOptionPane.ERROR_MESSAGE);
                 }
             }
