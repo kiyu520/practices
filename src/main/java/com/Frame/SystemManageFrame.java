@@ -1,7 +1,14 @@
 package com.Frame;
 
+import com.Entity.User;
+import com.Mappers.user_mapper;
+import com.Service.UserService;
+import com.Tools.SqlUtil;
+import org.apache.ibatis.session.SqlSession;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class SystemManageFrame extends JFrame {
     private JPanel mainPanel;
@@ -23,6 +30,11 @@ public class SystemManageFrame extends JFrame {
     private JButton saveSettingBtn;
     // 退出系统按钮
     private JButton exitBtn;
+
+    private UserService userService = new UserService();
+
+    // 示例：定义为系统配置文件的路径
+    private static final String SETTINGS_FILE = "system_settings.properties";
 
     public SystemManageFrame() {
         initFrameBasic();
@@ -184,28 +196,182 @@ public class SystemManageFrame extends JFrame {
 
     // 原功能函数（未修改）
     private void loadAllSystemUsers() {
-        // 后续实现
-    }
-    private void submitPasswordModify() {
-        // 后续实现
-    }
-    private void resetPasswordInputs() {
-        // 后续实现
-    }
-    private void saveSystemSettings() {
-        // 后续实现
-    }
-    private void loadSavedSettings() {
-        // 后续实现
-    }
-    private void exitSystem() {
-        // 后续实现
+        // 清空下拉框
+        targetUserComboBox.removeAllItems();
+        try (SqlSession sqlSession = SqlUtil.getSession()) {
+            user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
+            // 调用Mapper查询所有用户
+            List<User> userList = userMapper.select_user_all();
+            // 将用户名添加到下拉框
+            for (User user : userList) {
+                targetUserComboBox.addItem(user.getUsername());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "加载用户列表失败：" + e.getMessage(),
+                    "错误", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            SystemManageFrame frame = new SystemManageFrame();
-//            frame.setVisible(true);
-//        });
-//    }
+    // 2. 提交密码修改（调用UserService，适配原有方法）
+    private void submitPasswordModify() {
+        // 获取输入数据
+        String targetUser = (String) targetUserComboBox.getSelectedItem();
+        String oldPwd = new String(oldPwdField.getPassword());
+        String newPwd = new String(newPwdField.getPassword());
+        String confirmPwd = new String(confirmPwdField.getPassword());
+
+        // 1. 基础校验
+        if (targetUser == null || targetUser.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请选择目标用户！", "提示", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (oldPwd.isEmpty() || newPwd.isEmpty() || confirmPwd.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "密码输入不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (!newPwd.equals(confirmPwd)) {
+            JOptionPane.showMessageDialog(this, "两次输入的新密码不一致！", "错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (newPwd.length() < 6) {
+            JOptionPane.showMessageDialog(this, "新密码长度不能少于6位！", "提示", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2. 调用Service修改密码（适配原有changePassword方法）
+        try (SqlSession sqlSession = SqlUtil.getSession()) {
+            user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
+            // 先校验原密码（复用Service的登录逻辑）
+            User loginUser = userService.login(targetUser, oldPwd);
+
+            if (loginUser == null) {
+                JOptionPane.showMessageDialog(this, "原密码输入错误！", "错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 构建更新用户对象
+            User updateUser = new User();
+            updateUser.setUsername(targetUser);
+            updateUser.setPassword(newPwd);
+            updateUser.setUserRole(loginUser.getUserRole()); // 保留原有角色
+
+            // 调用Mapper更新密码
+            int rows = userMapper.update_user_by_name(updateUser);
+            sqlSession.commit(); // MyBatis手动提交事务
+
+            // 3. 结果反馈
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                resetPasswordInputs();
+            } else {
+                JOptionPane.showMessageDialog(this, "密码修改失败，请重试！", "错误", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "修改密码异常：" + e.getMessage(),
+                    "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 3. 重置密码输入框（纯UI操作，无数据层）
+    private void resetPasswordInputs() {
+        oldPwdField.setText("");
+        newPwdField.setText("");
+        confirmPwdField.setText("");
+    }
+
+    // ========== 字体设置（保留原有逻辑，非核心） ==========
+    // 4. 保存系统字体设置
+    private void saveSystemSettings() {
+        String fontName = (String) fontComboBox.getSelectedItem();
+        Integer fontSize = (Integer) fontSizeComboBox.getSelectedItem();
+
+        if (fontName == null || fontSize == null) {
+            JOptionPane.showMessageDialog(this, "请选择字体和字号！", "提示", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 保存到配置文件
+        java.util.Properties settingsProps = new java.util.Properties();
+        settingsProps.setProperty("font.name", fontName);
+        settingsProps.setProperty("font.size", fontSize.toString());
+        saveProperties(settingsProps, SETTINGS_FILE);
+
+        // 立即应用字体设置
+        applyFontSetting(fontName, fontSize);
+
+        JOptionPane.showMessageDialog(this, "字体设置已保存并生效！", "成功", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // 5. 加载保存的系统设置
+    private void loadSavedSettings() {
+        java.util.Properties settingsProps = loadProperties(SETTINGS_FILE);
+        String fontName = settingsProps.getProperty("font.name", "宋体");
+        String fontSizeStr = settingsProps.getProperty("font.size", "14");
+        int fontSize = Integer.parseInt(fontSizeStr);
+
+        // 设置下拉框选中项
+        fontComboBox.setSelectedItem(fontName);
+        fontSizeComboBox.setSelectedItem(fontSize);
+
+        // 应用字体设置
+        applyFontSetting(fontName, fontSize);
+    }
+
+    // 6. 退出系统
+    private void exitSystem() {
+        int confirm = JOptionPane.showConfirmDialog(this, "确定要退出系统吗？", "确认", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            // 退出程序
+            System.exit(0);
+        }
+    }
+
+    // ========== 工具方法（字体设置+配置文件） ==========
+    // 加载Properties文件
+    private java.util.Properties loadProperties(String filePath) {
+        java.util.Properties props = new java.util.Properties();
+        java.io.File file = new java.io.File(filePath);
+        if (file.exists()) {
+            try (java.io.InputStream is = new java.io.FileInputStream(file)) {
+                props.load(is);
+            } catch (java.io.IOException e) {
+                JOptionPane.showMessageDialog(this, "加载配置文件失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return props;
+    }
+
+    // 保存Properties文件
+    private void saveProperties(java.util.Properties props, String filePath) {
+        try (java.io.OutputStream os = new java.io.FileOutputStream(filePath)) {
+            props.store(os, "System Font Settings");
+        } catch (java.io.IOException e) {
+            JOptionPane.showMessageDialog(this, "保存配置文件失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 应用字体设置到所有组件
+    private void applyFontSetting(String fontName, int fontSize) {
+        Font newFont = new Font(fontName, Font.PLAIN, fontSize);
+        // 应用到密码面板所有组件
+        for (Component comp : passwordPanel.getComponents()) {
+            comp.setFont(newFont);
+        }
+        // 应用到字体设置面板所有组件
+        for (Component comp : settingPanel.getComponents()) {
+            comp.setFont(newFont);
+        }
+        // 应用到退出按钮
+        exitBtn.setFont(newFont);
+        // 刷新UI
+        this.revalidate();
+        this.repaint();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            SystemManageFrame frame = new SystemManageFrame();
+            frame.setVisible(true);
+        });
+    }
 }
