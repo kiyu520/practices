@@ -40,14 +40,23 @@ public class RoundButtonUtil {
             }
         };
 
+        // 设置图标与文本之间的间隔为12像素
         button.setIconTextGap(12);
+        // 设置文本垂直位置在底部
         button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        // 设置文本水平位置在中间
         button.setHorizontalTextPosition(SwingConstants.CENTER);
+        // 设置按钮字体为宋体、粗体、大小为12
         button.setFont(new Font("宋体", Font.BOLD, 12));
+        // 设置按钮背景颜色为浅蓝色
         button.setBackground(new Color(230, 240, 250));
+        // 设置按钮的首选大小为150x100像素
         button.setPreferredSize(new Dimension(150, 100));
+        // 设置按钮内容区域不填充背景
         button.setContentAreaFilled(false);
+        // 设置按钮不绘制焦点状态
         button.setFocusPainted(false);
+        // 设置按钮不绘制边框
         button.setBorderPainted(false);
 
         return button;

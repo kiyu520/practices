@@ -127,7 +127,7 @@ public class MainFrame extends JFrame {
         JButton productQueryBtn = RoundButtonUtil.createRoundedButton(
                 "产品查询",
                 "productQuery",
-                "/static.image/img5.png"
+                "/static/image/img5.png"
         );
         productQueryBtn.addActionListener(e -> new MainFrame.ProductQueryFrame().setVisible(true));
 
