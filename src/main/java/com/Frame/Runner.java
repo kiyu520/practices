@@ -9,8 +9,8 @@ public class Runner {
         // 在事件调度线程中运行Swing组件
         SwingUtilities.invokeLater(() -> {
             // 创建登录窗口
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setVisible(true);
+            LoginFrame LoginFrame = new LoginFrame();
+            LoginFrame.setVisible(true);
         });
     }
 }
