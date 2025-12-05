@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 
@@ -65,6 +66,23 @@ public class RoundButtonUtil {
     /**
      * 本地图片加载工具方法
      */
+//    public static ImageIcon loadLocalIcon(String Path, int iconWidth, int iconHeight) {
+//        try (InputStream is = RoundButtonUtil.class.getResourceAsStream(Path)) {
+//            if (is == null) {
+//                log.severe("⚠️  图标不存在（路径错误）：" + Path);
+//                return new ImageIcon();
+//            }
+//            Image originalImage = ImageIO.read(is);
+//            Image scaledImage = originalImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+//            return new ImageIcon(scaledImage);
+//        } catch (Exception e) {
+//            log.severe("⚠️  图标加载失败：" + Path);
+//            return new ImageIcon();
+//        }
+//    }
+    /**
+     * 本地图片加载工具方法（新增：透明背景处理）
+     */
     public static ImageIcon loadLocalIcon(String Path, int iconWidth, int iconHeight) {
         try (InputStream is = RoundButtonUtil.class.getResourceAsStream(Path)) {
             if (is == null) {
@@ -72,7 +90,40 @@ public class RoundButtonUtil {
                 return new ImageIcon();
             }
             Image originalImage = ImageIO.read(is);
-            Image scaledImage = originalImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+
+
+            // ========== 新增：将图片的白色背景转为透明 ==========
+            // 1. 将图片转为BufferedImage（便于像素操作）
+            BufferedImage bufferedImage = new BufferedImage(
+                    originalImage.getWidth(null),
+                    originalImage.getHeight(null),
+                    BufferedImage.TYPE_INT_ARGB // 带透明通道的格式
+            );
+            Graphics2D g2d = bufferedImage.createGraphics();
+            g2d.drawImage(originalImage, 0, 0, null);
+            g2d.dispose();
+
+            // 2. 遍历像素，将白色（或接近白色）的像素设为透明
+            int width = bufferedImage.getWidth();
+            int height = bufferedImage.getHeight();
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int pixel = bufferedImage.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xFF;
+                    int green = (pixel >> 8) & 0xFF;
+                    int blue = pixel & 0xFF;
+                    // 判断是否为白色（可根据实际图标背景色调整阈值）
+                    if (red > 240 && green > 240 && blue > 240) {
+                        bufferedImage.setRGB(x, y, 0x00FFFFFF); // 设为完全透明
+                    }
+                }
+            }
+            // ==================================================
+
+            // 缩放透明处理后的图片
+            Image scaledImage = bufferedImage.getScaledInstance(
+                    iconWidth, iconHeight, Image.SCALE_SMOOTH
+            );
             return new ImageIcon(scaledImage);
         } catch (Exception e) {
             log.severe("⚠️  图标加载失败：" + Path);

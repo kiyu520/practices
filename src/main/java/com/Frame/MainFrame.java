@@ -204,8 +204,8 @@ public class MainFrame extends JFrame {
             }
             add(supplierCombo);
 
-            JButton confirmBtn = new JButton("确认进货", loadLocalIcon("D:/icons/ok.png", 20, 20));
-            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png", 20, 20));
+            JButton confirmBtn = new JButton("确认进货", loadLocalIcon("/static/image/img10.png", 20, 20));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("/static/image/img11.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             clearBtn.setIconTextGap(8);
             add(confirmBtn);
@@ -267,8 +267,8 @@ public class MainFrame extends JFrame {
             customerField = new JTextField();
             add(customerField);
 
-            JButton confirmBtn = new JButton("确认出货", loadLocalIcon("D:/icons/ok.png", 20, 20));
-            JButton clearBtn = new JButton("清空", loadLocalIcon("D:/icons/clear.png", 20, 20));
+            JButton confirmBtn = new JButton("确认出货", loadLocalIcon("/static/image/img10.png", 20, 20));
+            JButton clearBtn = new JButton("清空", loadLocalIcon("/static/image/img11.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             clearBtn.setIconTextGap(8);
             add(confirmBtn);
@@ -388,8 +388,8 @@ public class MainFrame extends JFrame {
             confirmPwdField = new JPasswordField();
             add(confirmPwdField);
 
-            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("D:/icons/ok.png", 20, 20));
-            JButton cancelBtn = new JButton("取消", loadLocalIcon("D:/icons/cancel.png", 20, 20));
+            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("/static/image/img10.png", 20, 20));
+            JButton cancelBtn = new JButton("取消", loadLocalIcon("/static/image/img12.png", 20, 20));
             confirmBtn.setIconTextGap(8);
             cancelBtn.setIconTextGap(8);
             add(confirmBtn);
