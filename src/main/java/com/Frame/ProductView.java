@@ -325,4 +325,21 @@ public class ProductView extends JFrame {
             }
         }
     }
+    public static void main(String[] args) {
+        // 使用SwingUtilities确保UI在事件调度线程中创建
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // 设置系统外观，使界面更美观
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                log.warning("设置界面外观失败：" + e.getMessage());
+            }
+
+            // 创建并显示产品视图窗口
+            ProductView productView = new ProductView();
+            productView.setVisible(true);
+
+            log.info("产品管理系统已启动");
+        });
+    }
 }
