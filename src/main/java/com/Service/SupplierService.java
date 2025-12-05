@@ -11,7 +11,7 @@ import java.util.List;
 import static com.Tools.SqlUtil.sqlSessionFactory;
 
 public class SupplierService {
-    private sup_mapper supMapper;
+    private static sup_mapper supMapper;
 
     public SupplierService() {
         SqlSession sqlSession = SqlUtil.getSession();
@@ -74,7 +74,9 @@ public class SupplierService {
 
 
 //    查询所有供应商
-    public List<Supplier> findAllSupplier() {
+    public static List<Supplier> findAllSupplier() {
         return supMapper.select_supplier_all();
     }
+
+    public static List<Integer> findAllSupplierId() {return supMapper.select_exesConId();}
 }

@@ -77,4 +77,7 @@ public interface sup_mapper {
     // 删除（按名称）
     @Delete("delete from practice.suppliers where sup_name=#{supName}")
     public int delete_supplier_name(String supName);
+
+    @Select("select exesConId from practice.suppliers")
+    public List<Integer> select_exesConId();
 }
