@@ -10,25 +10,31 @@ import java.util.ArrayList;
 import static com.Tools.SqlUtil.session;
 
 public class UserService {
+    /**
+     * 用户登录方法
+     * @param username 用户名
+     * @param password 密码
+     * @return User对象，登录成功返回用户信息，失败返回null
+     */
     public User login(String username, String password) {
         SqlSession sqlSession = null;
         try {
-            // 1. 通过工具类获取 SqlSession
-            sqlSession = SqlUtil.getSession();
+            sqlSession = SqlUtil.getSession();  // 从工具类获取数据库连接会话
+            // 创建Mapper接口的代理对象
             user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
 
-            // 2. 调用Mapper查询用户
+            // 根据用户名查询用户信息
             User user = usermapper.select_user_by_name(username);
-
-            // 3. 密码匹配校验
+            // 检查用户是否存在且密码匹配
             if (user != null && user.getPassword().equals(password)) {
-                return user;
+                return user;  // 登录成功，返回用户信息
             }
-
-            return null;
+            return null;  // 登录失败，返回null
         } catch (Exception e) {
+            // 捕获并打印异常信息
+            System.err.println("用户名：" + username + "，异常类型：" + e.getClass().getSimpleName() + "，原因：" + e.getMessage());
             e.printStackTrace();
-            return null;
+            return null;  // 发生异常时返回null
         } finally {
             // 无论try成功/失败、catch是否触发，都会执行这里
             if (sqlSession != null) {
