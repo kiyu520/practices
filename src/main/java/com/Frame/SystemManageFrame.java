@@ -184,7 +184,7 @@ public class SystemManageFrame extends JFrame {
 
     private void initExitBtn() {
         exitBtn = new JButton("退出系统");
-        exitBtn.setPreferredSize(new Dimension(80, 26));
+        exitBtn.setPreferredSize(new Dimension(120, 26));
     }
 
     private void bindComponentEvents() {
@@ -194,7 +194,7 @@ public class SystemManageFrame extends JFrame {
         exitBtn.addActionListener(e -> exitSystem());
     }
 
-    // 原功能函数（未修改）
+    // 功能函数
     private void loadAllSystemUsers() {
         // 清空下拉框
         targetUserComboBox.removeAllItems();
@@ -212,7 +212,7 @@ public class SystemManageFrame extends JFrame {
         }
     }
 
-    // 2. 提交密码修改（调用UserService，适配原有方法）
+    // 2. 提交密码修改
     private void submitPasswordModify() {
         // 获取输入数据
         String targetUser = (String) targetUserComboBox.getSelectedItem();
@@ -238,7 +238,7 @@ public class SystemManageFrame extends JFrame {
             return;
         }
 
-        // 2. 调用Service修改密码（适配原有changePassword方法）
+        // 2. 调用Service修改密码
         try (SqlSession sqlSession = SqlUtil.getSession()) {
             user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
             // 先校验原密码（复用Service的登录逻辑）

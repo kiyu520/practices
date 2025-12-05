@@ -20,11 +20,10 @@ public class ProductView extends JFrame {
     private JTextField tfSupId;
 
     // 私有成员变量，用于存储产品表格模型对象
-// ProductTableModel 是一个自定义的表格模型类，用于管理表格的数据和结构
     private ProductTableModel tableModel;
     private JTable productTable;
 
-    // 供应商编号列表（放空，不实现数据库查询）
+    // 供应商id列表
     private List existSupplierIds = (List) SupplierService.findAllSupplierId();
     private ProductService productService;
 
@@ -33,6 +32,7 @@ public class ProductView extends JFrame {
      * 用于初始化产品查询界面
      */
     public ProductView() {
+        this.productService = new ProductService();
         // 初始化用户界面组件
         initUI();
         // 设置窗口标题为"产品管理系统 - 产品查询"
@@ -83,16 +83,15 @@ public class ProductView extends JFrame {
         funcPanel.add(btnImport);
 
         //表格页面
-        tableModel = new ProductTableModel();
-        productTable = new JTable(tableModel);
-        productTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        JScrollPane tableScroll = new JScrollPane(productTable);
-
+        tableModel = new ProductTableModel(); // 实例化“数据管家”
+        productTable = new JTable(tableModel); // 表格绑定数据模型（关键！表格从此有了数据来源）
+        productTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); // 列宽自适应窗口
+        JScrollPane tableScroll = new JScrollPane(productTable); // 给表格加滚动条，适配大量数据
         //将三个页面添加到主面板中
-        this.setLayout(new BorderLayout(5, 5));
-        this.add(queryPanel, BorderLayout.NORTH);
-        this.add(funcPanel, BorderLayout.CENTER);
-        this.add(tableScroll, BorderLayout.SOUTH);
+        this.setLayout(new BorderLayout(5, 5)); // 设置窗口布局，组件间距5px
+        this.add(queryPanel, BorderLayout.NORTH); // 查询面板放顶部
+        this.add(funcPanel, BorderLayout.CENTER); // 功能按钮放中间
+        this.add(tableScroll, BorderLayout.SOUTH); // 表格放底部
 
         btnQuery.addActionListener(e -> doQuery());
         btnReset.addActionListener(e -> resetQuery());//重置查询的函数
