@@ -9,6 +9,7 @@ import lombok.extern.java.Log;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.util.List;
 
 @Log
 public class ProductView extends JFrame {
@@ -24,7 +25,7 @@ public class ProductView extends JFrame {
     private JTable productTable;
 
     // 供应商id列表
-    private List existSupplierIds = (List) SupplierService.findAllSupplierId();
+    private List<Integer> existSupplierIds = SupplierService.findAllSupplierId();
     private ProductService productService;
 
     /**
@@ -90,9 +91,8 @@ public class ProductView extends JFrame {
         //将三个页面添加到主面板中
         this.setLayout(new BorderLayout(5, 5)); // 设置窗口布局，组件间距5px
         this.add(queryPanel, BorderLayout.NORTH); // 查询面板放顶部
-        this.add(funcPanel, BorderLayout.CENTER); // 功能按钮放中间
-        this.add(tableScroll, BorderLayout.SOUTH); // 表格放底部
-
+        this.add(funcPanel, BorderLayout.CENTER); // 功能放底部按钮放中间
+        this.add(tableScroll, BorderLayout.SOUTH); // 表格
         btnQuery.addActionListener(e -> doQuery());
         btnReset.addActionListener(e -> resetQuery());//重置查询的函数
         btnExport.addActionListener(e -> exportData());//执行导出数据的函数

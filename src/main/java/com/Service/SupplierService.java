@@ -13,9 +13,13 @@ import static com.Tools.SqlUtil.sqlSessionFactory;
 public class SupplierService {
     private static sup_mapper supMapper;
 
+    static{
+        SqlSession sqlSession = SqlUtil.getSession();
+        supMapper = sqlSession.getMapper(sup_mapper.class);
+    }
     public SupplierService() {
         SqlSession sqlSession = SqlUtil.getSession();
-        this.supMapper = sqlSession.getMapper(sup_mapper.class);
+        supMapper = sqlSession.getMapper(sup_mapper.class);
     }
     //    添加供应商，编号唯一
     public String addSupplier(Supplier supplier) {
