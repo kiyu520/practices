@@ -129,14 +129,14 @@ public class MainFrame extends JFrame {
                 "productQuery",
                 "/static/image/img5.png"
         );
-        productQueryBtn.addActionListener(e -> new MainFrame.ProductQueryFrame().setVisible(true));
+        productQueryBtn.addActionListener(e -> new ProductView().setVisible(true));
 
         JButton supplierQueryBtn = RoundButtonUtil.createRoundedButton(
                 "供应商查询",
                 "supplierQuery",
                 "/static/image/img6.png"
         );
-        supplierQueryBtn.addActionListener(e -> new MainFrame.SupplierQueryFrame().setVisible(true));
+        supplierQueryBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
 
         queryPanel.add(productQueryBtn);
         queryPanel.add(supplierQueryBtn);
