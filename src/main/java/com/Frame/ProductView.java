@@ -49,7 +49,7 @@ public class ProductView extends JFrame {
     private void initUI() {
 
         //查询页面
-        JPanel queryPanel = new JPanel(new GridLayout(3, 4, 5, 5));
+        JPanel queryPanel = new JPanel(new GridLayout(2, 6, 5, 5));
         queryPanel.add(new JLabel("产品编号"));
         queryPanel.add(new JLabel("产品名称"));
         queryPanel.add(new JLabel("价格"));
