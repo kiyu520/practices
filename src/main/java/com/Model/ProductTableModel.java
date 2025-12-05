@@ -1,6 +1,7 @@
 package com.Model;
 
 import com.Entity.Product;
+import com.Service.ProductService;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class ProductTableModel extends AbstractTableModel {
      */
     public void loadProducts() {
         // 如需从数据库加载，替换为：
-        // products = proMapper.select_product_all();
-        this.products = new ArrayList<>(); // 初始化空列表，避免空指针
+        products = ProductService.findAllproducts();
+        //this.products = new ArrayList<>(); // 初始化空列表，避免空指针
     }
 
     // ========== 必须重写的抽象方法（Swing表格核心） ==========
