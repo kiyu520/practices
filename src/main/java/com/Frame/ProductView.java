@@ -3,6 +3,7 @@ package com.Frame;
 import com.Entity.Product;
 import com.Model.ProductTableModel;
 import com.Service.ProductService;
+import com.Service.SupplierService;
 import lombok.extern.java.Log;
 
 import javax.swing.*;
@@ -24,7 +25,7 @@ public class ProductView extends JFrame {
     private JTable productTable;
 
     // 供应商编号列表（放空，不实现数据库查询）
-    private final List existSupplierIds = new List();
+    private List existSupplierIds = (List) SupplierService.findAllSupplierId();
     private ProductService productService;
 
     /**
