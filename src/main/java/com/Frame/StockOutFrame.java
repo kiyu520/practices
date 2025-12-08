@@ -45,11 +45,6 @@ public class StockOutFrame extends JFrame {
         quantityField = new JTextField();
         add(quantityField);
 
-        // 客户信息
-        add(new JLabel("客户信息:"));
-        customerField = new JTextField();
-        add(customerField);
-
         // 功能按钮
         JButton confirmBtn = new JButton("确认出货", loadLocalIcon("/static/image/img10.png", 20, 20));
         confirmBtn.setIconTextGap(8);
