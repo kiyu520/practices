@@ -236,7 +236,7 @@ public class MainFrame extends JFrame {
                 "supplierQuery",
                 "/static/image/img6.png"
         );
-        supplierQueryBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
+        supplierQueryBtn.addActionListener(e -> new SupplierQueryFrame().setVisible(true));
         queryPanel.add(productQueryBtn);
         queryPanel.add(supplierQueryBtn);
         tabbedPane.addTab("查询视图", queryPanel);
@@ -261,63 +261,6 @@ public class MainFrame extends JFrame {
         tabbedPane.addTab("系统管理", systemPanel);
 
         add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    // 内部类：产品查询
-    class ProductQueryFrame extends JFrame {
-        private JTable productTable;
-        private ProductTableModel tableModel;
-
-        public ProductQueryFrame() {
-            setTitle("产品查询");
-            setSize(800, 500);
-            setLocationRelativeTo(MainFrame.this);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            List<Product> productList = productService.findAllproducts();
-            tableModel = new ProductTableModel(productList);
-            productTable = new JTable(tableModel);
-
-            JTableHeader header = productTable.getTableHeader();
-            header.setFont(new Font("宋体", Font.BOLD, 14));
-            productTable.setFont(new Font("宋体", Font.PLAIN, 13));
-            productTable.setRowHeight(25);
-
-            add(new JScrollPane(productTable), BorderLayout.CENTER);
-        }
-    }
-
-    // 内部类：供应商查询
-    class SupplierQueryFrame extends JFrame {
-        private JTable supplierTable;
-
-        public SupplierQueryFrame() {
-            setTitle("供应商查询");
-            setSize(900, 500);
-            setLocationRelativeTo(MainFrame.this);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            List<Supplier> supplierList = supplierService.findAllSupplier();
-            String[] columns = {"供应商ID", "名称", "地址", "邮编", "电话", "传真", "联系人", "邮箱"};
-            Object[][] data = new Object[supplierList.size()][8];
-            for (int i = 0; i < supplierList.size(); i++) {
-                Supplier s = supplierList.get(i);
-                data[i][0] = s.getExesConId();
-                data[i][1] = s.getSupName();
-                data[i][2] = s.getSupAddress();
-                data[i][3] = s.getPostcode();
-                data[i][4] = s.getSupTelephone();
-                data[i][5] = s.getSupFax();
-                data[i][6] = s.getSupRelationer();
-                data[i][7] = s.getSupEmail();
-            }
-
-            supplierTable = new JTable(data, columns);
-            supplierTable.getTableHeader().setFont(new Font("宋体", Font.BOLD, 14));
-            supplierTable.setFont(new Font("宋体", Font.PLAIN, 13));
-            supplierTable.setRowHeight(28);
-            add(new JScrollPane(supplierTable), BorderLayout.CENTER);
-        }
     }
 
     private void setPadding(int padding) {
