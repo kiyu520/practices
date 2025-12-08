@@ -51,6 +51,11 @@ public interface user_mapper {
     List<User> select_user_by_role(int userRole);
 
     // 修改：按用户名更新信息
+    @Results( value = {
+            @Result(column = "u_name", property = "username"),
+            @Result(column = "u_password", property = "password"),
+            @Result(column = "u_role", property = "userRole")
+    })
     @Update("update practice.users set u_password=#{u.password}, u_role=#{u.userRole} " +
             "where u_name=#{u.username}")
     int update_user_by_name(@Param("u") User u);

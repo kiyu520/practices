@@ -11,11 +11,11 @@ import java.io.IOException;
 @Log
 public class SqlUtil {
     public static  SqlSessionFactory  sqlSessionFactory;
-    public static SqlSession session;
+    //public static SqlSession session;
     static{
         try {
             sqlSessionFactory= new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("Properties/mybatis-config.xml"));
-            session=sqlSessionFactory.openSession(true);
+            //session=sqlSessionFactory.openSession(true);
             log.info("数据库初始化完成");
         } catch (IOException e) {
             log.severe("数据库工具连接失败");
@@ -23,9 +23,9 @@ public class SqlUtil {
     }
     public static SqlSession getSession() {
         log.info("获取数据库连接");
-        return session;
+        return sqlSessionFactory.openSession(true);
     }
-    public static void destroy(){
-        session.close();
-    }
+//    public static void destroy(){
+//        session.close();
+//    }
 }

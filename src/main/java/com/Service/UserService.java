@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import java.util.ArrayList;
 
-import static com.Tools.SqlUtil.session;
+import static com.Tools.SqlUtil.sqlSessionFactory;
 
 public class UserService {
     /**

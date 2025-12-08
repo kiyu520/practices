@@ -249,11 +249,13 @@ public class SystemManageFrame extends JFrame {
                 return;
             }
 
+
             // 构建更新用户对象
             User updateUser = new User();
             updateUser.setUsername(targetUser);
             updateUser.setPassword(newPwd);
             updateUser.setUserRole(loginUser.getUserRole()); // 保留原有角色
+
 
             // 调用Mapper更新密码
             int rows = userMapper.update_user_by_name(updateUser);
