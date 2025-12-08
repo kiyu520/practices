@@ -27,7 +27,7 @@ public class ProductManageFrame extends JFrame {
     public ProductManageFrame() {
         // 初始化自定义图标
         initCustomIcon();
-        // 统一设置JOptionPane按钮样式
+        // 统一设置JOptionPane按钮样式（增强：彻底去掉选中框）
         initOptionPaneButtonStyle();
 
         // 窗口基础配置
@@ -230,7 +230,7 @@ public class ProductManageFrame extends JFrame {
                         return;
                     }
 
-                    // 确认删除弹窗
+                    // 确认删除弹窗（选中框已通过UIManager去掉）
                     int confirm = JOptionPane.showConfirmDialog(
                             ProductManageFrame.this,
                             "确定删除产品ID为 " + prodId + " 的产品吗？",
@@ -283,13 +283,14 @@ public class ProductManageFrame extends JFrame {
 
 
     /**
-     * 初始化自定义图标
+     * 初始化自定义图标（优化：补充资源加载方式）
      */
     private void initCustomIcon() {
         try {
-            // 替换为你的图片路径（示例：项目内资源或本地路径）
+            // 替换为你的图片路径（示例：项目内资源路径）
             String imagePath = "/static/image/img13.png";
-            ImageIcon originalIcon = new ImageIcon(imagePath);
+            // 优化：使用getClass().getResource确保路径正确
+            ImageIcon originalIcon = new ImageIcon(getClass().getResource(imagePath));
             Image scaledImage = originalIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             customIcon = new ImageIcon(scaledImage);
         } catch (Exception e) {
@@ -300,13 +301,22 @@ public class ProductManageFrame extends JFrame {
 
 
     /**
-     * 统一设置JOptionPane按钮样式（去掉选中框）
+     * 统一设置JOptionPane按钮样式（增强：彻底去掉选中框）
      */
     private void initOptionPaneButtonStyle() {
         try {
-            UIManager.put("Button.focusPainted", false); // 禁止绘制焦点框
-            UIManager.put("Button.background", new Color(214, 217, 223)); // 统一按钮背景
-            UIManager.put("Button.foreground", Color.BLACK); // 统一按钮文字颜色
+            // 核心：禁止绘制焦点框（去掉选中框的关键）
+            UIManager.put("Button.focusPainted", Boolean.FALSE);
+            // 补充：隐藏焦点边框
+            UIManager.put("Button.focusBorder", BorderFactory.createEmptyBorder());
+            // 补充：设置选中色为透明（避免点击后变色）
+            UIManager.put("Button.select", new Color(0, 0, 0, 0));
+            // 补充：禁用焦点遍历（可选，防止键盘Tab键触发焦点框）
+            UIManager.put("Button.focusTraversalKeysEnabled", Boolean.FALSE);
+
+            // 原有样式保持不变
+            UIManager.put("Button.background", new Color(214, 217, 223));
+            UIManager.put("Button.foreground", Color.BLACK);
         } catch (Exception e) {
             System.err.println("设置按钮样式失败：" + e.getMessage());
         }

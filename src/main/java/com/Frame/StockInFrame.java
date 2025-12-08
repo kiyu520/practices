@@ -13,7 +13,7 @@ import static com.Tools.RoundButtonUtil.loadLocalIcon;
 public class StockInFrame extends JFrame {
     private JTextField prodIdField;
     private JTextField quantityField;
-    private JComboBox<String> supplierCombo;
+    private JComboBox<Integer> supplierCombo; // 存储供应商ID（Integer类型）
     private ProductService productService;
     private SupplierService supplierService;
 
@@ -37,7 +37,6 @@ public class StockInFrame extends JFrame {
         // 窗口基础设置
         setTitle("商品进货");
         setSize(450, 350);
-        // 修复：parentFrame为null时，居中显示
         setLocationRelativeTo(parentFrame == null ? null : parentFrame);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(5, 2, 10, 20));
@@ -49,7 +48,7 @@ public class StockInFrame extends JFrame {
         bindEvents();
     }
 
-    // 修复：显式创建按钮对象，避免索引错误
+    // 修复：显式创建按钮对象，加载正确的供应商ID
     private void initComponents() {
         // 1. 商品ID
         add(new JLabel("商品ID:"));
@@ -61,18 +60,28 @@ public class StockInFrame extends JFrame {
         quantityField = new JTextField();
         add(quantityField);
 
-        // 3. 供应商
-        add(new JLabel("供应商:"));
-        supplierCombo = new JComboBox<>();
-        // 加载供应商列表（添加异常捕获）
+        // 3. 供应商（核心修改：加载供应商ID = exesConId）
+        add(new JLabel("供应商ID:")); // 标签改为"供应商ID"，更直观
+        supplierCombo = new JComboBox<>(); // 存储Integer类型的供应商ID
+        // 加载供应商列表（适配SupplierService的静态方法和exesConId字段）
         try {
+            // 调用SupplierService静态方法查询所有供应商
             List<Supplier> suppliers = SupplierService.findAllSupplier();
-            for (Supplier s : suppliers) {
-                supplierCombo.addItem(s.getSupName());
+            if (suppliers == null || suppliers.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "暂无供应商数据！", "提示", JOptionPane.WARNING_MESSAGE);
+                supplierCombo.addItem(0); // 兜底（无效ID）
+            } else {
+                for (Supplier s : suppliers) {
+                    // 关键：添加供应商的 exesConId（与SupplierService一致）
+                    Integer supplierId = s.getExesConId();
+                    if (supplierId != null && supplierId > 0) {
+                        supplierCombo.addItem(supplierId);
+                    }
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "加载供应商列表失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-            supplierCombo.addItem("默认供应商"); // 兜底
+            supplierCombo.addItem(0); // 兜底
         }
         add(supplierCombo);
 
@@ -119,6 +128,7 @@ public class StockInFrame extends JFrame {
 
                     int prodId = Integer.parseInt(prodIdStr);
                     float quantity = Float.parseFloat(quantityStr);
+                    int supplierId = (Integer) supplierCombo.getSelectedItem(); // 获取选中的供应商ID（exesConId）
 
                     // 合法性校验
                     if (prodId <= 0) {
@@ -129,7 +139,12 @@ public class StockInFrame extends JFrame {
                         JOptionPane.showMessageDialog(this, "进货数量必须大于0！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
+                    if (supplierId <= 0) {
+                        JOptionPane.showMessageDialog(this, "请选择有效的供应商！", "提示", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
 
+                    // 执行进货（若stockIn方法不需要供应商ID，可删除supplierId参数）
                     boolean success = productService.stockIn(prodId, quantity);
                     if (success) {
                         JOptionPane.showMessageDialog(this, "进货成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
