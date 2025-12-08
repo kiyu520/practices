@@ -32,11 +32,11 @@ public interface pro_mapper {
     @Select("select * from practice.products where quantity>= #{begin} and quantity <= #{end}")
     public List<Product> select_product_quantity(@Param("begin") double pri_begin, @Param("end") double pri_end);
 
-    @Update("update practice.products set prod_id=#{p.pro_id}, prod_name=#{p.pro_name}, price=#{p.price}, `type`=#{p.type}, quantity=#{p.quantity}, sup_id=#{p.sup_id} where prod_name=#{p.pro_name}")
-    public int update_product_id(Product p);
+    @Update("update practice.products set prod_id=#{p.prod_id}, prod_name=#{p.prod_name}, price=#{p.price}, `type`=#{p.type}, quantity=#{p.quantity}, sup_id=#{p.sup_id} where prod_name=#{p.prod_name}")
+    public int update_product_id(@Param("p") Product p);
 
     @Update("update practice.products set prod_id=#{p.pro_id}, prod_name=#{p.pro_name}, price=#{p.price}, `type`=#{p.type}, quantity=#{p.quantity}, sup_id=#{p.sup_id} where prod_id=#{p.pro_id}")
-    public int update_product_name(Product p);
+    public int update_product_name(@Param("p") Product p);
 
     @Delete("delete from practice.products where prod_id=#{pro_id}")
     public int delete_product_id(int pro_id);
