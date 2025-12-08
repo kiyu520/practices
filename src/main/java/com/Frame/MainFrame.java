@@ -5,145 +5,129 @@ import com.Entity.Product;
 import com.Entity.Supplier;
 import com.Service.ProductService;
 import com.Service.SupplierService;
-import com.Service.UserService;
 import com.Tools.DateUtil;
 import com.Model.ProductTableModel;
-import com.Mappers.user_mapper;
-import com.Tools.SqlUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.List;
 import java.util.Properties;
 import com.Tools.RoundButtonUtil;
-import org.apache.ibatis.session.SqlSession;
 
 import static com.Tools.RoundButtonUtil.loadLocalIcon;
 
 public class MainFrame extends JFrame {
     private User loginUser;
     private JLabel timeLabel;
+    // 修复：确保服务实例非空（显式初始化）
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
-
-    // 配置文件相关常量和属性
-    private static final String CONFIG_FILE = "system_config.properties";
-    private static Properties configProps = new Properties();
-
-    // 系统字体设置配置文件
-    private static final String SETTINGS_FILE = "system_settings.properties";
-
     public MainFrame(User user) {
         this.loginUser = user;
-        // 加载配置文件
-        loadConfig();
-        initFrame();
-        initTabbedPane();
-        initTimeLabel();
-        // 应用配置
-        applyConfig();
+        initFrame();  // 初始化窗口
+        initTabbedPane();  // 初始化选项卡面板
+        initTimeLabel();  // 初始化时间标签
     }
 
-    public MainFrame() {
-        // 加载配置文件（无用户构造函数）
-        loadConfig();
-    }
-
-    // 加载配置文件
-    private void loadConfig() {
-        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
-            configProps.load(fis);
-        } catch (FileNotFoundException e) {
-            // 配置文件不存在时创建默认配置
-            createDefaultConfig();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "配置文件加载失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // 创建默认配置
-    private void createDefaultConfig() {
-        configProps.setProperty("lookAndFeel", "Windows");
-        configProps.setProperty("bgColor", "#FFFFFF");
-        configProps.setProperty("fontName", "宋体");
-        configProps.setProperty("fontSize", "14");
-        configProps.setProperty("bgImage", "");
-        // 保存默认配置
-        saveConfig();
-    }
-
-    // 保存配置文件
-    public static void saveConfig() {
-        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
-            configProps.store(fos, "Warehouse Management System Configuration");
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "配置保存失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // 应用配置到界面
-    private void applyConfig() {
-        try {
-            // 1. 应用界面风格
-            String laf = configProps.getProperty("lookAndFeel");
-            switch (laf) {
-                case "Windows":
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case "Nimbus":
-                    UIManager.setLookAndFeel(new NimbusLookAndFeel().getClass().getName());
-                    break;
-                case "Metal":
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    break;
-            }
-            SwingUtilities.updateComponentTreeUI(this);
-
-            // 2. 应用背景颜色
-            String colorStr = configProps.getProperty("bgColor");
-            Color bgColor = Color.decode(colorStr);
-            getContentPane().setBackground(bgColor);
-
-            // 3. 应用全局字体
-            String fontName = configProps.getProperty("fontName");
-            int fontSize = Integer.parseInt(configProps.getProperty("fontSize"));
-            Font globalFont = new Font(fontName, Font.PLAIN, fontSize);
-
-            // 应用到时间标签
-            if (timeLabel != null) {
-                timeLabel.setFont(globalFont);
-            }
-            // 遍历组件应用字体（简化版）
-            Component[] components = getContentPane().getComponents();
-            for (Component comp : components) {
-                applyFontToComponent(comp, globalFont);
-            }
-
-            // 4. 背景图片（简化实现）
-            String bgImagePath = configProps.getProperty("bgImage");
-            if (!bgImagePath.isEmpty() && new File(bgImagePath).exists()) {
-                JOptionPane.showMessageDialog(this, "背景图片已设置，重启程序后生效", "提示", JOptionPane.INFORMATION_MESSAGE);
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "配置应用失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // 递归应用字体到所有子组件
-    private void applyFontToComponent(Component comp, Font font) {
-        comp.setFont(font);
-        if (comp instanceof Container) {
-            for (Component child : ((Container) comp).getComponents()) {
-                applyFontToComponent(child, font);
-            }
-        }
-    }
+    // 配置文件相关常量和属性
+//    private static final String CONFIG_FILE = "system_config.properties";
+//    private static Properties configProps = new Properties();
+//    private static final String SETTINGS_FILE = "system_settings.properties";
+//
+//    public MainFrame(User user) {
+//        this.loginUser = user;
+//        loadConfig();
+//        initFrame();
+//        initTabbedPane();
+//        initTimeLabel();
+//        applyConfig();
+//    }
+//
+//    public MainFrame() {
+//        loadConfig();
+//    }
+//
+//    // 加载配置文件
+//    private void loadConfig() {
+//        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
+//            configProps.load(fis);
+//        } catch (FileNotFoundException e) {
+//            createDefaultConfig();
+//        } catch (IOException e) {
+//            JOptionPane.showMessageDialog(this, "配置文件加载失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+//
+//    private void createDefaultConfig() {
+//        configProps.setProperty("lookAndFeel", "Windows");
+//        configProps.setProperty("bgColor", "#FFFFFF");
+//        configProps.setProperty("fontName", "宋体");
+//        configProps.setProperty("fontSize", "14");
+//        configProps.setProperty("bgImage", "");
+//        saveConfig();
+//    }
+//
+//    public static void saveConfig() {
+//        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
+//            configProps.store(fos, "Warehouse Management System Configuration");
+//        } catch (IOException e) {
+//            JOptionPane.showMessageDialog(null, "配置保存失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+//
+//    private void applyConfig() {
+//        try {
+//            String laf = configProps.getProperty("lookAndFeel");
+//            switch (laf) {
+//                case "Windows":
+//                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//                    break;
+//                case "Nimbus":
+//                    UIManager.setLookAndFeel(new NimbusLookAndFeel().getClass().getName());
+//                    break;
+//                case "Metal":
+//                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//                    break;
+//            }
+//            SwingUtilities.updateComponentTreeUI(this);
+//
+//            String colorStr = configProps.getProperty("bgColor");
+//            Color bgColor = Color.decode(colorStr);
+//            getContentPane().setBackground(bgColor);
+//
+//            String fontName = configProps.getProperty("fontName");
+//            int fontSize = Integer.parseInt(configProps.getProperty("fontSize"));
+//            Font globalFont = new Font(fontName, Font.PLAIN, fontSize);
+//
+//            if (timeLabel != null) {
+//                timeLabel.setFont(globalFont);
+//            }
+//            Component[] components = getContentPane().getComponents();
+//            for (Component comp : components) {
+//                applyFontToComponent(comp, globalFont);
+//            }
+//
+//            String bgImagePath = configProps.getProperty("bgImage");
+//            if (!bgImagePath.isEmpty() && new File(bgImagePath).exists()) {
+//                JOptionPane.showMessageDialog(this, "背景图片已设置，重启程序后生效", "提示", JOptionPane.INFORMATION_MESSAGE);
+//            }
+//
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(this, "配置应用失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+//
+//    private void applyFontToComponent(Component comp, Font font) {
+//        comp.setFont(font);
+//        if (comp instanceof Container) {
+//            for (Component child : ((Container) comp).getComponents()) {
+//                applyFontToComponent(child, font);
+//            }
+//        }
+//    }
 
     private void initFrame() {
         String title = "仓库管理系统欢迎你--" + loginUser.getUsername();
@@ -154,9 +138,7 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
     }
 
-    /**
-     * 初始化实时时钟
-     */
+    // 修复：用Swing Timer替代while(true)，避免阻塞EDT
     private void initTimeLabel() {
         timeLabel = new JLabel("System Time◆◆" + DateUtil.getCurrentDateTime());
         timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -164,7 +146,7 @@ public class MainFrame extends JFrame {
         timeLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 10));
         add(timeLabel, BorderLayout.SOUTH);
 
-        // 使用 Swing Timer 实现秒级更新，不阻塞 EDT
+        // 安全的秒级更新（Swing Timer）
         new Timer(1000, e -> timeLabel.setText("System Time◆◆" + DateUtil.getCurrentDateTime())).start();
     }
 
@@ -174,94 +156,106 @@ public class MainFrame extends JFrame {
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.addTab("产品列表", new JScrollPane(ProTablePanel.get()));
 
-        // ========== 1. 基本数据选项卡 ==========
+        // 1. 基本数据选项卡
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         dataPanel.setBackground(Color.WHITE);
-
-        // 供应商信息管理按钮
         JButton supplierBtn = RoundButtonUtil.createRoundedButton(
                 "供应商信息管理",
                 "supplierManagement",
                 "/static/image/img1.png"
         );
         supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
-
-        // 商品信息管理按钮
         JButton productBtn = RoundButtonUtil.createRoundedButton(
                 "商品信息管理",
                 "productManage",
                 "/static/image/img2.png"
         );
         productBtn.addActionListener(e -> new ProductManageFrame().setVisible(true));
-
         dataPanel.add(supplierBtn);
         dataPanel.add(productBtn);
         tabbedPane.addTab("基本数据", dataPanel);
 
-        // ========== 2. 进货出货管理选项卡 ==========
+        // 2. 进货出货管理选项卡（核心修复：添加异常捕获+明确实例化）
         JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         stockPanel.setBackground(Color.WHITE);
 
-        // 修改：调用独立的进货窗口类
+        // 进货按钮（添加异常捕获，确保报错能显示）
         JButton stockInBtn = RoundButtonUtil.createRoundedButton(
                 "商品进货",
                 "stockIn",
                 "/static/image/img3.png"
         );
-        stockInBtn.addActionListener(e -> new StockInFrame(this, productService, supplierService).setVisible(true));
+        stockInBtn.addActionListener(e -> {
+            try {
+                // 修复：传递非null的主窗口实例
+                StockInFrame stockInFrame = new StockInFrame(MainFrame.this, productService, supplierService);
+                stockInFrame.setVisible(true);
+            } catch (Exception ex) {
+                // 关键：捕获并显示所有异常，定位问题
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "打开进货窗口失败：" + ex.getMessage() + "\n" +
+                                "异常类型：" + ex.getClass().getName(),
+                        "错误", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace(); // 控制台输出完整堆栈
+            }
+        });
 
-        // 修改：调用独立的出货窗口类
+        // 出货按钮（同理添加异常捕获）
         JButton stockOutBtn = RoundButtonUtil.createRoundedButton(
                 "商品出货",
                 "stockOut",
                 "/static/image/img4.png"
         );
-        stockOutBtn.addActionListener(e -> new StockOutFrame(this, productService).setVisible(true));
+        stockOutBtn.addActionListener(e -> {
+            try {
+                StockOutFrame stockOutFrame = new StockOutFrame(MainFrame.this, productService);
+                stockOutFrame.setVisible(true);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "打开出货窗口失败：" + ex.getMessage(),
+                        "错误", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
 
         stockPanel.add(stockInBtn);
         stockPanel.add(stockOutBtn);
         tabbedPane.addTab("进货出货管理", stockPanel);
 
-        // ========== 3. 查询视图选项卡 ==========
+        // 3. 查询视图选项卡
         JPanel queryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         queryPanel.setBackground(Color.WHITE);
-
         JButton productQueryBtn = RoundButtonUtil.createRoundedButton(
                 "产品查询",
                 "productQuery",
                 "/static/image/img5.png"
         );
         productQueryBtn.addActionListener(e -> new ProductView().setVisible(true));
-
         JButton supplierQueryBtn = RoundButtonUtil.createRoundedButton(
                 "供应商查询",
                 "supplierQuery",
                 "/static/image/img6.png"
         );
         supplierQueryBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
-
         queryPanel.add(productQueryBtn);
         queryPanel.add(supplierQueryBtn);
         tabbedPane.addTab("查询视图", queryPanel);
 
-        // ========== 4. 系统管理选项卡 ==========
+        // 4. 系统管理选项卡
         JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         systemPanel.setBackground(Color.WHITE);
-
         JButton settingBtn = RoundButtonUtil.createRoundedButton(
                 "系统设置",
                 "systemSetting",
                 "/static/image/img8.png"
         );
         settingBtn.addActionListener(e -> new SystemManageFrame().setVisible(true));
-
         JButton exitBtn = RoundButtonUtil.createRoundedButton(
                 "退出系统",
                 "exitSystem",
                 "/static/image/img9.png"
         );
         exitBtn.addActionListener(e -> System.exit(0));
-
         systemPanel.add(settingBtn);
         systemPanel.add(exitBtn);
         tabbedPane.addTab("系统管理", systemPanel);
@@ -269,8 +263,7 @@ public class MainFrame extends JFrame {
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-    // 移除嵌套的 StockInFrame 和 StockOutFrame 类
-
+    // 内部类：产品查询
     class ProductQueryFrame extends JFrame {
         private JTable productTable;
         private ProductTableModel tableModel;
@@ -294,6 +287,7 @@ public class MainFrame extends JFrame {
         }
     }
 
+    // 内部类：供应商查询
     class SupplierQueryFrame extends JFrame {
         private JTable supplierTable;
 
@@ -328,5 +322,19 @@ public class MainFrame extends JFrame {
 
     private void setPadding(int padding) {
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
+    }
+
+    // 程序入口（测试用）
+    public static void main(String[] args) {
+        // 模拟登录用户，确保MainFrame能初始化
+        User testUser = new User();
+        testUser.setUsername("admin");
+        testUser.setPassword("123456");
+
+        // 在EDT中启动主窗口（Swing规范）
+        SwingUtilities.invokeLater(() -> {
+            MainFrame mainFrame = new MainFrame(testUser);
+            mainFrame.setVisible(true);
+        });
     }
 }
