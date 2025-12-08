@@ -191,7 +191,7 @@ public class SystemManageFrame extends JFrame {
         submitPwdBtn.addActionListener(e -> submitPasswordModify());
         resetPwdBtn.addActionListener(e -> resetPasswordInputs());
         saveSettingBtn.addActionListener(e -> saveSystemSettings());
-        exitBtn.addActionListener(e -> exitSystem());
+        //exitBtn.addActionListener(e -> exitSystem());
     }
 
     // 功能函数
@@ -316,15 +316,15 @@ public class SystemManageFrame extends JFrame {
         // 应用字体设置
         applyFontSetting(fontName, fontSize);
     }
-
-    // 6. 退出系统
-    private void exitSystem() {
-        int confirm = JOptionPane.showConfirmDialog(this, "确定要退出系统吗？", "确认", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            // 退出程序
-            System.exit(0);
-        }
-    }
+//
+//    // 6. 退出系统
+//    private void exitSystem() {
+//        int confirm = JOptionPane.showConfirmDialog(this, "确定要退出系统吗？", "确认", JOptionPane.YES_NO_OPTION);
+//        if (confirm == JOptionPane.YES_OPTION) {
+//            // 退出程序
+//            System.exit(0);
+//        }
+//    }
 
     // ========== 工具方法（字体设置+配置文件） ==========
     // 加载Properties文件
