@@ -67,10 +67,10 @@ public class ProductManageFrame extends JFrame {
         addBtn.setBounds(100, 130, 100, 30);
         JButton deleteBtn = new JButton("删除产品");
         deleteBtn.setBounds(220, 130, 100, 30);
-        JButton stockInBtn = new JButton("产品进货");
-        stockInBtn.setBounds(340, 130, 100, 30);
-        JButton stockOutBtn = new JButton("产品出货");
-        stockOutBtn.setBounds(460, 130, 100, 30);
+//        JButton stockInBtn = new JButton("产品进货");
+//        stockInBtn.setBounds(340, 130, 100, 30);
+//        JButton stockOutBtn = new JButton("产品出货");
+//        stockOutBtn.setBounds(460, 130, 100, 30);
         JButton resetBtn = new JButton("重置");
         resetBtn.setBounds(580, 130, 80, 30);
 
@@ -96,8 +96,8 @@ public class ProductManageFrame extends JFrame {
         add(supIdCombo);
         add(addBtn);
         add(deleteBtn);
-        add(stockInBtn);
-        add(stockOutBtn);
+//        add(stockInBtn);
+//        add(stockOutBtn);
         add(resetBtn);
         add(scrollPane);
 
