@@ -164,16 +164,8 @@ public class MainFrame extends JFrame {
         timeLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 10));
         add(timeLabel, BorderLayout.SOUTH);
 
-        new Thread(() -> {
-            while (true) {
-                SwingUtilities.invokeLater(() -> timeLabel.setText("System Time◆◆" + DateUtil.getCurrentDateTime()));
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        // 使用 Swing Timer 实现秒级更新，不阻塞 EDT
+        new Timer(1000, e -> timeLabel.setText("System Time◆◆" + DateUtil.getCurrentDateTime())).start();
     }
 
     private void initTabbedPane() {
