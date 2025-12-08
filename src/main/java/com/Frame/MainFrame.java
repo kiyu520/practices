@@ -10,28 +10,133 @@ import com.Tools.DateUtil;
 import com.Model.ProductTableModel;
 
 import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.List;
+import java.util.Properties;
 import com.Tools.RoundButtonUtil;
 
 import static com.Tools.RoundButtonUtil.loadLocalIcon;
-
 
 public class MainFrame extends JFrame {
     private User loginUser;
     private JLabel timeLabel;
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
+
+    // 配置文件相关常量和属性
+    private static final String CONFIG_FILE = "system_config.properties";
+    private static Properties configProps = new Properties();
+
     public MainFrame(User user) {
         this.loginUser = user;
+        // 加载配置文件
+        loadConfig();
         initFrame();
         initTabbedPane();
         initTimeLabel();
+        // 应用配置
+        applyConfig();
     }
 
     public MainFrame() {
+        // 加载配置文件（无用户构造函数）
+        loadConfig();
+    }
 
+    // 加载配置文件
+    private void loadConfig() {
+        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
+            configProps.load(fis);
+        } catch (FileNotFoundException e) {
+            // 配置文件不存在时创建默认配置
+            createDefaultConfig();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "配置文件加载失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 创建默认配置
+    private void createDefaultConfig() {
+        configProps.setProperty("lookAndFeel", "Windows");
+        configProps.setProperty("bgColor", "#FFFFFF");
+        configProps.setProperty("fontName", "宋体");
+        configProps.setProperty("fontSize", "14");
+        configProps.setProperty("bgImage", "");
+        // 保存默认配置
+        saveConfig();
+    }
+
+    // 保存配置文件
+    public static void saveConfig() {
+        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
+            configProps.store(fos, "Warehouse Management System Configuration");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "配置保存失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 应用配置到界面
+    private void applyConfig() {
+        try {
+            // 1. 应用界面风格
+            String laf = configProps.getProperty("lookAndFeel");
+            switch (laf) {
+                case "Windows":
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    break;
+                case "Nimbus":
+                    UIManager.setLookAndFeel(new NimbusLookAndFeel().getClass().getName());
+                    break;
+                case "Metal":
+                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                    break;
+            }
+            SwingUtilities.updateComponentTreeUI(this);
+
+            // 2. 应用背景颜色
+            String colorStr = configProps.getProperty("bgColor");
+            Color bgColor = Color.decode(colorStr);
+            getContentPane().setBackground(bgColor);
+
+            // 3. 应用全局字体
+            String fontName = configProps.getProperty("fontName");
+            int fontSize = Integer.parseInt(configProps.getProperty("fontSize"));
+            Font globalFont = new Font(fontName, Font.PLAIN, fontSize);
+
+            // 应用到时间标签
+            if (timeLabel != null) {
+                timeLabel.setFont(globalFont);
+            }
+            // 遍历组件应用字体（简化版）
+            Component[] components = getContentPane().getComponents();
+            for (Component comp : components) {
+                applyFontToComponent(comp, globalFont);
+            }
+
+            // 4. 背景图片（简化实现，如需完整显示需自定义面板）
+            String bgImagePath = configProps.getProperty("bgImage");
+            if (!bgImagePath.isEmpty() && new File(bgImagePath).exists()) {
+                JOptionPane.showMessageDialog(this, "背景图片已设置，重启程序后生效", "提示", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "配置应用失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // 递归应用字体到所有子组件
+    private void applyFontToComponent(Component comp, Font font) {
+        comp.setFont(font);
+        if (comp instanceof Container) {
+            for (Component child : ((Container) comp).getComponents()) {
+                applyFontToComponent(child, font);
+            }
+        }
     }
 
     private void initFrame() {
@@ -42,9 +147,6 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
     }
-
-
-
 
     /**
      * 初始化实时时钟
@@ -67,32 +169,32 @@ public class MainFrame extends JFrame {
             }
         }).start();
     }
+
     private void initTabbedPane() {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.addTab("产品列表", new JScrollPane(ProTablePanel.get()));
+
         // ========== 1. 基本数据选项卡 ==========
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         dataPanel.setBackground(Color.WHITE);
 
-        // 供应商信息管理按钮：调用独立的SupplierManageFrame
+        // 供应商信息管理按钮
         JButton supplierBtn = RoundButtonUtil.createRoundedButton(
                 "供应商信息管理",
                 "supplierManagement",
                 "/static/image/img1.png"
         );
         supplierBtn.addActionListener(e -> new SupplierManageFrame().setVisible(true));
-        // 核心修改：商品信息管理按钮→调用独立的ProductManageFrame（你的完整功能类）
+
+        // 商品信息管理按钮
         JButton productBtn = RoundButtonUtil.createRoundedButton(
                 "商品信息管理",
                 "productManage",
                 "/static/image/img2.png"
         );
-        productBtn.addActionListener(e -> {
-            // 直接实例化你提供的独立ProductManageFrame类
-            new ProductManageFrame().setVisible(true);
-        });
+        productBtn.addActionListener(e -> new ProductManageFrame().setVisible(true));
 
         dataPanel.add(supplierBtn);
         dataPanel.add(productBtn);
@@ -431,15 +533,108 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // 系统设置子窗口（保持不变）
+    // 改造后的系统设置窗口
     class SystemManageFrame extends JFrame {
+        private JComboBox<String> lafComboBox;
+        private JColorChooser colorChooser;
+        private JTextField fontNameField;
+        private JSpinner fontSizeSpinner;
+        private JTextField bgImageField;
+
         public SystemManageFrame() {
+            // 窗口基本设置
             setTitle("系统设置");
-            setSize(400, 300);
+            setSize(600, 450);
             setLocationRelativeTo(MainFrame.this);
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            add(new JLabel("系统设置功能区域", SwingConstants.CENTER));
+
+            // 创建主面板
+            JPanel mainPanel = new JPanel();
+            mainPanel.setLayout(new GridLayout(6, 2, 10, 10));
+            mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            // 1. 界面风格选择
+            mainPanel.add(new JLabel("界面风格:"));
+            lafComboBox = new JComboBox<>(new String[]{"Windows", "Nimbus", "Metal"});
+            lafComboBox.setSelectedItem(configProps.getProperty("lookAndFeel"));
+            mainPanel.add(lafComboBox);
+
+            // 2. 背景颜色选择
+            mainPanel.add(new JLabel("背景颜色:"));
+            JPanel colorPanel = new JPanel(new BorderLayout());
+            JButton colorBtn = new JButton("选择颜色");
+            colorBtn.setBackground(Color.decode(configProps.getProperty("bgColor")));
+            colorChooser = new JColorChooser(colorBtn.getBackground());
+
+            colorBtn.addActionListener(e -> {
+                Color selectedColor = JColorChooser.showDialog(this, "选择背景颜色", colorBtn.getBackground());
+                if (selectedColor != null) {
+                    colorBtn.setBackground(selectedColor);
+                }
+            });
+            colorPanel.add(colorBtn, BorderLayout.CENTER);
+            mainPanel.add(colorPanel);
+
+            // 3. 字体名称
+            mainPanel.add(new JLabel("字体名称:"));
+            fontNameField = new JTextField(configProps.getProperty("fontName"));
+            mainPanel.add(fontNameField);
+
+            // 4. 字体大小
+            mainPanel.add(new JLabel("字体大小:"));
+            fontSizeSpinner = new JSpinner(new SpinnerNumberModel(
+                    Integer.parseInt(configProps.getProperty("fontSize")),
+                    8, 72, 1));
+            mainPanel.add(fontSizeSpinner);
+
+            // 5. 背景图片
+            mainPanel.add(new JLabel("背景图片路径:"));
+            JPanel imagePanel = new JPanel(new BorderLayout());
+            bgImageField = new JTextField(configProps.getProperty("bgImage"));
+            JButton imageBtn = new JButton("选择图片");
+            imageBtn.addActionListener(e -> {
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    bgImageField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                }
+            });
+            imagePanel.add(bgImageField, BorderLayout.CENTER);
+            imagePanel.add(imageBtn, BorderLayout.EAST);
+            mainPanel.add(imagePanel);
+
+            // 6. 保存按钮
+            mainPanel.add(new JLabel()); // 占位
+            JButton saveBtn = new JButton("保存设置");
+            saveBtn.addActionListener(new SaveConfigListener());
+            mainPanel.add(saveBtn);
+
+            add(mainPanel);
+        }
+
+        // 保存配置监听器
+        class SaveConfigListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 更新配置属性
+                configProps.setProperty("lookAndFeel", (String) lafComboBox.getSelectedItem());
+                configProps.setProperty("bgColor", String.format("#%02X%02X%02X",
+                        colorChooser.getColor().getRed(),
+                        colorChooser.getColor().getGreen(),
+                        colorChooser.getColor().getBlue()));
+                configProps.setProperty("fontName", fontNameField.getText().trim());
+                configProps.setProperty("fontSize", fontSizeSpinner.getValue().toString());
+                configProps.setProperty("bgImage", bgImageField.getText().trim());
+
+                // 保存配置文件
+                MainFrame.saveConfig();
+
+                // 应用新配置
+                MainFrame.this.applyConfig();
+
+                JOptionPane.showMessageDialog(SystemManageFrame.this, "设置已保存并生效！", "成功", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // 关闭设置窗口
+            }
         }
     }
-
 }
