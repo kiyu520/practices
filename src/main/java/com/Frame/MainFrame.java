@@ -254,12 +254,12 @@ public class MainFrame extends JFrame {
         JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         systemPanel.setBackground(Color.WHITE);
 
-        JButton changePwdBtn = RoundButtonUtil.createRoundedButton(
-                "更改密码",
-                "changePwd",
-                "/static/image/img7.png"
-        );
-        changePwdBtn.addActionListener(e -> new MainFrame.ChangePasswordFrame(loginUser).setVisible(true));
+//        JButton changePwdBtn = RoundButtonUtil.createRoundedButton(
+//                "更改密码",
+//                "changePwd",
+//                "/static/image/img7.png"
+//        );
+//        changePwdBtn.addActionListener(e -> new MainFrame.ChangePasswordFrame(loginUser).setVisible(true));
 
         JButton settingBtn = RoundButtonUtil.createRoundedButton(
                 "系统设置",
@@ -275,7 +275,6 @@ public class MainFrame extends JFrame {
         );
         exitBtn.addActionListener(e -> System.exit(0));
 
-        systemPanel.add(changePwdBtn);
         systemPanel.add(settingBtn);
         systemPanel.add(exitBtn);
         tabbedPane.addTab("系统管理", systemPanel);
@@ -469,73 +468,72 @@ public class MainFrame extends JFrame {
         }
     }
 
-    class ChangePasswordFrame extends JFrame {
-        private User loginUser;
-        private JPasswordField oldPwdField;
-        private JPasswordField newPwdField;
-        private JPasswordField confirmPwdField;
-
-        public ChangePasswordFrame(User user) {
-            this.loginUser = user;
-            setTitle("更改密码");
-            setSize(400, 300);
-            setLocationRelativeTo(MainFrame.this);
-            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            setLayout(new GridLayout(4, 2, 10, 20));
-            setPadding(20);
-
-            add(new JLabel("原密码:"));
-            oldPwdField = new JPasswordField();
-            add(oldPwdField);
-
-            add(new JLabel("新密码:"));
-            newPwdField = new JPasswordField();
-            add(newPwdField);
-
-            add(new JLabel("确认新密码:"));
-            confirmPwdField = new JPasswordField();
-            add(confirmPwdField);
-
-            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("/static/image/img10.png", 20, 20));
-            JButton cancelBtn = new JButton("取消", loadLocalIcon("/static/image/img12.png", 20, 20));
-            confirmBtn.setIconTextGap(8);
-            cancelBtn.setIconTextGap(8);
-            add(confirmBtn);
-            add(cancelBtn);
-
-            confirmBtn.addActionListener(e -> {
-                String oldPwd = new String(oldPwdField.getPassword()).trim();
-                String newPwd = new String(newPwdField.getPassword()).trim();
-                String confirmPwd = new String(confirmPwdField.getPassword()).trim();
-
-                if (!oldPwd.equals(loginUser.getPassword())) {
-                    JOptionPane.showMessageDialog(this, "原密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (newPwd.length() < 6) {
-                    JOptionPane.showMessageDialog(this, "新密码至少6位！", "提示", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                if (!newPwd.equals(confirmPwd)) {
-                    JOptionPane.showMessageDialog(this, "两次密码不一致！", "错误", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                boolean success = new UserService().changePassword(loginUser.getUsername(), newPwd);
-                if (success) {
-                    loginUser.setPassword(newPwd);
-                    JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "密码修改失败！", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            });
-
-            cancelBtn.addActionListener(e -> dispose());
-        }
+//    class ChangePasswordFrame extends JFrame {
+//        private User loginUser;
+//        private JPasswordField oldPwdField;
+//        private JPasswordField newPwdField;
+//        private JPasswordField confirmPwdField;
+//
+//        public ChangePasswordFrame(User user) {
+//            this.loginUser = user;
+//            setTitle("更改密码");
+//            setSize(400, 300);
+//            setLocationRelativeTo(MainFrame.this);
+//            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//            setLayout(new GridLayout(4, 2, 10, 20));
+//            setPadding(20);
+//
+//            add(new JLabel("原密码:"));
+//            oldPwdField = new JPasswordField();
+//            add(oldPwdField);
+//
+//            add(new JLabel("新密码:"));
+//            newPwdField = new JPasswordField();
+//            add(newPwdField);
+//
+//            add(new JLabel("确认新密码:"));
+//            confirmPwdField = new JPasswordField();
+//            add(confirmPwdField);
+//
+//            JButton confirmBtn = new JButton("确认修改", loadLocalIcon("/static/image/img10.png", 20, 20));
+//            JButton cancelBtn = new JButton("取消", loadLocalIcon("/static/image/img12.png", 20, 20));
+//            confirmBtn.setIconTextGap(8);
+//            cancelBtn.setIconTextGap(8);
+//            add(confirmBtn);
+//            add(cancelBtn);
+//
+//            confirmBtn.addActionListener(e -> {
+//                String oldPwd = new String(oldPwdField.getPassword()).trim();
+//                String newPwd = new String(newPwdField.getPassword()).trim();
+//                String confirmPwd = new String(confirmPwdField.getPassword()).trim();
+//
+//                if (!oldPwd.equals(loginUser.getPassword())) {
+//                    JOptionPane.showMessageDialog(this, "原密码错误！", "错误", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//                if (newPwd.length() < 6) {
+//                    JOptionPane.showMessageDialog(this, "新密码至少6位！", "提示", JOptionPane.WARNING_MESSAGE);
+//                    return;
+//                }
+//                if (!newPwd.equals(confirmPwd)) {
+//                    JOptionPane.showMessageDialog(this, "两次密码不一致！", "错误", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//
+//                boolean success = new UserService().changePassword(loginUser.getUsername(), newPwd);
+//                if (success) {
+//                    loginUser.setPassword(newPwd);
+//                    JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
+//                    dispose();
+//                } else {
+//                    JOptionPane.showMessageDialog(this, "密码修改失败！", "错误", JOptionPane.ERROR_MESSAGE);
+//                }
+//            });
+//
+//            cancelBtn.addActionListener(e -> dispose());
+//        }
 
         private void setPadding(int padding) {
             ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
         }
-    }
 }
