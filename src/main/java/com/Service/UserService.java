@@ -35,11 +35,6 @@ public class UserService {
             System.err.println("用户名：" + username + "，异常类型：" + e.getClass().getSimpleName() + "，原因：" + e.getMessage());
             e.printStackTrace();
             return null;  // 发生异常时返回null
-        } finally {
-            // 无论try成功/失败、catch是否触发，都会执行这里
-            if (sqlSession != null) {
-                sqlSession.close(); // 释放当前连接，避免泄漏
-            }
         }
     }
 
