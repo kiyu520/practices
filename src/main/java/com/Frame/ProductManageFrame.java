@@ -179,74 +179,74 @@ public class ProductManageFrame extends JFrame {
             }
         });
 
-        // 产品进货（需求1.c）
-        stockInBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int prodId = Integer.parseInt(JOptionPane.showInputDialog(ProductManageFrame.this, "请输入产品ID："));
-                    // 校验产品是否存在
-                    Product product = productService.getProductById(prodId);
-                    if (product == null) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品不存在！", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    float quantity = Float.parseFloat(JOptionPane.showInputDialog(ProductManageFrame.this, "当前库存：" + product.getQuantity() + "\n请输入进货量："));
-                    if (quantity <= 0) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货量需为正数！", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    boolean success = productService.stockIn(prodId, quantity);
-                    if (success) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货成功！当前库存：" + (product.getQuantity() + quantity), "成功", JOptionPane.INFORMATION_MESSAGE);
-                        loadProductTable();
-                    } else {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货失败！", "错误", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ProductManageFrame.this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        // 产品出货（需求1.d）
-        stockOutBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int prodId = Integer.parseInt(JOptionPane.showInputDialog(ProductManageFrame.this, "请输入产品ID："));
-                    // 校验产品是否存在
-                    Product product = productService.getProductById(prodId);
-                    if (product == null) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品不存在！", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    double currentStock = product.getQuantity();
-                    float quantity = Float.parseFloat(JOptionPane.showInputDialog(ProductManageFrame.this, "当前库存：" + currentStock + "\n请输入出货量："));
-                    // 合法性校验
-                    if (quantity <= 0) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货量需为正数！", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    // 异常处理：库存不足
-                    if (currentStock < quantity) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "库存不足！当前库存：" + currentStock, "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    boolean success = productService.stockOut(prodId, quantity);
-                    if (success) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货成功！当前库存：" + (currentStock - quantity), "成功", JOptionPane.INFORMATION_MESSAGE);
-                        loadProductTable();
-                    } else {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货失败！", "错误", JOptionPane.ERROR_MESSAGE);
-                    }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ProductManageFrame.this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+//        // 产品进货（需求1.c）
+//        stockInBtn.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    int prodId = Integer.parseInt(JOptionPane.showInputDialog(ProductManageFrame.this, "请输入产品ID："));
+//                    // 校验产品是否存在
+//                    Product product = productService.getProductById(prodId);
+//                    if (product == null) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品不存在！", "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//                    float quantity = Float.parseFloat(JOptionPane.showInputDialog(ProductManageFrame.this, "当前库存：" + product.getQuantity() + "\n请输入进货量："));
+//                    if (quantity <= 0) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货量需为正数！", "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//
+//                    boolean success = productService.stockIn(prodId, quantity);
+//                    if (success) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货成功！当前库存：" + (product.getQuantity() + quantity), "成功", JOptionPane.INFORMATION_MESSAGE);
+//                        loadProductTable();
+//                    } else {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "进货失败！", "错误", JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } catch (NumberFormatException ex) {
+//                    JOptionPane.showMessageDialog(ProductManageFrame.this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        });
+//
+//        // 产品出货（需求1.d）
+//        stockOutBtn.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    int prodId = Integer.parseInt(JOptionPane.showInputDialog(ProductManageFrame.this, "请输入产品ID："));
+//                    // 校验产品是否存在
+//                    Product product = productService.getProductById(prodId);
+//                    if (product == null) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品不存在！", "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//                    double currentStock = product.getQuantity();
+//                    float quantity = Float.parseFloat(JOptionPane.showInputDialog(ProductManageFrame.this, "当前库存：" + currentStock + "\n请输入出货量："));
+//                    // 合法性校验
+//                    if (quantity <= 0) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货量需为正数！", "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//                    // 异常处理：库存不足
+//                    if (currentStock < quantity) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "库存不足！当前库存：" + currentStock, "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
+//
+//                    boolean success = productService.stockOut(prodId, quantity);
+//                    if (success) {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货成功！当前库存：" + (currentStock - quantity), "成功", JOptionPane.INFORMATION_MESSAGE);
+//                        loadProductTable();
+//                    } else {
+//                        JOptionPane.showMessageDialog(ProductManageFrame.this, "出货失败！", "错误", JOptionPane.ERROR_MESSAGE);
+//                    }
+//                } catch (NumberFormatException ex) {
+//                    JOptionPane.showMessageDialog(ProductManageFrame.this, "请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
+//                }
+//            }
+//        });
 
         // 重置表单
         resetBtn.addActionListener(new ActionListener() {
