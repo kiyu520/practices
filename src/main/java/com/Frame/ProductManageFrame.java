@@ -5,6 +5,7 @@ import com.Entity.Supplier;
 import com.Service.ProductService;
 import com.Service.SupplierService;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -12,25 +13,31 @@ import java.util.List;
 public class ProductManageFrame extends JFrame {
     // 表单组件
     private JTextField prodIdField, prodNameField, priceField, typeField, quantityField;
-    // 新增：删除产品专用的ID输入框
-    private JTextField deleteProdIdField;
-    private JComboBox<Integer> supIdCombo; // 供应商下拉选择框
-    // 移除表格相关组件
-    // private JTable productTable;
-    // private DefaultTableModel tableModel;
+    private JTextField deleteProdIdField; // 删除产品ID输入框
+    private JComboBox<Integer> supIdCombo; // 供应商下拉框
+    // 功能按钮（新增：定义deleteBtn变量，解决“无法解析符号”报错）
+    private JButton addBtn, deleteBtn, resetBtn;
+
     // 业务层对象
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
+    // 自定义图标
+    private Icon customIcon;
 
     public ProductManageFrame() {
+        // 初始化自定义图标
+        initCustomIcon();
+        // 统一设置JOptionPane按钮样式
+        initOptionPaneButtonStyle();
+
         // 窗口基础配置
         setTitle("商品信息管理");
-        setSize(800, 400); // 缩小窗口高度（移除表格后）
-        setLocationRelativeTo(null); // 居中显示
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE); // 关闭窗口不退出程序
+        setSize(800, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(null);
 
-        // 1. 表单区域（添加产品）
+        // ========== 1. 表单区域（添加产品） ==========
         // 产品ID
         JLabel prodIdLabel = new JLabel("产品ID:");
         prodIdLabel.setBounds(30, 30, 60, 25);
@@ -61,23 +68,23 @@ public class ProductManageFrame extends JFrame {
         supIdLabel.setBounds(460, 80, 60, 25);
         supIdCombo = new JComboBox<>();
         supIdCombo.setBounds(520, 80, 120, 25);
-        loadSupplierIds(); // 加载所有供应商ID到下拉框
+        loadSupplierIds(); // 加载供应商ID
 
-        // 2. 删除产品区域（新增：输入ID删除）
+        // ========== 2. 删除产品区域 ==========
         JLabel deleteProdIdLabel = new JLabel("删除产品ID:");
         deleteProdIdLabel.setBounds(30, 130, 80, 25);
         deleteProdIdField = new JTextField();
         deleteProdIdField.setBounds(120, 130, 120, 25);
 
-        // 3. 功能按钮（调整位置，移除表格后重新布局）
-        JButton addBtn = new JButton("添加产品");
+        // ========== 3. 功能按钮（定义deleteBtn，解决报错） ==========
+        addBtn = new JButton("添加产品");
         addBtn.setBounds(270, 130, 100, 30);
-        JButton deleteBtn = new JButton("删除产品");
+        deleteBtn = new JButton("删除产品"); // 关键：定义deleteBtn变量
         deleteBtn.setBounds(390, 130, 100, 30);
-        JButton resetBtn = new JButton("重置");
+        resetBtn = new JButton("重置");
         resetBtn.setBounds(510, 130, 80, 30);
 
-        // 添加所有组件到窗口（移除表格相关组件）
+        // ========== 4. 添加所有组件到窗口 ==========
         add(prodIdLabel);
         add(prodIdField);
         add(prodNameLabel);
@@ -90,23 +97,27 @@ public class ProductManageFrame extends JFrame {
         add(quantityField);
         add(supIdLabel);
         add(supIdCombo);
-        // 新增删除ID输入框及标签
         add(deleteProdIdLabel);
         add(deleteProdIdField);
         add(addBtn);
-        add(deleteBtn);
+        add(deleteBtn); // 关键：添加deleteBtn到窗口
         add(resetBtn);
 
-        // 移除加载表格的方法调用
-        // loadProductTable();
+        // ========== 5. 按钮事件绑定 ==========
+        bindAddBtnEvent();
+        bindDeleteBtnEvent();
+        bindResetBtnEvent();
+    }
 
-        // 4. 按钮事件绑定
-        // 添加产品（保留原有逻辑）
+
+    /**
+     * 绑定“添加产品”按钮事件
+     */
+    private void bindAddBtnEvent() {
         addBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    // 解析表单数据
                     int prodId = Integer.parseInt(prodIdField.getText().trim());
                     String prodName = prodNameField.getText().trim();
                     float price = Float.parseFloat(priceField.getText().trim());
@@ -114,87 +125,154 @@ public class ProductManageFrame extends JFrame {
                     float quantity = Float.parseFloat(quantityField.getText().trim());
                     int supId = (Integer) supIdCombo.getSelectedItem();
 
-                    // 合法性判断：非空、数据类型校验
+                    // 合法性校验
                     if (prodName.isEmpty() || type.isEmpty()) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "名称和种类不能为空！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "名称和种类不能为空！",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                         return;
                     }
                     if (prodName.length() > 50 || type.length() > 50) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "名称和种类长度不能超过50字符！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "名称和种类长度不能超过50字符！",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                         return;
                     }
                     if (price <= 0 || quantity < 0) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "价格需为正数，库存不能为负数！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "价格需为正数，库存不能为负数！",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                         return;
                     }
 
-                    // 创建产品对象
+                    // 添加产品
                     Product product = new Product(prodId, prodName, price, type, quantity, supId);
                     boolean success = productService.addProduct(product);
                     if (success) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "添加成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
-                        resetFields(); // 重置表单
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "添加成功！",
+                                "成功",
+                                JOptionPane.INFORMATION_MESSAGE,
+                                customIcon);
+                        resetFields();
                     } else {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "添加失败！产品已存在或供应商不存在", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "添加失败！产品已存在或供应商不存在",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                     }
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ProductManageFrame.this, "ID、价格、库存请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(ProductManageFrame.this,
+                            "ID、价格、库存请输入合法数字！",
+                            "错误",
+                            JOptionPane.ERROR_MESSAGE,
+                            customIcon);
                 }
             }
         });
+    }
 
-        // 删除产品（核心修改：改为输入ID删除）
+
+    /**
+     * 绑定“删除产品”按钮事件
+     */
+    private void bindDeleteBtnEvent() {
         deleteBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1. 获取输入的产品ID
                 String deleteProdIdStr = deleteProdIdField.getText().trim();
                 if (deleteProdIdStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(ProductManageFrame.this, "请输入要删除的产品ID！", "提示", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(ProductManageFrame.this,
+                            "请输入要删除的产品ID！",
+                            "提示",
+                            JOptionPane.WARNING_MESSAGE,
+                            customIcon);
                     return;
                 }
 
                 try {
-                    // 2. 转换为整数并校验
                     int prodId = Integer.parseInt(deleteProdIdStr);
                     if (prodId <= 0) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品ID必须为正整数！", "提示", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "产品ID必须为正整数！",
+                                "提示",
+                                JOptionPane.WARNING_MESSAGE,
+                                customIcon);
                         return;
                     }
 
-                    // 3. 查询产品信息（校验是否存在+库存是否为0）
+                    // 校验产品是否存在
                     Product product = productService.getProductById(prodId);
                     if (product == null) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "产品不存在！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "产品不存在！",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                         return;
                     }
 
-                    // 4. 库存校验：库存不为0不能删除
+                    // 校验库存是否为0
                     float stock = (float) product.getQuantity();
                     if (stock != 0) {
-                        JOptionPane.showMessageDialog(ProductManageFrame.this, "库存不为0（当前库存：" + stock + "），无法删除！", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                "库存不为0（当前库存：" + stock + "），无法删除！",
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE,
+                                customIcon);
                         return;
                     }
 
-                    // 5. 确认删除
-                    int confirm = JOptionPane.showConfirmDialog(ProductManageFrame.this, "确定删除产品ID为 " + prodId + " 的产品吗？", "确认", JOptionPane.YES_NO_OPTION);
+                    // 确认删除弹窗
+                    int confirm = JOptionPane.showConfirmDialog(
+                            ProductManageFrame.this,
+                            "确定删除产品ID为 " + prodId + " 的产品吗？",
+                            "确认",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            customIcon
+                    );
+
                     if (confirm == JOptionPane.YES_OPTION) {
                         boolean success = productService.deleteProduct(prodId);
                         if (success) {
-                            JOptionPane.showMessageDialog(ProductManageFrame.this, "删除成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
-                            // 清空删除ID输入框
+                            JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                    "删除成功！",
+                                    "成功",
+                                    JOptionPane.INFORMATION_MESSAGE,
+                                    customIcon);
                             deleteProdIdField.setText("");
                         } else {
-                            JOptionPane.showMessageDialog(ProductManageFrame.this, "删除失败！", "错误", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(ProductManageFrame.this,
+                                    "删除失败！",
+                                    "错误",
+                                    JOptionPane.ERROR_MESSAGE,
+                                    customIcon);
                         }
                     }
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ProductManageFrame.this, "产品ID请输入合法数字！", "错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(ProductManageFrame.this,
+                            "产品ID请输入合法数字！",
+                            "错误",
+                            JOptionPane.ERROR_MESSAGE,
+                            customIcon);
                 }
             }
         });
+    }
 
-        // 重置表单（修改：包含删除ID输入框）
+
+    /**
+     * 绑定“重置”按钮事件
+     */
+    private void bindResetBtnEvent() {
         resetBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -203,7 +281,41 @@ public class ProductManageFrame extends JFrame {
         });
     }
 
-    // 加载所有供应商ID到下拉框（保留原有逻辑）
+
+    /**
+     * 初始化自定义图标
+     */
+    private void initCustomIcon() {
+        try {
+            // 替换为你的图片路径（示例：项目内资源或本地路径）
+            String imagePath = "/static/image/img13.png";
+            ImageIcon originalIcon = new ImageIcon(imagePath);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            customIcon = new ImageIcon(scaledImage);
+        } catch (Exception e) {
+            System.err.println("自定义图标加载失败：" + e.getMessage());
+            customIcon = UIManager.getIcon("OptionPane.questionIcon");
+        }
+    }
+
+
+    /**
+     * 统一设置JOptionPane按钮样式（去掉选中框）
+     */
+    private void initOptionPaneButtonStyle() {
+        try {
+            UIManager.put("Button.focusPainted", false); // 禁止绘制焦点框
+            UIManager.put("Button.background", new Color(214, 217, 223)); // 统一按钮背景
+            UIManager.put("Button.foreground", Color.BLACK); // 统一按钮文字颜色
+        } catch (Exception e) {
+            System.err.println("设置按钮样式失败：" + e.getMessage());
+        }
+    }
+
+
+    /**
+     * 加载供应商ID到下拉框
+     */
     private void loadSupplierIds() {
         List<Supplier> suppliers = supplierService.findAllSupplier();
         for (Supplier supplier : suppliers) {
@@ -211,10 +323,10 @@ public class ProductManageFrame extends JFrame {
         }
     }
 
-    // 移除表格加载方法
-    // private void loadProductTable() { ... }
 
-    // 重置表单字段（修改：包含删除ID输入框）
+    /**
+     * 重置表单字段
+     */
     private void resetFields() {
         prodIdField.setText("");
         prodNameField.setText("");
@@ -222,7 +334,6 @@ public class ProductManageFrame extends JFrame {
         typeField.setText("");
         quantityField.setText("");
         supIdCombo.setSelectedIndex(0);
-        // 新增：清空删除ID输入框
         deleteProdIdField.setText("");
     }
 }

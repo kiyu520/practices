@@ -66,7 +66,7 @@ public class StockInFrame extends JFrame {
         supplierCombo = new JComboBox<>();
         // 加载供应商列表（添加异常捕获）
         try {
-            List<Supplier> suppliers = supplierService.findAllSupplier();
+            List<Supplier> suppliers = SupplierService.findAllSupplier();
             for (Supplier s : suppliers) {
                 supplierCombo.addItem(s.getSupName());
             }
