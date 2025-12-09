@@ -155,7 +155,7 @@ public class MainFrame extends JFrame {
         tabbedPane.setFont(new Font("宋体", Font.PLAIN, 16));
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.addTab("产品列表", new JScrollPane(ProTablePanel.get()));
-        tabbedPane.addTab("供应商列表", new JScrollPane(SupListPanel.get()));
+        tabbedPane.addTab("供应商列表", new JScrollPane(SupTablePanel.get()));
 
         // 1. 基本数据选项卡
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
