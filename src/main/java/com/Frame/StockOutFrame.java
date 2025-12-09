@@ -45,11 +45,6 @@ public class StockOutFrame extends JFrame {
         quantityField = new JTextField();
         add(quantityField);
 
-        // 3. 客户信息（原代码遗漏了该组件的创建，补充修复）
-        add(new JLabel("客户信息:"));
-        customerField = new JTextField();
-        add(customerField);
-
         // 4. 新增：查看库存按钮
         JButton checkStockBtn = new JButton("查看库存", loadLocalIcon("/static/image/img12.png", 20, 20));
         checkStockBtn.setIconTextGap(8);
