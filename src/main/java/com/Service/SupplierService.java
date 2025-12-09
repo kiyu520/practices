@@ -114,49 +114,49 @@ public class SupplierService {
         return supMapper.select_exesConId();
     }
 
-    public List<Supplier> querySuppliers(Object o, Object o1, Object o2, Object o3,
-                                         Object o4, Object o5, Object o6, Object o7) {
+    public List<Supplier> querySuppliers(Integer o, String o1, String o2, String o3,
+                                         String o4, String o5, String o6, String o7) {
         try (SqlSession sqlSession = SqlUtil.getSession()) {
             sup_mapper mapper = sqlSession.getMapper(sup_mapper.class);
 
             // 1. 条件1：按供应商ID查询（Integer类型 + 大于0）
-            if (o instanceof Integer && (Integer) o > 0) {
+            if (o != null && (Integer) o > 0) {
                 return mapper.select_supplier_id((Integer) o);
             }
 
             // 2. 条件2：按供应商名称查询（String类型 + 非空）
-            if (o1 instanceof String && !((String) o1).isEmpty()) {
+            if (o1 != null && !((String) o1).isEmpty()) {
                 // 模糊查询（若需精确匹配，直接用 = #{name}，此处按常用场景用LIKE）
-                return mapper.select_supplier_name("%" + ((String) o1) + "%");
-            }
+                return mapper.select_supplier_name((String) o1);
+           }
 
             // 3. 条件3：按地址查询（String类型 + 非空）
-            if (o2 instanceof String && !((String) o2).isEmpty()) {
-                return mapper.select_supplier_address("%" + ((String) o2) + "%");
+            if (o2 != null && !((String) o2).isEmpty()) {
+                return mapper.select_supplier_address((String) o2);
             }
 
             // 4. 条件4：按邮编查询（String类型 + 非空）
-            if (o3 instanceof String && !((String) o3).isEmpty()) {
+            if (o3 != null && !((String) o3).isEmpty()) {
                 return mapper.select_supplier_postcode((String) o3); // 邮编一般精确匹配
             }
 
             // 5. 条件5：按电话查询（String类型 + 非空）
-            if (o4 instanceof String && !((String) o4).isEmpty()) {
+            if (o4 != null && !((String) o4).isEmpty()) {
                 return mapper.select_supplier_Telephone((String) o4); // 电话精确匹配
             }
 
             // 6. 条件6：按联系人查询（String类型 + 非空）
-            if (o5 instanceof String && !((String) o5).isEmpty()) {
-                return mapper.select_supplier_relationer("%" + ((String) o5) + "%"); // 模糊查询
+            if (o5 != null && !((String) o5).isEmpty()) {
+                return mapper.select_supplier_relationer((String) o5); // 模糊查询
             }
 
             // 7. 条件7：按邮箱查询（String类型 + 非空）
-            if (o6 instanceof String && !((String) o6).isEmpty()) {
+            if (o6 != null && !((String) o6).isEmpty()) {
                 return mapper.select_supplier_email((String) o6); // 邮箱精确匹配
             }
 
             // 8. 条件8：按传真查询（String类型 + 非空）
-            if (o7 instanceof String && !((String) o7).isEmpty()) {
+            if (o7 != null && !((String) o7).isEmpty()) {
                 return mapper.select_supplier_Fex((String) o7); // 传真精确匹配
             }
 

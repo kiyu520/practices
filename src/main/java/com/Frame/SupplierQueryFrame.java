@@ -44,28 +44,28 @@ public class SupplierQueryFrame extends JFrame {
         queryPanel.add(new JLabel("供应商ID"));
         queryPanel.add(new JLabel("供应商名称"));
         queryPanel.add(new JLabel("地址"));
-        queryPanel.add(new JLabel("邮编"));
-        queryPanel.add(new JLabel("电话"));
+        //queryPanel.add(new JLabel("邮编"));
+        //queryPanel.add(new JLabel("电话"));
         queryPanel.add(new JLabel("传真"));
         queryPanel.add(new JLabel("联系人"));
-        queryPanel.add(new JLabel("邮箱"));
+       // queryPanel.add(new JLabel("邮箱"));
         // 第二行：输入框
         tfSupId = new JTextField();
         tfSupName = new JTextField();
         tfAddress = new JTextField();
-        tfZipCode = new JTextField();
+        //tfZipCode = new JTextField();
         queryPanel.add(tfSupId);
         queryPanel.add(tfSupName);
         queryPanel.add(tfAddress);
-        queryPanel.add(tfZipCode);
-        tfPhone = new JTextField();
+        //queryPanel.add(tfZipCode);
+        //tfPhone = new JTextField();
         tfFax = new JTextField();
         tfContact = new JTextField();
-        tfEmail = new JTextField();
-        queryPanel.add(tfPhone);
+        //tfEmail = new JTextField();
+        //queryPanel.add(tfPhone);
         queryPanel.add(tfFax);
         queryPanel.add(tfContact);
-        queryPanel.add(tfEmail);
+        //queryPanel.add(tfEmail);
 
         // ========== 4. 功能按钮面板（保留原功能） ==========
         JPanel funcPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
@@ -128,7 +128,7 @@ public class SupplierQueryFrame extends JFrame {
                 // 无条件查询所有供应商
                 resultList = SupplierService.findAllSupplier();
             } else {
-                // 多条件查询（需在SupplierService中新增querySuppliers方法）
+                // 多条件查询
                 resultList = supplierService.querySuppliers(supId, supName, address, zipCode, phone, fax, contact, email);
             }
 
@@ -336,19 +336,5 @@ public class SupplierQueryFrame extends JFrame {
                         "错误", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                log.warning("设置界面外观失败：" + e.getMessage());
-            }
-
-            SupplierQueryFrame queryFrame = new SupplierQueryFrame();
-            queryFrame.setVisible(true);
-            log.info("供应商信息查询系统已启动");
-        });
     }
 }
