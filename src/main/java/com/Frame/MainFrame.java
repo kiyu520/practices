@@ -249,7 +249,7 @@ public class MainFrame extends JFrame {
                 "systemSetting",
                 "/static/image/img8.png"
         );
-        settingBtn.addActionListener(e -> new SystemManageFrame().setVisible(true));
+        settingBtn.addActionListener(e -> new PasswordManagementFrame().setVisible(true));
         JButton exitBtn = RoundButtonUtil.createRoundedButton(
                 "退出系统",
                 "exitSystem",
