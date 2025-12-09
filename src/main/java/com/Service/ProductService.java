@@ -125,4 +125,13 @@ public class ProductService {
         // 无有效查询条件：返回空列表（避免null）
         return Collections.emptyList();
     }
+
+    public boolean isProductExist(int prodId) {
+        return getProductById(prodId) != null;
+    }
+
+    public double getStockById(int prodId) {
+        Product product = getProductById(prodId);
+        return product != null ? product.getQuantity() : 0;
+    }
 }
