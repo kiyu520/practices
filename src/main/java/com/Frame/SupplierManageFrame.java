@@ -1,14 +1,12 @@
 package com.Frame;
 
 import com.Tools.SqlUtil;
+import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -96,36 +94,16 @@ public class SupplierManageFrame extends JFrame {
      */
     private void bindEvents() {
         // 添加供应商
-        btnAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addSupplier();
-            }
-        });
+        btnAdd.addActionListener(e -> addSupplier());
 
         // 修改供应商
-        btnUpdate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateSupplier();
-            }
-        });
+        btnUpdate.addActionListener(e -> updateSupplier());
 
         // 删除供应商
-        btnDelete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteSupplier();
-            }
-        });
+        btnDelete.addActionListener(e -> deleteSupplier());
 
         // 重置输入框
-        btnReset.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                resetInput();
-            }
-        });
+        btnReset.addActionListener(e -> resetInput());
     }
 
     /**
@@ -163,30 +141,26 @@ public class SupplierManageFrame extends JFrame {
             return;
         }
 
-        // 4. 插入数据库
-        Connection conn = SqlUtil.getSession().getConnection();
-        String sql = "INSERT INTO suppliers(exesConId, sup_name, sup_address, postcode, sup_telephone, sup_fax, sup_relationer, sup_email) VALUES (?,?,?,?,?,?,?,?)";
+        // 4. 插入数据库（使用MyBatis SqlSession）
+        SqlSession session = null;
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            pstmt.setString(2, name);
-            pstmt.setString(3, address);
-            pstmt.setString(4, postcode);
-            pstmt.setString(5, tel);
-            pstmt.setString(6, fax);
-            pstmt.setString(7, relationer);
-            pstmt.setString(8, email);
+            session = SqlUtil.getSession();
+            String sql = "INSERT INTO suppliers(exesConId, sup_name, sup_address, postcode, sup_telephone, sup_fax, sup_relationer, sup_email) VALUES (?,?,?,?,?,?,?,?)";
+            int rows = session.update(sql);
 
-            int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "供应商添加成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
                 resetInput(); // 重置输入框
             } else {
                 JOptionPane.showMessageDialog(this, "供应商添加失败！", "提示", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "添加失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
         } finally {
+            if (session != null) {
+                session.close(); // 关闭会话
+            }
         }
     }
 
@@ -225,30 +199,26 @@ public class SupplierManageFrame extends JFrame {
             return;
         }
 
-        // 4. 更新数据库
-        Connection conn = SqlUtil.getSession().getConnection();
-        String sql = "UPDATE suppliers SET sup_name=?, sup_address=?, postcode=?, sup_telephone=?, sup_fax=?, sup_relationer=?, sup_email=? WHERE exesConId=?";
+        // 4. 更新数据库（使用MyBatis SqlSession）
+        SqlSession session = null;
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, name);
-            pstmt.setString(2, address);
-            pstmt.setString(3, postcode);
-            pstmt.setString(4, tel);
-            pstmt.setString(5, fax);
-            pstmt.setString(6, relationer);
-            pstmt.setString(7, email);
-            pstmt.setInt(8, id);
+            session = SqlUtil.getSession();
+            String sql = "UPDATE suppliers SET sup_name=?, sup_address=?, postcode=?, sup_telephone=?, sup_fax=?, sup_relationer=?, sup_email=? WHERE exesConId=?";
+            int rows = session.update(sql);
 
-            int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "供应商修改成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
                 resetInput();
             } else {
                 JOptionPane.showMessageDialog(this, "供应商修改失败！", "提示", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "修改失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
         } finally {
+            if (session != null) {
+                session.close(); // 关闭会话
+            }
         }
     }
 
@@ -289,22 +259,26 @@ public class SupplierManageFrame extends JFrame {
             return;
         }
 
-        // 5. 删除数据库记录
-        Connection conn = SqlUtil.getSession().getConnection();
-        String sql = "DELETE FROM suppliers WHERE exesConId=?";
+        // 5. 删除数据库记录（使用MyBatis SqlSession）
+        SqlSession session = null;
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            session = SqlUtil.getSession();
+            String sql = "DELETE FROM suppliers WHERE exesConId=?";
+            int rows = session.update(sql, id);
 
-            int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "供应商删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
                 resetInput();
             } else {
                 JOptionPane.showMessageDialog(this, "供应商删除失败！", "提示", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "删除失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (session != null) {
+                session.close(); // 关闭会话
+            }
         }
     }
 
@@ -328,16 +302,19 @@ public class SupplierManageFrame extends JFrame {
      * @return 存在返回true，否则false
      */
     private boolean isSupplierExist(int id) {
-        Connection conn = SqlUtil.getSession().getConnection();
-        String sql = "SELECT * FROM suppliers WHERE exesConId=?";
+        SqlSession session = null;
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
+            session = SqlUtil.getSession();
+            String sql = "SELECT COUNT(*) FROM suppliers WHERE exesConId=?";
+            Integer count = session.selectOne(sql, id);
+            return count != null && count > 0;
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
@@ -347,27 +324,25 @@ public class SupplierManageFrame extends JFrame {
      * @return 关联返回true，否则false
      */
     private boolean isSupplierRelatedProduct(int id) {
-        Connection conn = SqlUtil.getSession().getConnection();
-        String sql = "SELECT * FROM products WHERE sup_id=?";
+        SqlSession session = null;
         try {
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
+            session = SqlUtil.getSession();
+            String sql = "SELECT COUNT(*) FROM products WHERE sup_id=?";
+            Integer count = session.selectOne(sql, id);
+            return count != null && count > 0;
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
     // 测试入口
     public static void main(String[] args) {
         // Swing组件需在事件调度线程中运行
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SupplierManageFrame();
-            }
-        });
+        SwingUtilities.invokeLater(SupplierManageFrame::new);
     }
 }
