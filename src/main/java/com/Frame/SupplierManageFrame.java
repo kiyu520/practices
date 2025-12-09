@@ -1,348 +1,382 @@
 package com.Frame;
 
-import com.Tools.SqlUtil;
-import org.apache.ibatis.session.SqlSession;
-
+import com.Entity.Supplier;
+import com.Service.SupplierService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
+import java.util.List;
 
-/**
- * 供应商管理界面（添加、修改、删除）
- */
 public class SupplierManageFrame extends JFrame {
-    // 组件定义
-    private JLabel lblId, lblName, lblAddress, lblPostcode, lblTel, lblFax, lblRelationer, lblEmail;
-    private JTextField txtId, txtName, txtAddress, txtPostcode, txtTel, txtFax, txtRelationer, txtEmail;
-    private JButton btnAdd, btnUpdate, btnDelete, btnReset;
+    // 表单组件
+    private JTextField supIdField, supNameField, addressField, postcodeField;
+    private JTextField telephoneField, faxField, relationerField, emailField;
+    private JTextField deleteSupIdField;
+
+    // 功能按钮
+    private JButton addBtn, deleteBtn, resetBtn, updateBtn;
+
+    // 业务层对象
+    private SupplierService supplierService = new SupplierService();
+    private Icon customIcon;
 
     public SupplierManageFrame() {
-        // 界面初始化
-        initFrame();
+        // 初始化自定义图标
+        initCustomIcon();
+        // 统一设置按钮样式
+        initOptionPaneButtonStyle();
+
+        // 窗口基础配置
+        setTitle("供应商信息管理");
+        setSize(800, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setLayout(null);
+
+        // 初始化组件
+        initComponents();
         // 绑定事件
         bindEvents();
     }
 
     /**
-     * 初始化界面布局
+     * 初始化表单组件
      */
-    private void initFrame() {
-        // 窗口设置
-        this.setTitle("供应商信息管理");
-        this.setSize(600, 400);
-        this.setLocationRelativeTo(null); // 居中显示
-        this.setLayout(new GridLayout(9, 2, 10, 10)); // 网格布局
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    private void initComponents() {
+        // 1. 供应商ID
+        JLabel supIdLabel = new JLabel("供应商ID:");
+        supIdLabel.setBounds(30, 30, 80, 25);
+        supIdField = new JTextField();
+        supIdField.setBounds(120, 30, 150, 25);
 
-        // 组件初始化
-        lblId = new JLabel("供应商ID：");
-        txtId = new JTextField();
-        lblName = new JLabel("供应商名称：");
-        txtName = new JTextField();
-        lblAddress = new JLabel("地址：");
-        txtAddress = new JTextField();
-        lblPostcode = new JLabel("邮编：");
-        txtPostcode = new JTextField();
-        lblTel = new JLabel("电话：");
-        txtTel = new JTextField();
-        lblFax = new JLabel("传真：");
-        txtFax = new JTextField();
-        lblRelationer = new JLabel("联系人：");
-        txtRelationer = new JTextField();
-        lblEmail = new JLabel("邮箱：");
-        txtEmail = new JTextField();
+        // 2. 供应商名称
+        JLabel supNameLabel = new JLabel("供应商名称:");
+        supNameLabel.setBounds(320, 30, 90, 25);
+        supNameField = new JTextField();
+        supNameField.setBounds(420, 30, 150, 25);
 
-        btnAdd = new JButton("添加");
-        btnUpdate = new JButton("修改");
-        btnDelete = new JButton("删除");
-        btnReset = new JButton("重置");
+        // 3. 地址
+        JLabel addressLabel = new JLabel("地址:");
+        addressLabel.setBounds(30, 80, 80, 25);
+        addressField = new JTextField();
+        addressField.setBounds(120, 80, 150, 25);
+
+        // 4. 邮编
+        JLabel postcodeLabel = new JLabel("邮编:");
+        postcodeLabel.setBounds(320, 80, 90, 25);
+        postcodeField = new JTextField();
+        postcodeField.setBounds(420, 80, 150, 25);
+
+        // 5. 电话
+        JLabel telephoneLabel = new JLabel("电话:");
+        telephoneLabel.setBounds(30, 130, 80, 25);
+        telephoneField = new JTextField();
+        telephoneField.setBounds(120, 130, 150, 25);
+
+        // 6. 传真
+        JLabel faxLabel = new JLabel("传真:");
+        faxLabel.setBounds(320, 130, 90, 25);
+        faxField = new JTextField();
+        faxField.setBounds(420, 130, 150, 25);
+
+        // 7. 联系人
+        JLabel relationerLabel = new JLabel("联系人:");
+        relationerLabel.setBounds(30, 180, 80, 25);
+        relationerField = new JTextField();
+        relationerField.setBounds(120, 180, 150, 25);
+
+        // 8. 邮箱
+        JLabel emailLabel = new JLabel("邮箱:");
+        emailLabel.setBounds(320, 180, 90, 25);
+        emailField = new JTextField();
+        emailField.setBounds(420, 180, 150, 25);
+
+        // 9. 删除区域
+        JLabel deleteSupIdLabel = new JLabel("删除供应商ID:");
+        deleteSupIdLabel.setBounds(30, 230, 100, 25);
+        deleteSupIdField = new JTextField();
+        deleteSupIdField.setBounds(140, 230, 150, 25);
+
+        // 10. 按钮
+        addBtn = new JButton("添加供应商");
+        addBtn.setBounds(320, 230, 120, 30);
+        updateBtn = new JButton("修改供应商");
+        updateBtn.setBounds(450, 230, 120, 30);
+        deleteBtn = new JButton("删除供应商");
+        deleteBtn.setBounds(580, 230, 120, 30);
+        resetBtn = new JButton("重置");
+        resetBtn.setBounds(320, 280, 100, 30);
 
         // 添加组件到窗口
-        this.add(lblId);
-        this.add(txtId);
-        this.add(lblName);
-        this.add(txtName);
-        this.add(lblAddress);
-        this.add(txtAddress);
-        this.add(lblPostcode);
-        this.add(txtPostcode);
-        this.add(lblTel);
-        this.add(txtTel);
-        this.add(lblFax);
-        this.add(txtFax);
-        this.add(lblRelationer);
-        this.add(txtRelationer);
-        this.add(lblEmail);
-        this.add(txtEmail);
-
-        // 按钮面板
-        JPanel btnPanel = new JPanel();
-        btnPanel.add(btnAdd);
-        btnPanel.add(btnUpdate);
-        btnPanel.add(btnDelete);
-        btnPanel.add(btnReset);
-        this.add(btnPanel);
-
-        // 显示窗口
-        this.setVisible(true);
+        add(supIdLabel);
+        add(supIdField);
+        add(supNameLabel);
+        add(supNameField);
+        add(addressLabel);
+        add(addressField);
+        add(postcodeLabel);
+        add(postcodeField);
+        add(telephoneLabel);
+        add(telephoneField);
+        add(faxLabel);
+        add(faxField);
+        add(relationerLabel);
+        add(relationerField);
+        add(emailLabel);
+        add(emailField);
+        add(deleteSupIdLabel);
+        add(deleteSupIdField);
+        add(addBtn);
+        add(updateBtn);
+        add(deleteBtn);
+        add(resetBtn);
     }
 
     /**
      * 绑定按钮事件
      */
     private void bindEvents() {
-        // 添加供应商
-        btnAdd.addActionListener(e -> addSupplier());
-
-        // 修改供应商
-        btnUpdate.addActionListener(e -> updateSupplier());
-
-        // 删除供应商
-        btnDelete.addActionListener(e -> deleteSupplier());
-
-        // 重置输入框
-        btnReset.addActionListener(e -> resetInput());
+        bindAddBtnEvent();
+        bindDeleteBtnEvent();
+        bindUpdateBtnEvent();
+        bindResetBtnEvent();
     }
 
     /**
-     * 添加供应商
+     * 绑定"添加供应商"按钮事件
      */
-    private void addSupplier() {
-        // 1. 获取输入数据
-        String idStr = txtId.getText().trim();
-        String name = txtName.getText().trim();
-        String address = txtAddress.getText().trim();
-        String postcode = txtPostcode.getText().trim();
-        String tel = txtTel.getText().trim();
-        String fax = txtFax.getText().trim();
-        String relationer = txtRelationer.getText().trim();
-        String email = txtEmail.getText().trim();
+    private void bindAddBtnEvent() {
+        addBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // 1. 获取表单数据
+                    int supId = Integer.parseInt(supIdField.getText().trim());
+                    String supName = supNameField.getText().trim();
+                    String address = addressField.getText().trim();
+                    String postcode = postcodeField.getText().trim();
+                    String telephone = telephoneField.getText().trim();
+                    String fax = faxField.getText().trim();
+                    String relationer = relationerField.getText().trim();
+                    String email = emailField.getText().trim();
 
-        // 2. 合法性校验
-        if (idStr.isEmpty() || name.isEmpty() || address.isEmpty() || postcode.isEmpty()
-                || tel.isEmpty() || fax.isEmpty() || relationer.isEmpty() || email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "所有字段不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+                    // 2. 客户端校验
+                    if (supName.isEmpty() || address.isEmpty() || postcode.isEmpty() ||
+                            telephone.isEmpty() || fax.isEmpty() || relationer.isEmpty() || email.isEmpty()) {
+                        showErrorMsg("带*的字段不能为空！");
+                        return;
+                    }
 
-        int id;
-        try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "供应商ID必须为数字！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+                    // 3. 封装实体
+                    Supplier supplier = new Supplier();
+                    supplier.setExesConId(supId);
+                    supplier.setSupName(supName);
+                    supplier.setSupAddress(address);
+                    supplier.setPostcode(postcode);
+                    supplier.setSupTelephone(telephone);
+                    supplier.setSupFax(fax);
+                    supplier.setSupRelationer(relationer);
+                    supplier.setSupEmail(email);
 
-        // 3. 检查供应商是否已存在
-        if (isSupplierExist(id)) {
-            JOptionPane.showMessageDialog(this, "该供应商ID已存在！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 4. 插入数据库（使用MyBatis SqlSession）
-        SqlSession session = null;
-        try {
-            session = SqlUtil.getSession();
-            String sql = "INSERT INTO suppliers(exesConId, sup_name, sup_address, postcode, sup_telephone, sup_fax, sup_relationer, sup_email) VALUES (?,?,?,?,?,?,?,?)";
-            int rows = session.update(sql);
-
-            if (rows > 0) {
-                JOptionPane.showMessageDialog(this, "供应商添加成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
-                resetInput(); // 重置输入框
-            } else {
-                JOptionPane.showMessageDialog(this, "供应商添加失败！", "提示", JOptionPane.ERROR_MESSAGE);
+                    // 4. 调用服务层
+                    System.out.println("String success = supplierService.addSupplier(supplier);");
+                } catch (NumberFormatException ex) {
+                    showErrorMsg("供应商ID请输入合法数字！");
+                }
             }
+        });
+    }
+
+    /**
+     * 绑定"删除供应商"按钮事件
+     */
+    private void bindDeleteBtnEvent() {
+        deleteBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String supIdStr = deleteSupIdField.getText().trim();
+                if (supIdStr.isEmpty()) {
+                    showWarnMsg("请输入要删除的供应商ID！");
+                    return;
+                }
+
+                try {
+                    int supId = Integer.parseInt(supIdStr);
+                    if (supId <= 0) {
+                        showWarnMsg("供应商ID必须为正整数！");
+                        return;
+                    }
+
+                    // 校验供应商是否存在
+                    Supplier supplier = supplierService.getSupplierById(supId);
+                    if (supplier == null) {
+                        showErrorMsg("供应商不存在！");
+                        return;
+                    }
+
+                    // 校验是否关联产品
+                    if (supplierService.isSupplierRelatedProduct(supId)) {
+                        showErrorMsg("该供应商关联产品，无法删除！");
+                        return;
+                    }
+
+                    // 确认删除
+                    int confirm = JOptionPane.showConfirmDialog(
+                            SupplierManageFrame.this,
+                            "确定删除供应商ID为 " + supId + " 的记录吗？",
+                            "确认",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            customIcon
+                    );
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        boolean success = supplierService.deleteSupplier(supId);
+                        if (success) {
+                            showSuccessMsg("删除成功！");
+                            deleteSupIdField.setText("");
+                        } else {
+                            showErrorMsg("删除失败！");
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    showErrorMsg("供应商ID请输入合法数字！");
+                }
+            }
+        });
+    }
+
+    /**
+     * 绑定"修改供应商"按钮事件
+     */
+    private void bindUpdateBtnEvent() {
+        updateBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int supId = Integer.parseInt(supIdField.getText().trim());
+                    String supName = supNameField.getText().trim();
+                    String address = addressField.getText().trim();
+                    String postcode = postcodeField.getText().trim();
+                    String telephone = telephoneField.getText().trim();
+                    String fax = faxField.getText().trim();
+                    String relationer = relationerField.getText().trim();
+                    String email = emailField.getText().trim();
+
+                    // 客户端校验
+                    if (supId <= 0) {
+                        showErrorMsg("供应商ID必须为正整数！");
+                        return;
+                    }
+                    if (supName.isEmpty() || address.isEmpty()) {
+                        showErrorMsg("名称和地址不能为空！");
+                        return;
+                    }
+
+                    // 封装实体
+                    Supplier supplier = new Supplier();
+                    supplier.setExesConId(supId);
+                    supplier.setSupName(supName);
+                    supplier.setSupAddress(address);
+                    supplier.setPostcode(postcode);
+                    supplier.setSupTelephone(telephone);
+                    supplier.setSupFax(fax);
+                    supplier.setSupRelationer(relationer);
+                    supplier.setSupEmail(email);
+
+                    // 调用服务层
+                    boolean success = supplierService.updateSupplier(supplier);
+                    if (success) {
+                        showSuccessMsg("修改成功！");
+                    } else {
+                        showErrorMsg("修改失败！供应商不存在或数据无效");
+                    }
+                } catch (NumberFormatException ex) {
+                    showErrorMsg("供应商ID请输入合法数字！");
+                }
+            }
+        });
+    }
+
+    /**
+     * 绑定"重置"按钮事件
+     */
+    private void bindResetBtnEvent() {
+        resetBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetFields();
+            }
+        });
+    }
+
+    /**
+     * 重置表单字段
+     */
+    private void resetFields() {
+        supIdField.setText("");
+        supNameField.setText("");
+        addressField.setText("");
+        postcodeField.setText("");
+        telephoneField.setText("");
+        faxField.setText("");
+        relationerField.setText("");
+        emailField.setText("");
+        deleteSupIdField.setText("");
+    }
+
+    /**
+     * 初始化自定义图标
+     */
+    private void initCustomIcon() {
+        try {
+            String imagePath = "/static/image/img13.png";
+            ImageIcon originalIcon = new ImageIcon(getClass().getResource(imagePath));
+            Image scaledImage = originalIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            customIcon = new ImageIcon(scaledImage);
         } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "添加失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (session != null) {
-                session.close(); // 关闭会话
-            }
+            System.err.println("自定义图标加载失败：" + e.getMessage());
+            customIcon = UIManager.getIcon("OptionPane.questionIcon");
         }
     }
 
     /**
-     * 修改供应商
+     * 统一设置按钮样式
      */
-    private void updateSupplier() {
-        // 1. 获取输入数据
-        String idStr = txtId.getText().trim();
-        String name = txtName.getText().trim();
-        String address = txtAddress.getText().trim();
-        String postcode = txtPostcode.getText().trim();
-        String tel = txtTel.getText().trim();
-        String fax = txtFax.getText().trim();
-        String relationer = txtRelationer.getText().trim();
-        String email = txtEmail.getText().trim();
-
-        // 2. 合法性校验
-        if (idStr.isEmpty() || name.isEmpty() || address.isEmpty() || postcode.isEmpty()
-                || tel.isEmpty() || fax.isEmpty() || relationer.isEmpty() || email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "所有字段不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int id;
+    private void initOptionPaneButtonStyle() {
         try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "供应商ID必须为数字！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 3. 检查供应商是否存在
-        if (!isSupplierExist(id)) {
-            JOptionPane.showMessageDialog(this, "该供应商不存在！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 4. 更新数据库（使用MyBatis SqlSession）
-        SqlSession session = null;
-        try {
-            session = SqlUtil.getSession();
-            String sql = "UPDATE suppliers SET sup_name=?, sup_address=?, postcode=?, sup_telephone=?, sup_fax=?, sup_relationer=?, sup_email=? WHERE exesConId=?";
-            int rows = session.update(sql);
-
-            if (rows > 0) {
-                JOptionPane.showMessageDialog(this, "供应商修改成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
-                resetInput();
-            } else {
-                JOptionPane.showMessageDialog(this, "供应商修改失败！", "提示", JOptionPane.ERROR_MESSAGE);
-            }
+            UIManager.put("Button.focusPainted", Boolean.FALSE);
+            UIManager.put("Button.focusBorder", BorderFactory.createEmptyBorder());
+            UIManager.put("Button.select", new Color(0, 0, 0, 0));
+            UIManager.put("Button.background", new Color(214, 217, 223));
+            UIManager.put("Button.foreground", Color.BLACK);
         } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "修改失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (session != null) {
-                session.close(); // 关闭会话
-            }
+            System.err.println("设置按钮样式失败：" + e.getMessage());
         }
     }
 
     /**
-     * 删除供应商
+     * 显示成功消息
      */
-    private void deleteSupplier() {
-        // 1. 获取供应商ID
-        String idStr = txtId.getText().trim();
-        if (idStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "请输入供应商ID！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int id;
-        try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "供应商ID必须为数字！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 2. 检查供应商是否存在
-        if (!isSupplierExist(id)) {
-            JOptionPane.showMessageDialog(this, "该供应商不存在！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 3. 检查该供应商是否关联产品（核心约束）
-        if (isSupplierRelatedProduct(id)) {
-            JOptionPane.showMessageDialog(this, "该供应商下存在产品，无法删除！", "提示", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 4. 确认删除
-        int confirm = JOptionPane.showConfirmDialog(this, "确定要删除该供应商吗？", "确认", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        // 5. 删除数据库记录（使用MyBatis SqlSession）
-        SqlSession session = null;
-        try {
-            session = SqlUtil.getSession();
-            String sql = "DELETE FROM suppliers WHERE exesConId=?";
-            int rows = session.update(sql, id);
-
-            if (rows > 0) {
-                JOptionPane.showMessageDialog(this, "供应商删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
-                resetInput();
-            } else {
-                JOptionPane.showMessageDialog(this, "供应商删除失败！", "提示", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "删除失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (session != null) {
-                session.close(); // 关闭会话
-            }
-        }
+    private void showSuccessMsg(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "成功",
+                JOptionPane.INFORMATION_MESSAGE, customIcon);
     }
 
     /**
-     * 重置输入框
+     * 显示错误消息
      */
-    private void resetInput() {
-        txtId.setText("");
-        txtName.setText("");
-        txtAddress.setText("");
-        txtPostcode.setText("");
-        txtTel.setText("");
-        txtFax.setText("");
-        txtRelationer.setText("");
-        txtEmail.setText("");
+    private void showErrorMsg(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "错误",
+                JOptionPane.ERROR_MESSAGE, customIcon);
     }
 
     /**
-     * 检查供应商是否存在
-     * @param id 供应商ID
-     * @return 存在返回true，否则false
+     * 显示警告消息
      */
-    private boolean isSupplierExist(int id) {
-        SqlSession session = null;
-        try {
-            session = SqlUtil.getSession();
-            String sql = "SELECT COUNT(*) FROM suppliers WHERE exesConId=?";
-            Integer count = session.selectOne(sql, id);
-            return count != null && count > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-    }
-
-    /**
-     * 检查供应商是否关联产品
-     * @param id 供应商ID
-     * @return 关联返回true，否则false
-     */
-    private boolean isSupplierRelatedProduct(int id) {
-        SqlSession session = null;
-        try {
-            session = SqlUtil.getSession();
-            String sql = "SELECT COUNT(*) FROM products WHERE sup_id=?";
-            Integer count = session.selectOne(sql, id);
-            return count != null && count > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-    }
-
-    // 测试入口
-    public static void main(String[] args) {
-        // Swing组件需在事件调度线程中运行
-        SwingUtilities.invokeLater(SupplierManageFrame::new);
+    private void showWarnMsg(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "提示",
+                JOptionPane.WARNING_MESSAGE, customIcon);
     }
 }

@@ -76,7 +76,34 @@ public class SupplierService {
         int result = supMapper.delete_supplier_id(supplierId);
         return result > 0;
     }
+    /**
+     * 根据ID查询单个供应商
+     * @param supplierId 供应商ID
+     * @return 供应商实体（无数据返回null）
+     */
+    public Supplier getSupplierById(Integer supplierId) {
+        if (supplierId == null || supplierId <= 0) {
+            return null;
+        }
+        List<Supplier> suppliers = supMapper.select_supplier_id(supplierId);
+        // 如果查询结果不为空且有数据，返回第一个元素，否则返回null
+        return (suppliers != null && !suppliers.isEmpty()) ? suppliers.get(0) : null;
+    }
 
+    /**
+     * 校验供应商是否关联产品
+     * @param supplierId 供应商ID
+     * @return 关联返回true，否则返回false
+     */
+    public boolean isSupplierRelatedProduct(Integer supplierId) {
+        if (supplierId == null || supplierId <= 0) {
+            return false;
+        }
+        // 假设存在产品相关的mapper方法，实际需根据项目情况实现
+        // 这里需要你根据实际的产品表关联关系补充查询逻辑
+        int relatedCount = supMapper.countRelatedProducts(supplierId);
+        return relatedCount > 0;
+    }
 
 //    查询所有供应商
     public static List<Supplier> findAllSupplier() {
