@@ -12,6 +12,7 @@ import java.io.IOException;
 public class SqlUtil {
     public static  SqlSessionFactory  sqlSessionFactory;
     //public static SqlSession session;
+
     static{
         try {
             sqlSessionFactory= new SqlSessionFactoryBuilder().build(Resources.getResourceAsStream("Properties/mybatis-config.xml"));
