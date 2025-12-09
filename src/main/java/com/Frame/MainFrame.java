@@ -263,7 +263,9 @@ public class MainFrame extends JFrame {
         );
         exitBtn.addActionListener(e -> System.exit(0));
         systemPanel.add(settingBtn);
+        systemPanel.add(operatorBtn);
         systemPanel.add(exitBtn);
+
         tabbedPane.addTab("系统管理", systemPanel);
 
         add(tabbedPane, BorderLayout.CENTER);
