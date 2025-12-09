@@ -180,9 +180,9 @@ public class SupplierManageFrame extends JFrame {
                     supplier.setSupEmail(email);
 
                     // 4. 调用服务层
-                    String success = supplierService.addSupplier(supplier);
+                    boolean success = supplierService.addSupplier(supplier);
                     System.out.println(success);
-                    if (success.equals("success")) {
+                    if (success == true) {
                         showSuccessMsg("添加成功！");
                     } else {
                         showErrorMsg("添加失败！！！");
@@ -364,6 +364,8 @@ public class SupplierManageFrame extends JFrame {
 
     /**
      * 显示成功消息
+ * 该方法用于在界面上显示一个成功提示对话框
+ * @param msg 需要显示的成功消息内容
      */
     private void showSuccessMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg, "成功",

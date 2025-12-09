@@ -23,18 +23,18 @@ public class SupplierService {
         supMapper = sqlSession.getMapper(sup_mapper.class);
     }
     //    添加供应商，编号唯一
-    public String addSupplier(Supplier supplier) {
+    public boolean addSupplier(Supplier supplier) {
         if (supplier.getExesConId() == null || supplier.getSupName().isEmpty() || supplier.getExesConId() <= 0) {
-            return "供应商ID/名称不能为空！";
+            return false;
         }
 //        实际可添加编号唯一性校验
         List<Supplier> existSupplier = supMapper.select_supplier_id(supplier.getExesConId());
         if(existSupplier != null && !existSupplier.isEmpty()) {
-            return "供应商编号已存在！";
+            return false;
         }
         //    调用mapper新增
         int result = supMapper.add_supplier_entity(supplier);
-        return result > 0 ? "success" : "供应商添加失败！";
+        return result > 0 ? true : false;
     }
     /**
      * 根据ID查询供应商（适配Frame层修改/删除时的存在性校验）

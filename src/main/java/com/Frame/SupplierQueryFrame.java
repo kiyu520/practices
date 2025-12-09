@@ -308,8 +308,8 @@ public class SupplierQueryFrame extends JFrame {
                         supplier.setSupEmail(fields[7].trim());
 
                         // 4. 调用Service添加供应商
-                        String addResult = supplierService.addSupplier(supplier);
-                        if ("success".equals(addResult)) {
+                        boolean addResult = supplierService.addSupplier(supplier);
+                        if (addResult == true) {
                             tableModel.addSupplier(supplier);
                             successCount++;
                         } else {
