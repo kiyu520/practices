@@ -217,10 +217,10 @@ public class SupplierManageFrame extends JFrame {
                     }
 
                     // 校验是否关联产品
-                    if (supplierService.isSupplierRelatedProduct(supId)) {
-                        showErrorMsg("该供应商关联产品，无法删除！");
-                        return;
-                    }
+//                    if (supplierService.isSupplierRelatedProduct(supId)) {
+//                        showErrorMsg("该供应商关联产品，无法删除！");
+//                        return;
+//                    }
 
                     // 确认删除
                     int confirm = JOptionPane.showConfirmDialog(
