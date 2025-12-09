@@ -180,7 +180,8 @@ public class SupplierManageFrame extends JFrame {
                     supplier.setSupEmail(email);
 
                     // 4. 调用服务层
-                    System.out.println("String success = supplierService.addSupplier(supplier);");
+                    String success = supplierService.addSupplier(supplier);
+                    System.out.println(success);
                 } catch (NumberFormatException ex) {
                     showErrorMsg("供应商ID请输入合法数字！");
                 }

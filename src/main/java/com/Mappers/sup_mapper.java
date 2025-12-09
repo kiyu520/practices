@@ -88,6 +88,4 @@ public interface sup_mapper {
     List<Supplier> select_supplier_Telephone(String o4);
 
     List<Supplier> select_supplier_Fex(String o7);
-
-    int countRelatedProducts(Integer supplierId);
 }
