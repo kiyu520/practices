@@ -245,11 +245,17 @@ public class MainFrame extends JFrame {
         JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         systemPanel.setBackground(Color.WHITE);
         JButton settingBtn = RoundButtonUtil.createRoundedButton(
-                "系统设置",
+                "更改密码",
                 "systemSetting",
-                "/static/image/img8.png"
+                "/static/image/img14.png"
         );
         settingBtn.addActionListener(e -> new PasswordManagementFrame().setVisible(true));
+        JButton operatorBtn = RoundButtonUtil.createRoundedButton(
+                "操作员管理",
+                "operatormanage",
+                "/static/image/img15.png"
+        );
+        operatorBtn.addActionListener(e -> new OperatorManagementFrame().setVisible(true));
         JButton exitBtn = RoundButtonUtil.createRoundedButton(
                 "退出系统",
                 "exitSystem",
@@ -257,7 +263,9 @@ public class MainFrame extends JFrame {
         );
         exitBtn.addActionListener(e -> System.exit(0));
         systemPanel.add(settingBtn);
+        systemPanel.add(operatorBtn);
         systemPanel.add(exitBtn);
+
         tabbedPane.addTab("系统管理", systemPanel);
 
         add(tabbedPane, BorderLayout.CENTER);
