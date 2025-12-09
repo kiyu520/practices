@@ -7,7 +7,7 @@ import java.util.List;
 public class SupplierTableModel extends AbstractTableModel {
     // 表头：对应供应商字段（与查询面板字段一致）
     private final String[] headers = {"供应商ID", "供应商名称", "地址", "邮编", "电话", "传真", "联系人", "邮箱"};
-    private List<Supplier> supplierList; // 存储供应商数据（对应 ProTableModel 的 ProList）
+    private List<Supplier> supplierList; // 存储供应商数据（对应 ProTableModel 的 Pro                              List）
 
     // 构造方法：传入初始供应商列表
     public SupplierTableModel(List<Supplier> supplierList) {

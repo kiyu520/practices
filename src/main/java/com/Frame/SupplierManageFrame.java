@@ -182,6 +182,11 @@ public class SupplierManageFrame extends JFrame {
                     // 4. 调用服务层
                     String success = supplierService.addSupplier(supplier);
                     System.out.println(success);
+                    if (success.equals("success")) {
+                        showSuccessMsg("添加成功！");
+                    } else {
+                        showErrorMsg("添加失败！！！");
+                    }
                 } catch (NumberFormatException ex) {
                     showErrorMsg("供应商ID请输入合法数字！");
                 }
