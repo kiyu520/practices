@@ -126,7 +126,7 @@ public class OperatorManagementFrame extends JFrame {
         // 操作员下拉选择
         gbc.gridx = 0;
         gbc.gridy = 0;
-        addPanel.add(new JLabel("选择操作员："), gbc);
+        deletePanel.add(new JLabel("选择操作员："), gbc);
         deleteUserComboBox = new JComboBox<>();
         deleteUserComboBox.setPreferredSize(new Dimension(150, 25));
         gbc.gridx = 1;
