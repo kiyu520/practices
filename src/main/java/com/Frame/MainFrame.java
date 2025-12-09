@@ -255,7 +255,7 @@ public class MainFrame extends JFrame {
                 "operatormanage",
                 "/static/image/img15.png"
         );
-        settingBtn.addActionListener(e -> new OperatorManagementFrame().setVisible(true));
+        operatorBtn.addActionListener(e -> new OperatorManagementFrame().setVisible(true));
         JButton exitBtn = RoundButtonUtil.createRoundedButton(
                 "退出系统",
                 "exitSystem",
