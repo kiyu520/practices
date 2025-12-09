@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
     // 修复：确保服务实例非空（显式初始化）
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
+
     public MainFrame(User user) {
         this.loginUser = user;
         initFrame();  // 初始化窗口
@@ -271,22 +272,22 @@ public class MainFrame extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
     }
-
-    private void setPadding(int padding) {
-        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
-    }
-
-    // 程序入口（测试用）
-    public static void main(String[] args) {
-        // 模拟登录用户，确保MainFrame能初始化
-        User testUser = new User();
-        testUser.setUsername("admin");
-        testUser.setPassword("123456");
-
-        // 在EDT中启动主窗口（Swing规范）
-        SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame(testUser);
-            mainFrame.setVisible(true);
-        });
-    }
 }
+//    private void setPadding(int padding) {
+//        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
+//    }
+//
+//    // 程序入口（测试用）
+//    public static void main(String[] args) {
+//        // 模拟登录用户，确保MainFrame能初始化
+//        User testUser = new User();
+//        testUser.setUsername("admin");
+//        testUser.setPassword("123456");
+//
+//        // 在EDT中启动主窗口（Swing规范）
+//        SwingUtilities.invokeLater(() -> {
+//            MainFrame mainFrame = new MainFrame(testUser);
+//            mainFrame.setVisible(true);
+//        });
+//    }
+//}
