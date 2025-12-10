@@ -9,15 +9,10 @@ import java.util.Collections;
 import java.util.List;
 
 
-import static com.Tools.SqlUtil.sqlSessionFactory;
 
 public class SupplierService {
     private static sup_mapper supMapper;
 
-    static{
-        SqlSession sqlSession = SqlUtil.getSession();
-        supMapper = sqlSession.getMapper(sup_mapper.class);
-    }
     public SupplierService() {
         SqlSession sqlSession = SqlUtil.getSession();
         supMapper = sqlSession.getMapper(sup_mapper.class);
