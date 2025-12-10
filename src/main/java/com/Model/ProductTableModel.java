@@ -12,7 +12,7 @@ public class ProductTableModel extends AbstractTableModel {
     // 1. 核心数据源：存储表格要显示的所有产品数据
     private List<Product> products = new ArrayList<>();
 
-    // 2. 表格列名（和你的查询页面列对应）
+    // 2. 表格列名
     private final String[] COLUMN_NAMES = {
             "产品编号", "产品名称", "价格", "类别", "库存量", "供应商编号"
     };
@@ -49,16 +49,6 @@ public class ProductTableModel extends AbstractTableModel {
         products.add(product);
         // 通知表格：新增了一行数据，刷新对应行
         fireTableRowsInserted(products.size() - 1, products.size() - 1);
-    }
-
-    /**
-     * 加载初始数据（ProductView的resetQuery()会调用）
-     * 注：暂为空实现，后续可对接MyBatis查询数据库
-     */
-    public void loadProducts() {
-        // 如需从数据库加载，替换为：
-        products = ProductService.findAllproducts();
-        //this.products = new ArrayList<>(); // 初始化空列表，避免空指针
     }
 
     // ========== 必须重写的抽象方法（Swing表格核心） ==========

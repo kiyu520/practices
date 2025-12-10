@@ -22,7 +22,6 @@ public class ProductQueryFrame extends JFrame {
 
     private ProductTableModel tableModel;
     private JTable productTable;
-    private List<Integer> existSupplierIds = SupplierService.findAllSupplierId();
     private ProductService productService;
 
     public ProductQueryFrame() {
@@ -149,7 +148,7 @@ public class ProductQueryFrame extends JFrame {
     }
 
     /**
-     * 辅助方法：字符串转Double，空串或非数字返回null（不抛异常）
+     * 辅助方法：字符串转Double，空串或非数字返回null
      */
     private Double parseDouble(String text) {
         if (text == null || text.trim().isEmpty()) {
