@@ -37,13 +37,22 @@ public class PasswordManagementFrame extends JFrame {
     // 业务逻辑服务
     private final UserService userService = new UserService();
 
+    int userrole = LoginFrame.userole;
+
     public PasswordManagementFrame() {
-        // 初始化窗口基础配置
-        initFrameConfig();
-        // 初始化所有组件
-        initAllComponents();
-        // 绑定组件事件
-        bindComponentEvents();
+        if(userrole == 0){
+            // 初始化窗口基础配置
+            initFrameConfig();
+            // 初始化所有组件
+            initAllComponents();
+            // 绑定组件事件
+            bindComponentEvents();
+            this.setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(this,"您没有权限更改密码", "提示", JOptionPane.ERROR_MESSAGE);
+            this.setVisible(false);
+        }
     }
 
     /**

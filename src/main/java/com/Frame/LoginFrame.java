@@ -11,8 +11,9 @@ import com.Service.UserService;
 public class LoginFrame extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private UserService userService = new UserService();
+    private static UserService userService = new UserService();
 
+    public static int userole;
     public LoginFrame() {
         // 创建登录界面
         setTitle("郑州轻工业大学仓库管理系统 - 登录");
@@ -60,7 +61,8 @@ public class LoginFrame extends JFrame {
     // 获取密码输入框中的密码，将字符数组转换为字符串
                 String password = new String(passwordField.getPassword());
     // 调用userService的login方法进行用户登录验证
-                    User loginUser = userService.login(username, password);
+                User loginUser = userService.login(username, password);
+                userole = loginUser.getUserRole();
     // 判断登录是否成功
                 if (loginUser != null) {
         // 登录成功，关闭当前登录窗口

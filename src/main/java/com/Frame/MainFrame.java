@@ -24,103 +24,6 @@ public class MainFrame extends JFrame {
         initTimeLabel();  // 初始化时间标签
     }
 
-    // 配置文件相关常量和属性
-//    private static final String CONFIG_FILE = "system_config.properties";
-//    private static Properties configProps = new Properties();
-//    private static final String SETTINGS_FILE = "system_settings.properties";
-//
-//    public MainFrame(User user) {
-//        this.loginUser = user;
-//        loadConfig();
-//        initFrame();
-//        initTabbedPane();
-//        initTimeLabel();
-//        applyConfig();
-//    }
-//
-//    public MainFrame() {
-//        loadConfig();
-//    }
-//
-//    // 加载配置文件
-//    private void loadConfig() {
-//        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
-//            configProps.load(fis);
-//        } catch (FileNotFoundException e) {
-//            createDefaultConfig();
-//        } catch (IOException e) {
-//            JOptionPane.showMessageDialog(this, "配置文件加载失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
-//    private void createDefaultConfig() {
-//        configProps.setProperty("lookAndFeel", "Windows");
-//        configProps.setProperty("bgColor", "#FFFFFF");
-//        configProps.setProperty("fontName", "宋体");
-//        configProps.setProperty("fontSize", "14");
-//        configProps.setProperty("bgImage", "");
-//        saveConfig();
-//    }
-//
-//    public static void saveConfig() {
-//        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
-//            configProps.store(fos, "Warehouse Management System Configuration");
-//        } catch (IOException e) {
-//            JOptionPane.showMessageDialog(null, "配置保存失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
-//    private void applyConfig() {
-//        try {
-//            String laf = configProps.getProperty("lookAndFeel");
-//            switch (laf) {
-//                case "Windows":
-//                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//                    break;
-//                case "Nimbus":
-//                    UIManager.setLookAndFeel(new NimbusLookAndFeel().getClass().getName());
-//                    break;
-//                case "Metal":
-//                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//                    break;
-//            }
-//            SwingUtilities.updateComponentTreeUI(this);
-//
-//            String colorStr = configProps.getProperty("bgColor");
-//            Color bgColor = Color.decode(colorStr);
-//            getContentPane().setBackground(bgColor);
-//
-//            String fontName = configProps.getProperty("fontName");
-//            int fontSize = Integer.parseInt(configProps.getProperty("fontSize"));
-//            Font globalFont = new Font(fontName, Font.PLAIN, fontSize);
-//
-//            if (timeLabel != null) {
-//                timeLabel.setFont(globalFont);
-//            }
-//            Component[] components = getContentPane().getComponents();
-//            for (Component comp : components) {
-//                applyFontToComponent(comp, globalFont);
-//            }
-//
-//            String bgImagePath = configProps.getProperty("bgImage");
-//            if (!bgImagePath.isEmpty() && new File(bgImagePath).exists()) {
-//                JOptionPane.showMessageDialog(this, "背景图片已设置，重启程序后生效", "提示", JOptionPane.INFORMATION_MESSAGE);
-//            }
-//
-//        } catch (Exception e) {
-//            JOptionPane.showMessageDialog(this, "配置应用失败: " + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
-//    private void applyFontToComponent(Component comp, Font font) {
-//        comp.setFont(font);
-//        if (comp instanceof Container) {
-//            for (Component child : ((Container) comp).getComponents()) {
-//                applyFontToComponent(child, font);
-//            }
-//        }
-//    }
-
     private void initFrame() {
         String title = "仓库管理系统欢迎你--" + loginUser.getUsername();
         setTitle(title);
@@ -237,18 +140,21 @@ public class MainFrame extends JFrame {
         // 4. 系统管理选项卡
         JPanel systemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         systemPanel.setBackground(Color.WHITE);
+
         JButton settingBtn = RoundButtonUtil.createRoundedButton(
                 "更改密码",
                 "systemSetting",
                 "/static/image/img14.png"
         );
-        settingBtn.addActionListener(e -> new PasswordManagementFrame().setVisible(true));
+        settingBtn.addActionListener(e -> new PasswordManagementFrame());
+
         JButton operatorBtn = RoundButtonUtil.createRoundedButton(
                 "操作员管理",
                 "operatormanage",
                 "/static/image/img15.png"
         );
-        operatorBtn.addActionListener(e -> new OperatorManagementFrame().setVisible(true));
+        operatorBtn.addActionListener(e -> new OperatorManagementFrame());
+
         JButton exitBtn = RoundButtonUtil.createRoundedButton(
                 "退出系统",
                 "exitSystem",
@@ -264,21 +170,3 @@ public class MainFrame extends JFrame {
         add(tabbedPane, BorderLayout.CENTER);
     }
 }
-//    private void setPadding(int padding) {
-//        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(padding, padding, padding, padding));
-//    }
-//
-//    // 程序入口（测试用）
-//    public static void main(String[] args) {
-//        // 模拟登录用户，确保MainFrame能初始化
-//        User testUser = new User();
-//        testUser.setUsername("admin");
-//        testUser.setPassword("123456");
-//
-//        // 在EDT中启动主窗口（Swing规范）
-//        SwingUtilities.invokeLater(() -> {
-//            MainFrame mainFrame = new MainFrame(testUser);
-//            mainFrame.setVisible(true);
-//        });
-//    }
-//}

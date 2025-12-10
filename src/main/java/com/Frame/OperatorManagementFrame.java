@@ -29,11 +29,20 @@ public class OperatorManagementFrame extends JFrame {
     private JButton deleteSubmitBtn;
     private JButton deleteResetBtn;
 
+    int userrole = LoginFrame.userole;
+
     public OperatorManagementFrame() {
-        initFrameBasic();
-        initComponents();
-        bindEvents();
-        loadAllOperators(); // 加载所有操作员到删除面板的下拉框
+        if (userrole == 0){
+            initFrameBasic();
+            initComponents();
+            bindEvents();
+            loadAllOperators(); // 加载所有操作员到删除面板的下拉框
+            this.setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "权限不足，无法访问该功能", "提示", JOptionPane.ERROR_MESSAGE);
+            this.setVisible(false);
+        }
     }
 
     /**
@@ -205,7 +214,7 @@ public class OperatorManagementFrame extends JFrame {
             }
 
             // 新增操作员（默认角色为普通操作员，可根据实际需求调整userRole值）
-            int rows = mapper.add_user_args(username, pwd, 2); // 假设2是普通操作员角色值
+            int rows = mapper.add_user_args(username, pwd, 1); // 假设2是普通操作员角色值
             sqlSession.commit();
 
             if (rows > 0) {
