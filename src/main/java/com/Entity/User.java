@@ -13,7 +13,4 @@ public class User {
     private String username;
     private String password;
     private int userRole;
-
-    public User(int i, String admin, String number, String 管理员) {
-    }
 }
