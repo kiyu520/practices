@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.List;
 
 @Log
-public class ProductView extends JFrame {
+public class ProductQueryFrame extends JFrame {
     private JTextField tfProId;
     private JTextField tfProName;
     private JTextField tfPrice;
@@ -25,7 +25,7 @@ public class ProductView extends JFrame {
     private List<Integer> existSupplierIds = SupplierService.findAllSupplierId();
     private ProductService productService;
 
-    public ProductView() {
+    public ProductQueryFrame() {
         this.productService = new ProductService();
         initUI();
         setTitle("产品管理系统 - 产品查询");

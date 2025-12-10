@@ -1,23 +1,14 @@
 package com.Frame;
 
 import com.Entity.User;
-import com.Entity.Product;
-import com.Entity.Supplier;
 import com.Service.ProductService;
 import com.Service.SupplierService;
 import com.Tools.DateUtil;
-import com.Model.ProductTableModel;
 
 import javax.swing.*;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.io.*;
-import java.util.List;
-import java.util.Properties;
-import com.Tools.RoundButtonUtil;
 
-import static com.Tools.RoundButtonUtil.loadLocalIcon;
+import com.Tools.RoundButtonUtil;
 
 public class MainFrame extends JFrame {
     private User loginUser;
@@ -232,7 +223,7 @@ public class MainFrame extends JFrame {
                 "productQuery",
                 "/static/image/img5.png"
         );
-        productQueryBtn.addActionListener(e -> new ProductView().setVisible(true));
+        productQueryBtn.addActionListener(e -> new ProductQueryFrame().setVisible(true));
         JButton supplierQueryBtn = RoundButtonUtil.createRoundedButton(
                 "供应商查询",
                 "supplierQuery",
