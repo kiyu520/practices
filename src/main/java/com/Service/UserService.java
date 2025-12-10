@@ -5,10 +5,6 @@ import com.Mappers.user_mapper;
 import com.Tools.SqlUtil;
 import org.apache.ibatis.session.SqlSession;
 
-import java.util.ArrayList;
-
-import static com.Tools.SqlUtil.sqlSessionFactory;
-
 public class UserService {
     /**
      * 用户登录方法
@@ -38,32 +34,46 @@ public class UserService {
         }
     }
 
-    public boolean changePassword(String username, String oldPwd) {
+    public boolean changePassword(String username, String oldPwd, String newPwd) {
         // 1. 入参非空校验
-        String newPwd= String.valueOf(' ');
-        if (username == null || oldPwd == null || newPwd == null) {
+        if (username == null || oldPwd == null || newPwd == null ||
+                username.isEmpty() || oldPwd.isEmpty() || newPwd.isEmpty()) {
             return false;
         }
 
-        // 2. 获取 SqlSession
-        SqlSession sqlSession = SqlUtil.getSession();
-        user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = SqlUtil.getSession();
+            user_mapper usermapper = sqlSession.getMapper(user_mapper.class);
 
-        // 3. 查询用户并校验原密码
-        User user = usermapper.select_user_by_name(username);
-        if (user == null || !user.getPassword().equals(oldPwd)) {
+            // 2. 查询用户并校验原密码
+            User user = usermapper.select_user_by_name(username);
+            if (user == null || !user.getPassword().equals(oldPwd)) {
+                return false;
+            }
+
+            // 3. 构建修改对象并更新密码
+            User updateUser = new User();
+            updateUser.setUsername(username);
+            updateUser.setPassword(newPwd);
+            updateUser.setUserRole(user.getUserRole());
+
+            int rows = usermapper.update_user_by_name(updateUser);
+            sqlSession.commit(); // 手动提交事务
+
+            // 4. 返回结果
+            return rows > 0;
+        } catch (Exception e) {
+            if (sqlSession != null) {
+                sqlSession.rollback(); // 异常回滚
+            }
+            System.err.println("修改密码异常-用户名：" + username + "，异常类型：" + e.getClass().getSimpleName() + "，原因：" + e.getMessage());
+            e.printStackTrace();
             return false;
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close(); // 关闭SqlSession
+            }
         }
-
-        // 4. 构建修改对象并更新密码
-        User updateUser = new User();
-        updateUser.setUsername(username);
-        updateUser.setPassword(newPwd);
-        updateUser.setUserRole(user.getUserRole());
-
-        int rows = usermapper.update_user_by_name(updateUser);
-
-        // 5. 返回结果
-        return rows > 0;
     }
 }

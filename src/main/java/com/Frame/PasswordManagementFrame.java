@@ -220,38 +220,19 @@ public class PasswordManagementFrame extends JFrame {
         String newPwd = new String(newPwdField.getPassword());
         String confirmNewPwd = new String(confirmNewPwdField.getPassword());
 
-        // 基础校验
+        // 基础校验（保留原有校验逻辑，保证用户体验）
         if (!validateInputData(targetUsername, originalPwd, newPwd, confirmNewPwd)) {
             return;
         }
 
-        // 业务逻辑处理（修改密码）
-        try (SqlSession sqlSession = SqlUtil.getSession()) {
-            user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
-
-            // 校验原密码是否正确
-            User validUser = userService.login(targetUsername, originalPwd);
-            if (validUser == null) {
-                JOptionPane.showMessageDialog(this, "原密码输入错误！", "错误", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // 构建更新用户对象
-            User updateUser = new User();
-            updateUser.setUsername(targetUsername);
-            updateUser.setPassword(newPwd);
-            updateUser.setUserRole(validUser.getUserRole()); // 保留原有角色
-
-            // 执行密码更新
-            int affectedRows = userMapper.update_user_by_name(updateUser);
-            sqlSession.commit(); // 手动提交事务
-
-            // 结果反馈
-            if (affectedRows > 0) {
+        // 调用UserService的changePassword方法处理核心逻辑
+        try {
+            boolean modifyResult = userService.changePassword(targetUsername, originalPwd, newPwd);
+            if (modifyResult) {
                 JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                 resetPasswordInputs(); // 重置输入框
             } else {
-                JOptionPane.showMessageDialog(this, "密码修改失败，请重试！", "错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "原密码错误或修改失败！", "错误", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
