@@ -258,10 +258,4 @@ public class OperatorManagementFrame extends JFrame {
         addPwdField.setText("");
         addConfirmPwdField.setText("");
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new OperatorManagementFrame().setVisible(true);
-        });
-    }
 }
