@@ -86,11 +86,6 @@ public class SupplierService {
         return supMapper.select_supplier_all();
     }
 
-    public static List<Integer> findAllSupplierId() {
-
-        return supMapper.select_exesConId();
-    }
-
     public List<Supplier> querySuppliers(Integer o, String o1, String o2, String o3,
                                          String o4, String o5, String o6, String o7) {
         try (SqlSession sqlSession = SqlUtil.getSession()) {
