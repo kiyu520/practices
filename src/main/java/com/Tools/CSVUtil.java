@@ -12,95 +12,163 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.Tools.DataFormat.DATA_FORMAT;
 
 @Log
 public class CSVUtil {
 
-    public static <T>  boolean CSV_out(String output_name, List<T> data) {
-        if(data==null|| data.isEmpty()){
+    public static <T> boolean CSV_out(File targetFile, List<T> data) {
+        if (data == null || data.isEmpty()) {
             log.severe("data数据为空");
             return false;
         }
         Class<?> clazz = data.get(0).getClass();
         log.info("准备输出CSV，数据类型:" + clazz.getName());
-        try(BufferedOutputStream out=new BufferedOutputStream(new FileOutputStream("Output_CSV/"+output_name+".csv"));) {
-            log.info("准备输出数据");
-            Field[] fields = clazz.getDeclaredFields();
-            switch (clazz.getSimpleName()) {
-                case "Product":out.write(DATA_FORMAT.pro_format.getBytes(StandardCharsets.UTF_8));break;
-                case "Supplier":out.write(DATA_FORMAT.sup_format.getBytes(StandardCharsets.UTF_8));break;
-                case "User":out.write(DATA_FORMAT.user_format.getBytes(StandardCharsets.UTF_8));break;
-                default:log.severe("数据类型不支持");return false;
+
+        File parentDir = targetFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean dirCreated = parentDir.mkdirs();
+            if (!dirCreated) {
+                log.severe("无法创建父目录: " + parentDir.getAbsolutePath());
+                return false;
             }
-            out.write("\r\n".getBytes());
-            for (T t : data) {
-                for (int i = 0; i < fields.length; i++) {
-                    fields[i].setAccessible(true);//暴力反射防止private
-                    if(i==fields.length-1) out.write(fields[i].get(t).toString().getBytes());
-                    else out.write((fields[i].get(t).toString()+",").getBytes());
-                }
-                out.write("\r\n".getBytes());
-            }
-            log.info("CSV输出成功,文件名:" + output_name + ".csv");
-            out.flush();
         }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            log.severe("输出流异常"+e.getMessage());
+        try (BufferedWriter out = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {
+            log.info("准备输出数据到: " + targetFile.getAbsolutePath());
+            // 提前获取表头，避免switch重复写
+            String header = null;
+            switch (clazz.getSimpleName()) {
+                case "Product":
+                    header = DATA_FORMAT.pro_format;
+                    break;
+                case "Supplier":
+                    header = DATA_FORMAT.sup_format;
+                    break;
+                case "User":
+                    header = DATA_FORMAT.user_format;
+                    break;
+                default:
+                    log.severe("数据类型不支持");
+                    return false;
+            }
+            // 写入表头，去除隐形字符
+            out.write(header.trim());
+            out.write("\r\n");
+
+            Field[] fields = clazz.getDeclaredFields();
+            for (T t : data) {
+                StringBuilder line = new StringBuilder();
+                for (int i = 0; i < fields.length; i++) {
+                    fields[i].setAccessible(true);
+                    Object value = fields[i].get(t);
+                    // 处理null值，避免空指针
+                    String fieldValue = value == null ? "" : value.toString().trim();
+                    if (i == fields.length - 1) {
+                        line.append(fieldValue);
+                    } else {
+                        line.append(fieldValue).append(",");
+                    }
+                }
+                out.write(line.toString());
+                out.write("\r\n");
+            }
+            out.flush();
+            log.info("CSV输出成功,文件路径:" + targetFile.getAbsolutePath());
+        } catch (Exception e) {
+            log.severe("输出流异常" + e.getMessage());
             return false;
         }
         return true;
     }
 
-    public static List<Object> CSV_in(File file){
-        log.info("接收到读入请求,路径:"+file.getPath());
-        List<Object> list=new ArrayList<>();
-        Object data;
-        try(BufferedReader inner= new BufferedReader(new FileReader(file));){
-            String format=inner.readLine();
-            if(format==null||format.isEmpty()){
+    public static List<Object> CSV_in(File file) {
+        log.info("接收到读入请求,路径:" + file.getPath());
+        List<Object> list = new ArrayList<>();
+        // 移除循环外的data定义，改为记录类型
+        String dataType = null;
+
+        try (BufferedReader inner = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+
+            // 读取表头并去除所有隐形字符（空格、换行、制表符）
+            String format = inner.readLine();
+            if (format == null || format.trim().isEmpty()) {
                 log.severe("首行为空!");
                 return null;
             }
-            else if(format.equals(DATA_FORMAT.pro_format)){
+            format = format.trim().replaceAll("\\s", ""); // 移除所有空白字符
+            System.out.println("读取到纯净表头: " + format); // 打印纯净表头，方便排查
+
+            // 匹配表头，必须用trim后的字符串对比
+            if (format.equals(DATA_FORMAT.pro_format.trim().replaceAll("\\s", ""))) {
                 log.info("数据类型:产品");
-                data=new Product();
-            }
-            else if(format.equals(DATA_FORMAT.sup_format)){
+                dataType = "Product";
+            } else if (format.equals(DATA_FORMAT.sup_format.trim().replaceAll("\\s", ""))) {
                 log.info("数据类型:供应商");
-                data=new Supplier();
-            }
-            else if(format.equals(DATA_FORMAT.user_format)){
+                dataType = "Supplier";
+            } else if (format.equals(DATA_FORMAT.user_format.trim().replaceAll("\\s", ""))) {
                 log.info("数据类型:用户");
-                data=new User();
-            }
-            else{
-                log.severe("格式或类型不支持");
+                dataType = "User";
+            } else {
+                log.severe("格式或类型不支持，当前表头：" + format + "，预期表头：" + DATA_FORMAT.pro_format);
                 return null;
             }
+
             String line;
-            while((line= inner.readLine())!=null){
-                String[] fields=line.split(",");
-                int i=0;
-                for(Field field:data.getClass().getDeclaredFields()){
+            while ((line = inner.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                String[] fields = line.split(",");
+                // 关键修复：每次循环新建对象，避免引用重复
+                Object data = switch (dataType) {
+                    case "Product" -> new Product();
+                    case "Supplier" -> new Supplier();
+                    case "User" -> new User();
+                    default -> null;
+                };
+                if (data == null) continue;
+
+                int i = 0;
+                Field[] declaredFields = data.getClass().getDeclaredFields();
+                for (Field field : declaredFields) {
                     field.setAccessible(true);
-                    field.set(data,Convert(fields[i],field.getType()));
+                    // 防止数组越界 + 处理空字段
+                    if (i < fields.length && !fields[i].trim().isEmpty()) {
+                        try {
+                            field.set(data, Convert(fields[i].trim(), field.getType()));
+                        } catch (Exception e) {
+                            log.warning("字段赋值失败：" + field.getName() + "，值：" + fields[i] + "，原因：" + e.getMessage());
+                        }
+                    }
                     i++;
                 }
                 list.add(data);
             }
-        }
-        catch (Exception e){
-            log.severe("输入流异常:"+e.getMessage());
+        } catch (Exception e) {
+            log.severe("输入流异常:" + e.getMessage());
             return null;
         }
-        if(list.isEmpty())return null;
-        log.info("读取成功");
+
+        if (list.isEmpty()) {
+            log.severe("读取到空数据");
+            return null;
+        }
+        log.info("读取成功，共" + list.size() + "条数据");
         return list;
     }
-    private static Object Convert(String value, Class<?> clazz){
-        PropertyEditor editor= PropertyEditorManager.findEditor(clazz);
+
+    private static Object Convert(String value, Class<?> clazz) {
+        if (value == null || value.isEmpty()) {
+            // 基本类型返回默认值
+            if (clazz == int.class || clazz == Integer.class) return 0;
+            if (clazz == double.class || clazz == Double.class) return 0.0;
+            if (clazz == String.class) return "";
+            return null;
+        }
+        PropertyEditor editor = PropertyEditorManager.findEditor(clazz);
         editor.setAsText(value);
         return editor.getValue();
     }

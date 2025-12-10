@@ -3,6 +3,7 @@ package com.Frame;
 import com.Entity.Supplier;
 import com.Model.SupplierTableModel;
 import com.Service.SupplierService;
+import com.Tools.CSVUtil;
 import lombok.extern.java.Log;
 
 import javax.swing.*;
@@ -195,56 +196,40 @@ public class SupplierQueryFrame extends JFrame {
         loadAllSuppliers();
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);
     }
-
     /**
-     * 导出供应商数据为CSV
+     * 【完全对齐产品模块】使用CSVUtil导出供应商数据
      */
     private void exportData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导出供应商数据");
-        fileChooser.setSelectedFile(new File("供应商数据_" + System.currentTimeMillis() + ".csv"));
+        // 设置默认文件名（和产品模块命名规则一致）
+        String defaultFileName = "供应商数据_" + System.currentTimeMillis() + ".csv";
+        fileChooser.setSelectedFile(new File(defaultFileName));
 
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File saveFile = fileChooser.getSelectedFile();
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile))) {
-                // 表头：供应商字段
-                bw.write("供应商ID,供应商名称,地址,邮编,电话,传真,联系人,邮箱");
-                bw.newLine();
-
-                List<Supplier> supplierList = tableModel.getSuppliers();
-                for (Supplier supplier : supplierList) {
-                    int supId = supplier.getExesConId() == null ? 0 : supplier.getExesConId();
-                    String supName = supplier.getSupName() == null ? "" : supplier.getSupName();
-                    String address = supplier.getSupAddress() == null ? "" : supplier.getSupAddress();
-                    String zipCode = supplier.getPostcode() == null ? "" : supplier.getPostcode();
-                    String phone = supplier.getSupTelephone() == null ? "" : supplier.getSupTelephone();
-                    String fax = supplier.getSupFax() == null ? "" : supplier.getSupFax();
-                    String contact = supplier.getSupRelationer() == null ? "" : supplier.getSupRelationer();
-                    String email = supplier.getSupEmail() == null ? "" : supplier.getSupEmail();
-
-                    bw.write(String.format("%d,%s,%s,%s,%s,%s,%s,%s",
-                            supId, supName, address, zipCode, phone, fax, contact, email));
-                    bw.newLine();
-                }
+            // 调用CSVUtil导出（和产品模块完全一致）
+            boolean isSuccess = CSVUtil.CSV_out(saveFile, tableModel.getSuppliers());
+            if (isSuccess) {
                 JOptionPane.showMessageDialog(this,
-                        "数据导出成功：\n" + saveFile.getAbsolutePath(),
+                        "数据导出成功！\n文件路径：" + saveFile.getAbsolutePath(),
                         "导出成功", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                log.severe("导出数据失败：" + e.getMessage());
+            } else {
                 JOptionPane.showMessageDialog(this,
-                        "导出失败：" + e.getMessage(),
+                        "导出失败：数据为空或格式不支持",
                         "错误", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     /**
-     * 从CSV导入供应商数据
+     * 【完全对齐产品模块】使用CSVUtil导入供应商数据
      */
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导入供应商数据");
+        // 过滤CSV文件（和产品模块完全一致）
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -256,85 +241,48 @@ public class SupplierQueryFrame extends JFrame {
                 return "CSV文件 (*.csv)";
             }
         });
-        int result = fileChooser.showOpenDialog(this);
 
+        int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File importFile = fileChooser.getSelectedFile();
+            // 调用CSVUtil读取数据（和产品模块完全一致）
+            List<Object> importList = CSVUtil.CSV_in(importFile);
+            if (importList == null || importList.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "导入失败：文件为空或格式不匹配",
+                        "错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 批量导入到数据库并更新表格（和产品模块逻辑一致）
             int successCount = 0;
             int failCount = 0;
-
-            try (BufferedReader br = new BufferedReader(new FileReader(importFile))) {
-                String line;
-                br.readLine(); // 跳过表头
-
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        failCount++;
-                        continue;
-                    }
-
-                    String[] fields = line.split(",");
-                    // 供应商数据需8个字段：ID、名称、地址、邮编、电话、传真、联系人、邮箱
-                    if (fields.length != 8) {
-                        log.warning("导入失败：行数据列数错误 → " + line);
-                        failCount++;
-                        continue;
-                    }
-
+            for (Object obj : importList) {
+                if (obj instanceof Supplier supplier) {
                     try {
-                        Supplier supplier = new Supplier();
-                        // 1. 供应商ID
-                        int supId = Integer.parseInt(fields[0].trim());
-                        if (supId <= 0) {
-                            failCount++;
-                            continue;
-                        }
-                        supplier.setExesConId(supId);
-
-                        // 2. 供应商名称
-                        String supName = fields[1].trim();
-                        if (supName.isEmpty()) {
-                            failCount++;
-                            continue;
-                        }
-                        supplier.setSupName(supName);
-
-                        // 3. 其他字段
-                        supplier.setSupAddress(fields[2].trim());
-                        supplier.setPostcode(fields[3].trim());
-                        supplier.setSupTelephone(fields[4].trim());
-                        supplier.setSupFax(fields[5].trim());
-                        supplier.setSupRelationer(fields[6].trim());
-                        supplier.setSupEmail(fields[7].trim());
-
-                        // 4. 调用Service添加供应商
-                        boolean addResult = supplierService.addSupplier(supplier);
-                        if (addResult == true) {
+                        // 调用Service添加供应商（包含重复ID校验）
+                        if (supplierService.addSupplier(supplier)) {
                             tableModel.addSupplier(supplier);
                             successCount++;
                         } else {
-                            log.warning("导入失败：" + addResult + " → " + supId);
                             failCount++;
+                            log.warning("导入失败：供应商ID重复 → " + supplier.getExesConId());
                         }
-                    } catch (NumberFormatException e) {
-                        log.warning("导入失败：数据格式错误 → " + line + "，原因：" + e.getMessage());
-                        failCount++;
                     } catch (Exception e) {
-                        log.warning("导入失败：行数据异常 → " + line + "，原因：" + e.getMessage());
                         failCount++;
+                        log.warning("导入失败：数据异常 → " + e.getMessage());
                     }
+                } else {
+                    failCount++;
+                    log.warning("导入失败：非供应商类型数据");
                 }
-
-                JOptionPane.showMessageDialog(this,
-                        String.format("导入完成！\n成功：%d 条\n失败：%d 条", successCount, failCount),
-                        "导入结果", JOptionPane.INFORMATION_MESSAGE);
-
-            } catch (IOException e) {
-                log.severe("导入数据失败：文件读取异常 → " + e.getMessage());
-                JOptionPane.showMessageDialog(this,
-                        "导入失败：无法读取文件\n" + e.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
             }
+
+            // 刷新表格（和产品模块一致）
+            tableModel.fireTableDataChanged();
+            JOptionPane.showMessageDialog(this,
+                    String.format("导入完成！\n成功：%d 条\n失败：%d 条", successCount, failCount),
+                    "导入结果", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

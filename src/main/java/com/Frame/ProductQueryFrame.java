@@ -4,6 +4,7 @@ import com.Entity.Product;
 import com.Model.ProductTableModel;
 import com.Service.ProductService;
 import com.Service.SupplierService;
+import com.Tools.CSVUtil;
 import lombok.extern.java.Log;
 
 import javax.swing.*;
@@ -183,46 +184,43 @@ public class ProductQueryFrame extends JFrame {
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);
     }
 
+
+    /**
+     * 【修改后】使用CSVUtil工具类导出数据
+     */
     private void exportData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导出产品数据");
-        fileChooser.setSelectedFile(new File("产品数据_" + System.currentTimeMillis() + ".csv"));
+        // 设置默认文件名
+        String defaultFileName = "产品数据_" + System.currentTimeMillis() + ".csv";
+        fileChooser.setSelectedFile(new File(defaultFileName));
 
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File saveFile = fileChooser.getSelectedFile();
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile))) {
-                bw.write("产品编号,产品名称,价格,类别,库存量,供应商编号");
-                bw.newLine();
-
-                List<Product> productList = tableModel.getProducts();
-                for (Product product : productList) {
-                    int prodId = product.getProd_id() == 0 ? 0 : product.getProd_id();
-                    String prodName = product.getProd_name() == null ? "" : product.getProd_name();
-                    double price = product.getPrice() < 0 ? 0.0 : product.getPrice();
-                    String type = product.getType() == null ? "" : product.getType();
-                    double quantity = product.getQuantity() < 0 ? 0.0 : product.getQuantity();
-                    int supId = product.getSup_id() == 0 ? 0 : product.getSup_id();
-
-                    bw.write(String.format("%d,%s,%.2f,%s,%.0f,%d",
-                            prodId, prodName, price, type, quantity, supId));
-                    bw.newLine();
-                }
+            // 截取文件名（去掉后缀，因为CSVUtil会自动添加.csv）
+            String fileName = saveFile.getName().replace(".csv", "");
+            // 调用CSVUtil导出
+            boolean isSuccess = CSVUtil.CSV_out(saveFile, tableModel.getProducts());
+            if (isSuccess) {
                 JOptionPane.showMessageDialog(this,
-                        "数据导出成功：\n" + saveFile.getAbsolutePath(),
+                        "数据导出成功！\n文件路径：Output_CSV/" + fileName + ".csv",
                         "导出成功", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                log.severe("导出数据失败：" + e.getMessage());
+            } else {
                 JOptionPane.showMessageDialog(this,
-                        "导出失败：" + e.getMessage(),
+                        "导出失败：数据为空或格式不支持",
                         "错误", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    /**
+     * 【修改后】使用CSVUtil工具类导入数据
+     */
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导入产品数据");
+        // 过滤CSV文件
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -234,100 +232,48 @@ public class ProductQueryFrame extends JFrame {
                 return "CSV文件 (*.csv)";
             }
         });
-        int result = fileChooser.showOpenDialog(this);
 
+        int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File importFile = fileChooser.getSelectedFile();
+            // 调用CSVUtil读取数据
+            List<Object> importList = CSVUtil.CSV_in(importFile);
+            if (importList == null || importList.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "导入失败：文件为空或格式不匹配",
+                        "错误", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 批量导入到数据库并更新表格
             int successCount = 0;
             int failCount = 0;
-
-            try (BufferedReader br = new BufferedReader(new FileReader(importFile))) {
-                String line;
-                br.readLine(); // 跳过表头
-
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        failCount++;
-                        continue;
-                    }
-
-                    String[] fields = line.split(",");
-                    if (fields.length != 6) {
-                        log.warning("导入失败：行数据列数错误 → " + line);
-                        failCount++;
-                        continue;
-                    }
-
+            for (Object obj : importList) {
+                if (obj instanceof Product product) {
                     try {
-                        Product product = new Product();
-                        int prodId = Integer.parseInt(fields[0].trim());
-                        if (prodId <= 0) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setProd_id(prodId);
-
-                        String prodName = fields[1].trim();
-                        if (prodName.isEmpty()) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setProd_name(prodName);
-
-                        double price = Double.parseDouble(fields[2].trim());
-                        if (price < 0) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setPrice(price);
-
-                        String type = fields[3].trim();
-                        if (type.isEmpty()) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setType(type);
-
-                        double quantity = Double.parseDouble(fields[4].trim());
-                        if (quantity < 0) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setQuantity(quantity);
-
-                        int supId = Integer.parseInt(fields[5].trim());
-                        if (supId <= 0) {
-                            failCount++;
-                            continue;
-                        }
-                        product.setSup_id(supId);
-
+                        // 调用Service添加产品（需包含重复编号校验）
                         if (productService.addProduct(product)) {
                             tableModel.addProduct(product);
                             successCount++;
                         } else {
-                            log.warning("导入失败：产品编号重复/参数不合法 → " + prodId);
                             failCount++;
+                            log.warning("导入失败：产品编号重复 → " + product.getProd_id());
                         }
-                    } catch (NumberFormatException e) {
-                        log.warning("导入失败：数据格式错误 → " + line + "，原因：" + e.getMessage());
-                        failCount++;
                     } catch (Exception e) {
-                        log.warning("导入失败：行数据异常 → " + line + "，原因：" + e.getMessage());
                         failCount++;
+                        log.warning("导入失败：数据异常 → " + e.getMessage());
                     }
+                } else {
+                    failCount++;
+                    log.warning("导入失败：非产品类型数据");
                 }
-
-                JOptionPane.showMessageDialog(this,
-                        String.format("导入完成！\n成功：%d 条\n失败：%d 条", successCount, failCount),
-                        "导入结果", JOptionPane.INFORMATION_MESSAGE);
-
-            } catch (IOException e) {
-                log.severe("导入数据失败：文件读取异常 → " + e.getMessage());
-                JOptionPane.showMessageDialog(this,
-                        "导入失败：无法读取文件\n" + e.getMessage(),
-                        "错误", JOptionPane.ERROR_MESSAGE);
             }
+
+            // 刷新表格
+            tableModel.fireTableDataChanged();
+            JOptionPane.showMessageDialog(this,
+                    String.format("导入完成！\n成功：%d 条\n失败：%d 条", successCount, failCount),
+                    "导入结果", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
