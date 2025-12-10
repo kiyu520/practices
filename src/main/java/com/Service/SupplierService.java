@@ -37,17 +37,6 @@ public class SupplierService {
         return result > 0 ? true : false;
     }
     /**
-     * 根据ID查询供应商（适配Frame层修改/删除时的存在性校验）
-     * @param supplierId 供应商ID
-     * @return 供应商列表（无数据返回空列表）
-     */
-    public List<Supplier> findSupplierById(Integer supplierId) {
-        if (supplierId == null || supplierId <= 0) {
-            return null;
-        }
-        return supMapper.select_supplier_id(supplierId);
-    }
-    /**
      * 修改供应商信息
      * @param supplier 供应商实体（需包含ID和要修改的字段）
      * @return 修改成功返回true，失败返回false
@@ -90,27 +79,15 @@ public class SupplierService {
         return (suppliers != null && !suppliers.isEmpty()) ? suppliers.get(0) : null;
     }
 
-//    /**
-//     * 校验供应商是否关联产品
-//     * @param supplierId 供应商ID
-//     * @return 关联返回true，否则返回false
-//     */
-//    public boolean isSupplierRelatedProduct(Integer supplierId) {
-//        if (supplierId == null || supplierId <= 0) {
-//            return false;
-//        }
-//        // 假设存在产品相关的mapper方法，实际需根据项目情况实现
-//        // 这里需要你根据实际的产品表关联关系补充查询逻辑
-//        int relatedCount = supMapper.countRelatedProducts(supplierId);
-//        return relatedCount > 0;
-//    }
 
 //    查询所有供应商
     public static List<Supplier> findAllSupplier() {
+
         return supMapper.select_supplier_all();
     }
 
     public static List<Integer> findAllSupplierId() {
+
         return supMapper.select_exesConId();
     }
 
