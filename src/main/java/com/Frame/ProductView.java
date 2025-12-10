@@ -162,7 +162,6 @@ public class ProductView extends JFrame {
         }
     }
 
-    /* 以下方法保持不变 */
     private void loadAllProducts() {
         try {
             List<Product> productList = ProductService.findAllproducts();
@@ -236,7 +235,7 @@ public class ProductView extends JFrame {
                 return "CSV文件 (*.csv)";
             }
         });
-        int result = fileChooser.showOpenDialog(this); // 修复：导入应该用showOpenDialog，不是showSaveDialog
+        int result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             File importFile = fileChooser.getSelectedFile();
@@ -331,19 +330,5 @@ public class ProductView extends JFrame {
                         "错误", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                log.warning("设置界面外观失败：" + e.getMessage());
-            }
-
-            ProductView productView = new ProductView();
-            productView.setVisible(true);
-            log.info("产品管理系统已启动");
-        });
     }
 }
