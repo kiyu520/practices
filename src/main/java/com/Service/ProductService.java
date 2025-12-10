@@ -101,19 +101,19 @@ public class ProductService {
     public List<Product> queryProducts(Object o, Object o1, Object o2, Object o3, Object o4, Object o5) {
         // 1. 优先按非空参数匹配查询维度（按需扩展其他条件）
         // 场景1：按产品ID查询
-        if (o instanceof Integer && (Integer) o > 0) {
+        if (o != null && (Integer) o > 0) {
             return proMapper.select_product_id((Integer) o);
         }
         // 场景2：按产品名称查询
-        if (o1 instanceof String && !((String) o1).isEmpty()) {
+        if (o1 != null && !((String) o1).isEmpty()) {
             return proMapper.select_product_name((String) o1);
         }
         // 场景3：按价格区间查询
-        if (o2 instanceof Double) {
+        if (o2 != null) {
             return proMapper.select_product_price((Double) o2);
         }
         // 场景4：按产品类型查询
-        if (o3 instanceof String && !((String) o3).isEmpty()) {
+        if (o3 != null && !((String) o3).isEmpty()) {
             return proMapper.select_product_type((String) o3);
         }
 
@@ -121,7 +121,7 @@ public class ProductService {
             return proMapper.select_product_quantity((Double) o4);
         }
         // 场景5：按供应商ID查询
-        if (o5 instanceof Integer && (Integer) o5 > 0) {
+        if (o5 != null && (Integer) o5 > 0) {
             return proMapper.select_product_supid((Integer) o5);
         }
         // 无有效查询条件：返回空列表（避免null）
