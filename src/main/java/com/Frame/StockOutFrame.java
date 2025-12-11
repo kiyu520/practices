@@ -13,7 +13,6 @@ public class StockOutFrame extends JFrame {
     private ProductService productService;
 
     public StockOutFrame(JFrame parentFrame, ProductService productService) {
-        // 空校验
         if (productService == null) {
             JOptionPane.showMessageDialog(null, "ProductService 不能为空！", "错误", JOptionPane.ERROR_MESSAGE);
             dispose();
@@ -86,14 +85,12 @@ public class StockOutFrame extends JFrame {
                 try {
                     String prodIdStr = prodIdField.getText().trim();
 
-                    // 校验1：空值校验
                     if (prodIdStr.isEmpty()) {
                         JOptionPane.showMessageDialog(this, "请先输入商品ID！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     int prodId;
-                    // 校验2：是否为整数 + 正整数校验
                     try {
                         prodId = Integer.parseInt(prodIdStr);
                         if (prodId <= 0) {
@@ -105,14 +102,12 @@ public class StockOutFrame extends JFrame {
                         return;
                     }
 
-                    // 校验3：商品ID是否存在
                     boolean isExist = productService.isProductExist(prodId);
                     if (!isExist) {
                         JOptionPane.showMessageDialog(this, "输入的商品ID不存在！", "错误", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    // 所有校验通过，查询库存
                     float stock = (float) productService.getStockById(prodId);
                     JOptionPane.showMessageDialog(this,
                             "商品ID：" + prodId + "\n当前剩余库存量：" + stock,

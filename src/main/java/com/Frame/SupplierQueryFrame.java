@@ -167,9 +167,6 @@ public class SupplierQueryFrame extends JFrame {
         loadAllSuppliers();
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);
     }
-    /**
-     * 【完全对齐产品模块】使用CSVUtil导出供应商数据
-     */
     private void exportData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导出供应商数据");
@@ -228,7 +225,6 @@ public class SupplierQueryFrame extends JFrame {
             for (Object obj : importList) {
                 if (obj instanceof Supplier supplier) {
                     try {
-                        // 调用Service添加供应商（包含重复ID校验）
                         if (supplierService.addSupplier(supplier)) {
                             tableModel.addSupplier(supplier);
                             successCount++;
