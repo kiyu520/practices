@@ -17,8 +17,7 @@ public class SupplierQueryFrame extends JFrame {
     //替换为供应商查询输入框
     private JTextField tfSupId;      // 供应商ID
     private JTextField tfSupName;    // 供应商名称
-    private JTextField tfAddress;    // 地址
-    private JTextField tfFax;        // 传真
+    private JTextField tfAddress;    // 地址// 传真
     private JTextField tfContact;    // 联系人
 
     //替换为供应商表格模型
@@ -42,7 +41,6 @@ public class SupplierQueryFrame extends JFrame {
         queryPanel.add(new JLabel("供应商ID"));
         queryPanel.add(new JLabel("供应商名称"));
         queryPanel.add(new JLabel("地址"));
-        queryPanel.add(new JLabel("传真"));
         queryPanel.add(new JLabel("联系人"));
         // 第二行：输入框
         tfSupId = new JTextField();
@@ -51,9 +49,7 @@ public class SupplierQueryFrame extends JFrame {
         queryPanel.add(tfSupId);
         queryPanel.add(tfSupName);
         queryPanel.add(tfAddress);
-        tfFax = new JTextField();
         tfContact = new JTextField();
-        queryPanel.add(tfFax);
         queryPanel.add(tfContact);
 
         //功能按钮面板
@@ -103,17 +99,16 @@ public class SupplierQueryFrame extends JFrame {
             Integer supId = parseInteger(tfSupId.getText().trim());
             String supName = tfSupName.getText().trim().isEmpty() ? null : tfSupName.getText().trim();
             String address = tfAddress.getText().trim().isEmpty() ? null : tfAddress.getText().trim();
-            String fax = tfFax.getText().trim().isEmpty() ? null : tfFax.getText().trim();
             String contact = tfContact.getText().trim().isEmpty() ? null : tfContact.getText().trim();
 
             // 2. 调用Service查询：所有null参数会被忽略
             List<Supplier> resultList;
-            if (supId == null && supName == null && address == null && fax == null && contact == null ){
+            if (supId == null && supName == null && address == null&& contact == null ){
                 // 无条件查询所有供应商
                 resultList = SupplierService.findAllSupplier();
             } else {
                 // 多条件查询
-                resultList = supplierService.querySuppliers(supId, supName, address, fax, contact);
+                resultList = supplierService.querySuppliers(supId, supName, address, contact);
             }
 
             // 3. 更新表格并提示结果
@@ -168,7 +163,6 @@ public class SupplierQueryFrame extends JFrame {
         tfSupId.setText("");
         tfSupName.setText("");
         tfAddress.setText("");
-        tfFax.setText("");
         tfContact.setText("");
         loadAllSuppliers();
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);

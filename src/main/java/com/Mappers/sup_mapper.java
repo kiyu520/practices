@@ -81,13 +81,7 @@ public interface sup_mapper {
     @Select("select exesConId from practice.suppliers")
     public List<Integer> select_exesConId();
 
-    List<Supplier> querySuppliers(Integer supId, String supName, String address, String zipCode, String phone, String fax, String contact, String email);
-
-    List<Supplier> select_supplier_postcode(String o3);
-
-    List<Supplier> select_supplier_Telephone(String o4);
-
-    List<Supplier> select_supplier_Fex(String o7);
+    //List<Supplier> querySuppliers(Integer supId, String supName, String address, String zipCode, String phone, String fax, String contact, String email);
 
     int countRelatedProducts(Integer supplierId);
 }
