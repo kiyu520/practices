@@ -63,8 +63,7 @@ public class SupplierService {
         return supMapper.select_supplier_all();
     }
 
-    public List<Supplier> querySuppliers(Integer o, String o1, String o2, String o3,
-                                         String o4, String o5, String o6, String o7) {
+    public List<Supplier> querySuppliers(Integer o, String o1, String o4, String o5, String o6) {
         try (SqlSession sqlSession = SqlUtil.getSession()) {
             sup_mapper mapper = sqlSession.getMapper(sup_mapper.class);
 
@@ -75,13 +74,9 @@ public class SupplierService {
             if (o1 != null && !((String) o1).isEmpty()) {
                 return mapper.select_supplier_name((String) o1);
            }
-            if (o2 != null && !((String) o2).isEmpty()) {
-                return mapper.select_supplier_address((String) o2);
-            }
 
-            if (o3 != null && !((String) o3).isEmpty()) {
-                return mapper.select_supplier_postcode((String) o3);
-            }
+
+
 
             if (o4 != null && !((String) o4).isEmpty()) {
                 return mapper.select_supplier_Telephone((String) o4);
@@ -95,9 +90,7 @@ public class SupplierService {
                 return mapper.select_supplier_email((String) o6);
             }
 
-            if (o7 != null && !((String) o7).isEmpty()) {
-                return mapper.select_supplier_Fex((String) o7);
-            }
+
 
             return Collections.emptyList();
         } catch (Exception e) {

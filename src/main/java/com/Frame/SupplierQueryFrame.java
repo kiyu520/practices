@@ -18,11 +18,8 @@ public class SupplierQueryFrame extends JFrame {
     private JTextField tfSupId;      // 供应商ID
     private JTextField tfSupName;    // 供应商名称
     private JTextField tfAddress;    // 地址
-    private JTextField tfZipCode;    // 邮编
-    private JTextField tfPhone;      // 电话
     private JTextField tfFax;        // 传真
     private JTextField tfContact;    // 联系人
-    private JTextField tfEmail;      // 邮箱
 
     //替换为供应商表格模型
     private SupplierTableModel tableModel;
@@ -45,28 +42,19 @@ public class SupplierQueryFrame extends JFrame {
         queryPanel.add(new JLabel("供应商ID"));
         queryPanel.add(new JLabel("供应商名称"));
         queryPanel.add(new JLabel("地址"));
-        //queryPanel.add(new JLabel("邮编"));
-        //queryPanel.add(new JLabel("电话"));
         queryPanel.add(new JLabel("传真"));
         queryPanel.add(new JLabel("联系人"));
-       // queryPanel.add(new JLabel("邮箱"));
         // 第二行：输入框
         tfSupId = new JTextField();
         tfSupName = new JTextField();
         tfAddress = new JTextField();
-        //tfZipCode = new JTextField();
         queryPanel.add(tfSupId);
         queryPanel.add(tfSupName);
         queryPanel.add(tfAddress);
-        //queryPanel.add(tfZipCode);
-        //tfPhone = new JTextField();
         tfFax = new JTextField();
         tfContact = new JTextField();
-        //tfEmail = new JTextField();
-        //queryPanel.add(tfPhone);
         queryPanel.add(tfFax);
         queryPanel.add(tfContact);
-        //queryPanel.add(tfEmail);
 
         //功能按钮面板
         JPanel funcPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
@@ -115,21 +103,17 @@ public class SupplierQueryFrame extends JFrame {
             Integer supId = parseInteger(tfSupId.getText().trim());
             String supName = tfSupName.getText().trim().isEmpty() ? null : tfSupName.getText().trim();
             String address = tfAddress.getText().trim().isEmpty() ? null : tfAddress.getText().trim();
-            String zipCode = tfZipCode.getText().trim().isEmpty() ? null : tfZipCode.getText().trim();
-            String phone = tfPhone.getText().trim().isEmpty() ? null : tfPhone.getText().trim();
             String fax = tfFax.getText().trim().isEmpty() ? null : tfFax.getText().trim();
             String contact = tfContact.getText().trim().isEmpty() ? null : tfContact.getText().trim();
-            String email = tfEmail.getText().trim().isEmpty() ? null : tfEmail.getText().trim();
 
             // 2. 调用Service查询：所有null参数会被忽略
             List<Supplier> resultList;
-            if (supId == null && supName == null && address == null && zipCode == null
-                    && phone == null && fax == null && contact == null && email == null) {
+            if (supId == null && supName == null && address == null && fax == null && contact == null ){
                 // 无条件查询所有供应商
                 resultList = SupplierService.findAllSupplier();
             } else {
                 // 多条件查询
-                resultList = supplierService.querySuppliers(supId, supName, address, zipCode, phone, fax, contact, email);
+                resultList = supplierService.querySuppliers(supId, supName, address, fax, contact);
             }
 
             // 3. 更新表格并提示结果
@@ -184,11 +168,8 @@ public class SupplierQueryFrame extends JFrame {
         tfSupId.setText("");
         tfSupName.setText("");
         tfAddress.setText("");
-        tfZipCode.setText("");
-        tfPhone.setText("");
         tfFax.setText("");
         tfContact.setText("");
-        tfEmail.setText("");
         loadAllSuppliers();
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);
     }
