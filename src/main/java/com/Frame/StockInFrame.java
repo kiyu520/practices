@@ -58,7 +58,8 @@ public class StockInFrame extends JFrame {
         add(new JLabel("供应商ID:"));
         supplierCombo = new JComboBox<>();
         try {
-            List<Supplier> suppliers = SupplierService.findAllSupplier();
+            // 修正：调用实例的findAllSupplier方法（原代码调用静态方法易出错）
+            List<Supplier> suppliers = supplierService.findAllSupplier();
             if (suppliers == null || suppliers.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "暂无供应商数据！", "提示", JOptionPane.WARNING_MESSAGE);
                 supplierCombo.addItem(0);
@@ -111,19 +112,20 @@ public class StockInFrame extends JFrame {
             }
         }
 
+        // 查看库存按钮逻辑（保留原有增强校验）
         if (checkStockBtn != null) {
             checkStockBtn.addActionListener(e -> {
                 try {
                     String prodIdStr = prodIdField.getText().trim();
 
-                    //空值校验
+                    // 校验1：空值校验
                     if (prodIdStr.isEmpty()) {
                         JOptionPane.showMessageDialog(this, "请先输入商品ID！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     int prodId;
-                    //是否为整数 + 是否为正整数
+                    // 校验2：是否为整数 + 是否为正整数
                     try {
                         prodId = Integer.parseInt(prodIdStr);
                         if (prodId <= 0) {
@@ -135,7 +137,7 @@ public class StockInFrame extends JFrame {
                         return;
                     }
 
-                    //商品ID是否存在
+                    // 校验3：商品ID是否存在
                     boolean isExist = productService.isProductExist(prodId);
                     if (!isExist) {
                         JOptionPane.showMessageDialog(this, "输入的商品ID不存在！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -155,21 +157,30 @@ public class StockInFrame extends JFrame {
             });
         }
 
-        // 确认进货按钮事件
+        // 确认进货按钮事件（核心新增：产品-供应商匹配校验）
         if (confirmBtn != null) {
             confirmBtn.addActionListener(e -> {
                 try {
                     String prodIdStr = prodIdField.getText().trim();
                     String quantityStr = quantityField.getText().trim();
 
+                    // 1. 非空校验
                     if (prodIdStr.isEmpty() || quantityStr.isEmpty()) {
                         JOptionPane.showMessageDialog(this, "商品ID和数量不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
-                    int prodId = Integer.parseInt(prodIdStr);
-                    float quantity = Float.parseFloat(quantityStr);
+                    // 2. 数值合法性校验
+                    int prodId;
+                    float quantity;
                     int supplierId = (Integer) supplierCombo.getSelectedItem();
+                    try {
+                        prodId = Integer.parseInt(prodIdStr);
+                        quantity = Float.parseFloat(quantityStr);
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(this, "请输入合法数字：商品ID为整数，数量为正数！", "错误", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
                     if (prodId <= 0) {
                         JOptionPane.showMessageDialog(this, "商品ID必须为正整数！", "提示", JOptionPane.WARNING_MESSAGE);
@@ -184,15 +195,36 @@ public class StockInFrame extends JFrame {
                         return;
                     }
 
+                    // 3. 核心新增：校验商品是否存在
+                    boolean isProdExist = productService.isProductExist(prodId);
+                    if (!isProdExist) {
+                        JOptionPane.showMessageDialog(this, "商品ID不存在，无法进货！", "错误", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // 4. 核心新增：产品-供应商匹配校验（一个产品只能对应一个供应商）
+                    Integer prodBindSupplierId = getSupplierIdByProdId(prodId);
+                    if (prodBindSupplierId == null) {
+                        JOptionPane.showMessageDialog(this, "该商品未绑定供应商，无法进货！", "错误", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (!prodBindSupplierId.equals(supplierId)) {
+                        JOptionPane.showMessageDialog(this,
+                                String.format("供应商选择错误！商品ID %d 绑定的供应商ID为 %d，当前选择的是 %d",
+                                        prodId, prodBindSupplierId, supplierId),
+                                "错误",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // 5. 执行进货操作
                     boolean success = productService.stockIn(prodId, quantity);
                     if (success) {
                         JOptionPane.showMessageDialog(this, "进货成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                         clearFields();
                     } else {
-                        JOptionPane.showMessageDialog(this, "进货失败（商品不存在/库存异常）", "错误", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "进货失败（库存异常）", "错误", JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "请输入合法数字：商品ID为整数，数量为正数！", "错误", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "进货操作异常：" + ex.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
@@ -203,6 +235,21 @@ public class StockInFrame extends JFrame {
         // 清空按钮事件
         if (clearBtn != null) {
             clearBtn.addActionListener(e -> clearFields());
+        }
+    }
+
+    /**
+     * 核心新增方法：根据产品ID查询其绑定的供应商ID
+     * 体现“一个产品只能对应一个供应商”的核心规则
+     */
+    private Integer getSupplierIdByProdId(int prodId) {
+        try {
+            // 调用ProductService的方法查询产品绑定的供应商ID
+            // 需确保ProductService中实现该方法：根据prodId查询产品信息，返回其supId
+            return productService.getSupplierIdByProdId(prodId);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "查询商品绑定的供应商失败：" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
     }
 

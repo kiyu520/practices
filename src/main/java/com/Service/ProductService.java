@@ -117,4 +117,9 @@ public class ProductService {
         Product product = getProductById(prodId);
         return product != null ? product.getQuantity() : 0;
     }
+
+    public Integer getSupplierIdByProdId(int prodId) {
+        Product product = getProductById(prodId);
+        return product != null ? product.getSup_id() : null;
+    }
 }
