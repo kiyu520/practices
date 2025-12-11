@@ -54,39 +54,52 @@ public class SupplierTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        // 获取指定行索引的供应商对象
         Supplier supplier = supplierList.get(rowIndex);
+        // 检查输入值是否为空或仅包含空白字符
         if (aValue == null || aValue.toString().trim().isEmpty()) {
             return;
         }
         try {
+            // 根据列索引设置供应商的不同属性
             switch (columnIndex) {
                 case 0: // 供应商ID（整数）
+                    // 设置供应商ID，将输入值转换为整数
                     supplier.setExesConId(Integer.parseInt(aValue.toString().trim()));
                     break;
                 case 1: // 名称（字符串）
+                    // 设置供应商名称
                     supplier.setSupName(aValue.toString().trim());
                     break;
                 case 2: // 地址（字符串）
+                    // 设置供应商地址
                     supplier.setSupAddress(aValue.toString().trim());
                     break;
                 case 3: // 邮编（字符串）
+                    // 设置供应商邮编
                     supplier.setPostcode(aValue.toString().trim());
                     break;
                 case 4: // 电话（字符串）
+                    // 设置供应商电话
                     supplier.setSupTelephone(aValue.toString().trim());
                     break;
                 case 5: // 传真（字符串）
+                    // 设置供应商传真
                     supplier.setSupFax(aValue.toString().trim());
                     break;
                 case 6: // 联系人（字符串）
+                    // 设置供应商联系人
                     supplier.setSupRelationer(aValue.toString().trim());
                     break;
                 case 7: // 邮箱（字符串）
+                    // 设置供应商邮箱
                     supplier.setSupEmail(aValue.toString().trim());
                     break;
             }
+            // 通知表格单元格已更新
             fireTableCellUpdated(rowIndex, columnIndex);
         } catch (NumberFormatException e) {
+            // 处理数字格式异常，提示用户供应商ID必须为整数
             throw new NumberFormatException("供应商ID必须为整数！");
         }
     }

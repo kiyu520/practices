@@ -69,7 +69,9 @@ public class PasswordManagementFrame extends JFrame {
     }
 
     private void initPasswordModifyPanel() {
+// 使用GridBagLayout布局管理器创建密码修改面板
         passwordModifyPanel = new JPanel(new GridBagLayout());
+// 为面板设置带有标题的边框，提示用户需要先选择用户
         passwordModifyPanel.setBorder(BorderFactory.createTitledBorder("密码修改（请先选择用户）"));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -150,13 +152,21 @@ public class PasswordManagementFrame extends JFrame {
         passwordModifyPanel.add(resetInputBtn, gbc);
     }
 
+/**
+ * 初始化底部按钮面板
+ * @return 配置好的JPanel面板
+ */
     private JPanel initBottomButtonPanel() {
+        // 创建一个使用右对齐流式布局的面板
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
+        // 创建"关闭窗口"按钮，并设置按钮大小为120x30像素
         closeWindowBtn = new JButton("关闭窗口");
         closeWindowBtn.setPreferredSize(new Dimension(120, 30));
 
+        // 将按钮添加到底部面板中
         bottomPanel.add(closeWindowBtn);
+        // 返回配置完成的底部面板
         return bottomPanel;
     }
 
@@ -169,16 +179,25 @@ public class PasswordManagementFrame extends JFrame {
         closeWindowBtn.addActionListener(e -> this.dispose());
     }
 
+/**
+ * 加载所有系统用户的方法
+ * 从数据库中查询所有用户，并将用户名添加到下拉选择框中
+ */
     private void loadAllSystemUsers() {
+        // 清空下拉选择框中的所有项目
         userSelectComboBox.removeAllItems();
         try (SqlSession sqlSession = SqlUtil.getSession()) {
+            // 获取用户映射器
             user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
+            // 查询所有用户
             List<User> userList = userMapper.select_user_all();
 
+            // 遍历用户列表，将每个用户的用户名添加到下拉选择框中
             for (User user : userList) {
                 userSelectComboBox.addItem(user.getUsername());
             }
         } catch (Exception e) {
+            // 捕获异常并显示错误对话框
             JOptionPane.showMessageDialog(this,
                     "加载用户列表失败：" + e.getMessage(),
                     "错误",
@@ -186,6 +205,10 @@ public class PasswordManagementFrame extends JFrame {
         }
     }
 
+/**
+ * 提交密码修改方法
+ * 处理用户密码修改的整个流程，包括数据获取、验证、修改操作及结果处理
+ */
     private void submitPasswordModification() {
         // 获取输入数据
         String targetUsername = (String) userSelectComboBox.getSelectedItem();
@@ -199,7 +222,10 @@ public class PasswordManagementFrame extends JFrame {
 
 
         try {
+            // 尝试调用userService的changePassword方法修改用户密码
+            // 参数包括目标用户名、原始密码和新密码
             boolean modifyResult = userService.changePassword(targetUsername, originalPwd, newPwd);
+            // 检查密码修改是否成功
             if (modifyResult) {
                 JOptionPane.showMessageDialog(this, "密码修改成功！", "成功", JOptionPane.INFORMATION_MESSAGE);
                 resetPasswordInputs(); // 重置输入框

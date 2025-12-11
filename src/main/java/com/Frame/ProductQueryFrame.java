@@ -90,13 +90,25 @@ public class ProductQueryFrame extends JFrame {
         loadAllProducts();
     }
 
+    /**
+     * 执行产品查询操作
+     * 从界面获取查询条件，调用Service层进行查询，并更新表格显示
+     * 包含异常处理和用户提示
+     */
     private void doQuery() {
         try {
+            // 解析界面输入的查询条件
+            // 产品编号，使用parseInteger方法转换文本为Integer类型
             Integer proId = parseInteger(tfProId.getText().trim());
+            // 产品名称，如果为空则设为null
             String proName = tfProName.getText().trim().isEmpty() ? null : tfProName.getText().trim();
+            // 价格，使用parseDouble方法转换文本为Double类型
             Double price = parseDouble(tfPrice.getText().trim());
+            // 产品类型，如果为空则设为null
             String type = tfType.getText().trim().isEmpty() ? null : tfType.getText().trim();
+            // 库存量，使用parseInteger方法转换文本为Integer类型
             Integer quantity = parseInteger(tfQuantity.getText().trim());
+            // 供应商编号，使用parseInteger方法转换文本为Integer类型
             Integer supId = parseInteger(tfSupId.getText().trim()); // 供应商编号改为Integer（原String可能不匹配Service）
 
             // 2. 调用Service查询
@@ -107,7 +119,9 @@ public class ProductQueryFrame extends JFrame {
                 resultList = productService.queryProducts(proId, proName, price, type, quantity, supId);
             }
 
+            // 设置表格模型的产品列表数据
             tableModel.setProducts(resultList);
+            // 通知表格数据已更改，刷新表格显示
             tableModel.fireTableDataChanged();
             JOptionPane.showMessageDialog(this,
                     "查询到" + resultList.size() + "条匹配数据",

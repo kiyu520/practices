@@ -131,13 +131,22 @@ public class SupplierQueryFrame extends JFrame {
         }
     }
 
+    /**
+     * 将字符串解析为Integer类型
+     * @param text 需要解析的字符串
+     * @return 解析成功返回对应的Integer值，如果字符串为null或空字符串则返回null
+     * @throws NumberFormatException 当字符串不是有效的整数格式时抛出此异常
+     */
     private Integer parseInteger(String text) {
+        // 检查字符串是否为null或空字符串（去除前后空格后）
         if (text == null || text.trim().isEmpty()) {
             return null;
         }
         try {
+            // 尝试将去除前后空格的字符串转换为整数
             return Integer.parseInt(text.trim());
         } catch (NumberFormatException e) {
+            // 转换失败时抛出带有中文提示信息的异常
             throw new NumberFormatException("'" + text + "' 不是有效的整数");
         }
     }
