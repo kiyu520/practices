@@ -49,7 +49,7 @@ public class StockOutFrame extends JFrame {
         JButton checkStockBtn = new JButton("查看库存", loadLocalIcon("/static/image/img12.png", 20, 20));
         checkStockBtn.setIconTextGap(8);
         add(checkStockBtn);
-        // 占位组件（GridLayout填满行列）
+
         add(new JLabel());
 
         // 5. 功能按钮
@@ -81,7 +81,7 @@ public class StockOutFrame extends JFrame {
             }
         }
 
-        // 新增：查看库存按钮事件（和进货窗口逻辑一致）
+        //查看库存按钮事件
         if (checkStockBtn != null) {
             checkStockBtn.addActionListener(e -> {
                 try {
@@ -126,7 +126,7 @@ public class StockOutFrame extends JFrame {
             });
         }
 
-        // 确认出货按钮（保留原有逻辑，修复客户信息组件缺失问题）
+        // 确认出货按钮
         if (confirmBtn != null) {
             confirmBtn.addActionListener(e -> {
                 try {

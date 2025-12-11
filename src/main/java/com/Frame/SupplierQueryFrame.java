@@ -14,7 +14,7 @@ import java.util.List;
 
 @Log
 public class SupplierQueryFrame extends JFrame {
-    // ========== 1. 替换为供应商查询输入框 ==========
+    //替换为供应商查询输入框
     private JTextField tfSupId;      // 供应商ID
     private JTextField tfSupName;    // 供应商名称
     private JTextField tfAddress;    // 地址
@@ -24,7 +24,7 @@ public class SupplierQueryFrame extends JFrame {
     private JTextField tfContact;    // 联系人
     private JTextField tfEmail;      // 邮箱
 
-    // ========== 2. 替换为供应商表格模型 ==========
+    //替换为供应商表格模型
     private SupplierTableModel tableModel;
     private JTable supplierTable;
     private SupplierService supplierService;
@@ -39,7 +39,7 @@ public class SupplierQueryFrame extends JFrame {
     }
 
     private void initUI() {
-        // ========== 3. 查询面板：改为供应商字段 ==========
+        //查询面板：改为供应商字段
         JPanel queryPanel = new JPanel(new GridLayout(2, 8, 5, 5));
         // 第一行：标签
         queryPanel.add(new JLabel("供应商ID"));
@@ -68,7 +68,7 @@ public class SupplierQueryFrame extends JFrame {
         queryPanel.add(tfContact);
         //queryPanel.add(tfEmail);
 
-        // ========== 4. 功能按钮面板（保留原功能） ==========
+        //功能按钮面板
         JPanel funcPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         JButton btnQuery = new JButton("查询");
         JButton btnReset = new JButton("重置");
@@ -79,11 +79,10 @@ public class SupplierQueryFrame extends JFrame {
         funcPanel.add(btnExport);
         funcPanel.add(btnImport);
 
-        // ========== 5. 供应商表格初始化 ==========
+        //供应商表格初始化
         tableModel = new SupplierTableModel();
         supplierTable = new JTable(tableModel);
         supplierTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        // 设置表格文字居中
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < supplierTable.getColumnCount(); i++) {
@@ -91,13 +90,13 @@ public class SupplierQueryFrame extends JFrame {
         }
         JScrollPane tableScroll = new JScrollPane(supplierTable);
 
-        // ========== 6. 主布局 ==========
+        //主布局
         this.setLayout(new BorderLayout(5, 10));
         this.add(queryPanel, BorderLayout.NORTH);
         this.add(funcPanel, BorderLayout.CENTER);
         this.add(tableScroll, BorderLayout.SOUTH);
 
-        // ========== 7. 事件绑定 ==========
+        //事件绑定
         btnQuery.addActionListener(e -> doQuery());
         btnReset.addActionListener(e -> resetQuery());
         btnExport.addActionListener(e -> exportData());
@@ -108,7 +107,7 @@ public class SupplierQueryFrame extends JFrame {
     }
 
     /**
-     * 核心：供应商多条件查询
+     *供应商多条件查询
      */
     private void doQuery() {
         try {
@@ -153,9 +152,6 @@ public class SupplierQueryFrame extends JFrame {
         }
     }
 
-    /**
-     * 辅助方法：字符串转Integer，空串返回null
-     */
     private Integer parseInteger(String text) {
         if (text == null || text.trim().isEmpty()) {
             return null;
@@ -202,7 +198,6 @@ public class SupplierQueryFrame extends JFrame {
     private void exportData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导出供应商数据");
-        // 设置默认文件名（和产品模块命名规则一致）
         String defaultFileName = "供应商数据_" + System.currentTimeMillis() + ".csv";
         fileChooser.setSelectedFile(new File(defaultFileName));
 
@@ -224,7 +219,7 @@ public class SupplierQueryFrame extends JFrame {
     }
 
     /**
-     * 【完全对齐产品模块】使用CSVUtil导入供应商数据
+     * 导入供应商数据
      */
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
@@ -245,7 +240,6 @@ public class SupplierQueryFrame extends JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File importFile = fileChooser.getSelectedFile();
-            // 调用CSVUtil读取数据（和产品模块完全一致）
             List<Object> importList = CSVUtil.CSV_in(importFile);
             if (importList == null || importList.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -254,7 +248,6 @@ public class SupplierQueryFrame extends JFrame {
                 return;
             }
 
-            // 批量导入到数据库并更新表格（和产品模块逻辑一致）
             int successCount = 0;
             int failCount = 0;
             for (Object obj : importList) {
@@ -278,7 +271,7 @@ public class SupplierQueryFrame extends JFrame {
                 }
             }
 
-            // 刷新表格（和产品模块一致）
+            // 刷新表格
             tableModel.fireTableDataChanged();
             JOptionPane.showMessageDialog(this,
                     String.format("导入完成！\n成功：%d 条\n失败：%d 条", successCount, failCount),

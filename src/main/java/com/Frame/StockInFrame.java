@@ -111,20 +111,19 @@ public class StockInFrame extends JFrame {
             }
         }
 
-        // 核心修改：增强查看库存的校验逻辑
         if (checkStockBtn != null) {
             checkStockBtn.addActionListener(e -> {
                 try {
                     String prodIdStr = prodIdField.getText().trim();
 
-                    // 校验1：空值校验
+                    //空值校验
                     if (prodIdStr.isEmpty()) {
                         JOptionPane.showMessageDialog(this, "请先输入商品ID！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     int prodId;
-                    // 校验2：是否为整数 + 是否为正整数
+                    //是否为整数 + 是否为正整数
                     try {
                         prodId = Integer.parseInt(prodIdStr);
                         if (prodId <= 0) {
@@ -136,8 +135,7 @@ public class StockInFrame extends JFrame {
                         return;
                     }
 
-                    // 校验3：商品ID是否存在（核心新增）
-                    // 需确保ProductService有isProductExist方法，用于判断商品ID是否存在
+                    //商品ID是否存在
                     boolean isExist = productService.isProductExist(prodId);
                     if (!isExist) {
                         JOptionPane.showMessageDialog(this, "输入的商品ID不存在！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -157,7 +155,7 @@ public class StockInFrame extends JFrame {
             });
         }
 
-        // 确认进货按钮事件（保留原有逻辑）
+        // 确认进货按钮事件
         if (confirmBtn != null) {
             confirmBtn.addActionListener(e -> {
                 try {

@@ -17,12 +17,12 @@ public class SupTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return supList.size(); // 行数等于数据量
+        return supList.size();
     }
 
     @Override
     public int getColumnCount() {
-        return headers.length; // 列数等于表头长度
+        return headers.length;
     }
 
     @Override
@@ -41,18 +41,17 @@ public class SupTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return headers[column]; // 返回表头名称
+        return headers[column];
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true; // 允许编辑所有单元格
+        return true;
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Supplier supplier = supList.get(rowIndex);
-        // 根据列索引设置对应属性值（假设Supplier类有这些setter方法）
         switch (columnIndex) {
             case 0 -> supplier.setExesConId(Integer.parseInt((String) aValue));
             case 1 -> supplier.setSupName((String) aValue);
@@ -60,16 +59,14 @@ public class SupTableModel extends AbstractTableModel {
             case 3 -> supplier.setSupTelephone((String) aValue);
             case 4 -> supplier.setSupAddress((String) aValue);
         }
-        fireTableCellUpdated(rowIndex, columnIndex); // 通知表格刷新
+        fireTableCellUpdated(rowIndex, columnIndex);
     }
 
-    // 新增供应商数据
     public void addSupplier(Supplier supplier) {
         supList.add(supplier);
         fireTableRowsInserted(supList.size() - 1, supList.size() - 1);
     }
 
-    // 删除供应商数据
     public void removeSupplier(int rowIndex) {
         supList.remove(rowIndex);
         fireTableRowsDeleted(rowIndex, rowIndex);

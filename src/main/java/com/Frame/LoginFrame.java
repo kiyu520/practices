@@ -51,10 +51,6 @@ public class LoginFrame extends JFrame {
 
         loginButton.addActionListener(new ActionListener() {
             @Override
-/**
- * 重写actionPerformed方法，处理登录按钮的点击事件
- * @param e ActionEvent事件对象，包含事件的相关信息
- */
             public void actionPerformed(ActionEvent e) {
     // 获取用户名输入框中的文本，并去除前后空格
                 String username = usernameField.getText().trim();

@@ -221,12 +221,6 @@ public class SupplierManageFrame extends JFrame {
                         return;
                     }
 
-                    // 校验是否关联产品
-//                    if (supplierService.isSupplierRelatedProduct(supId)) {
-//                        showErrorMsg("该供应商关联产品，无法删除！");
-//                        return;
-//                    }
-
                     // 确认删除
                     int confirm = JOptionPane.showConfirmDialog(
                             SupplierManageFrame.this,
@@ -364,8 +358,6 @@ public class SupplierManageFrame extends JFrame {
 
     /**
      * 显示成功消息
- * 该方法用于在界面上显示一个成功提示对话框
- * @param msg 需要显示的成功消息内容
      */
     private void showSuccessMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg, "成功",

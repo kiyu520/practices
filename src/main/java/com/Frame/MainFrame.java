@@ -13,7 +13,6 @@ import com.Tools.RoundButtonUtil;
 public class MainFrame extends JFrame {
     private User loginUser;
     private JLabel timeLabel;
-    // 修复：确保服务实例非空（显式初始化）
     private ProductService productService = new ProductService();
     private SupplierService supplierService = new SupplierService();
 
@@ -33,7 +32,6 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
     }
 
-    // 修复：用Swing Timer替代while(true)，避免阻塞EDT
     private void initTimeLabel() {
         timeLabel = new JLabel("System Time◆◆" + DateUtil.getCurrentDateTime());
         timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -71,11 +69,11 @@ public class MainFrame extends JFrame {
         dataPanel.add(productBtn);
         tabbedPane.addTab("基本数据", dataPanel);
 
-        // 2. 进货出货管理选项卡（核心修复：添加异常捕获+明确实例化）
+        // 2. 进货出货管理选项卡
         JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 30, 20));
         stockPanel.setBackground(Color.WHITE);
 
-        // 进货按钮（添加异常捕获，确保报错能显示）
+        // 进货按钮
         JButton stockInBtn = RoundButtonUtil.createRoundedButton(
                 "商品进货",
                 "stockIn",
@@ -96,7 +94,7 @@ public class MainFrame extends JFrame {
             }
         });
 
-        // 出货按钮（同理添加异常捕获）
+        // 出货按钮
         JButton stockOutBtn = RoundButtonUtil.createRoundedButton(
                 "商品出货",
                 "stockOut",

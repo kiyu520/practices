@@ -7,17 +7,13 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-// 自定义表格模型：关联Product实体和JTable
 public class ProductTableModel extends AbstractTableModel {
-    // 1. 核心数据源：存储表格要显示的所有产品数据
     private List<Product> products = new ArrayList<>();
 
-    // 2. 表格列名
     private final String[] COLUMN_NAMES = {
             "产品编号", "产品名称", "价格", "类别", "库存量", "供应商编号"
     };
 
-    // 3. 空构造方法（初始化空数据）
     public ProductTableModel() {
         this.products = new ArrayList<>();
     }
@@ -34,7 +30,7 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     /**
-     * 设置表格数据（ProductView的doQuery()过滤后会调用）
+     * 设置表格数据
      */
     public void setProducts(List<Product> newProducts) {
         this.products = newProducts;
@@ -43,7 +39,7 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     /**
-     * 添加单个产品（ProductView的importData()导入时会调用）
+     * 添加单个产品
      */
     public void addProduct(Product product) {
         products.add(product);
@@ -51,9 +47,8 @@ public class ProductTableModel extends AbstractTableModel {
         fireTableRowsInserted(products.size() - 1, products.size() - 1);
     }
 
-    // ========== 必须重写的抽象方法（Swing表格核心） ==========
     /**
-     * 获取表格行数（数据源有多少产品，表格就有多少行）
+     * 获取表格行数
      */
     @Override
     public int getRowCount() {
@@ -61,7 +56,7 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     /**
-     * 获取表格列数（和COLUMN_NAMES长度一致）
+     * 获取表格列数
      */
     @Override
     public int getColumnCount() {
@@ -69,7 +64,7 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     /**
-     * 获取列名（表格顶部的表头文字）
+     * 获取列名
      */
     @Override
     public String getColumnName(int columnIndex) {
@@ -77,17 +72,14 @@ public class ProductTableModel extends AbstractTableModel {
     }
 
     /**
-     * 获取指定行/列的单元格数据（表格显示的核心逻辑）
+     * 获取指定行/列的单元格数据
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // 空数据时返回null，避免报错
         if (products.isEmpty()) {
             return null;
         }
-        // 获取当前行对应的Product对象
         Product product = products.get(rowIndex);
-        // 根据列索引返回对应字段（适配你的Product实体和数据库字段）
         switch (columnIndex) {
             case 0: return product.getProd_id();      // 产品编号（对应数据库prod_id）
             case 1: return product.getProd_name();    // 产品名称（对应数据库prod_name）

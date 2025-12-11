@@ -35,7 +35,6 @@ public class ProductQueryFrame extends JFrame {
     }
 
     private void initUI() {
-        // 查询页面：2行6列，标签和输入框一一对应
         JPanel queryPanel = new JPanel(new GridLayout(2, 6, 5, 5));
         queryPanel.add(new JLabel("产品编号"));
         queryPanel.add(new JLabel("产品名称"));
@@ -96,7 +95,6 @@ public class ProductQueryFrame extends JFrame {
      */
     private void doQuery() {
         try {
-            // 1. 处理查询参数：空输入则设为null，不参与查询
             Integer proId = parseInteger(tfProId.getText().trim());
             String proName = tfProName.getText().trim().isEmpty() ? null : tfProName.getText().trim();
             Double price = parseDouble(tfPrice.getText().trim());
@@ -104,17 +102,14 @@ public class ProductQueryFrame extends JFrame {
             Integer quantity = parseInteger(tfQuantity.getText().trim());
             Integer supId = parseInteger(tfSupId.getText().trim()); // 供应商编号改为Integer（原String可能不匹配Service）
 
-            // 2. 调用Service查询：所有null参数会被Service忽略
+            // 2. 调用Service查询
             List<Product> resultList;
-            // 优化：如果所有条件都为空，查询所有数据（和重置功能一致）
             if (proId == null && proName == null && price == null && type == null && quantity == null && supId == null) {
                 resultList = ProductService.findAllproducts();
             } else {
-                // 修复：传参改为（proId, 名称, 价格, 类别, 库存量, 供应商ID），不再重复传price
                 resultList = productService.queryProducts(proId, proName, price, type, quantity, supId);
             }
 
-            // 3. 更新表格并提示结果
             tableModel.setProducts(resultList);
             tableModel.fireTableDataChanged();
             JOptionPane.showMessageDialog(this,
@@ -134,9 +129,6 @@ public class ProductQueryFrame extends JFrame {
         }
     }
 
-    /**
-     * 辅助方法：字符串转Integer，空串或非数字返回null（不抛异常）
-     */
     private Integer parseInteger(String text) {
         if (text == null || text.trim().isEmpty()) {
             return null;
@@ -148,9 +140,6 @@ public class ProductQueryFrame extends JFrame {
         }
     }
 
-    /**
-     * 辅助方法：字符串转Double，空串或非数字返回null
-     */
     private Double parseDouble(String text) {
         if (text == null || text.trim().isEmpty()) {
             return null;
@@ -184,10 +173,6 @@ public class ProductQueryFrame extends JFrame {
         JOptionPane.showMessageDialog(this, "查询条件已重置", "重置成功", JOptionPane.INFORMATION_MESSAGE);
     }
 
-
-    /**
-     * 【修改后】使用CSVUtil工具类导出数据
-     */
     private void exportData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导出产品数据");
@@ -214,9 +199,6 @@ public class ProductQueryFrame extends JFrame {
         }
     }
 
-    /**
-     * 【修改后】使用CSVUtil工具类导入数据
-     */
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导入产品数据");

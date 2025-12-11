@@ -86,22 +86,19 @@ public class CSVUtil {
     public static List<Object> CSV_in(File file) {
         log.info("接收到读入请求,路径:" + file.getPath());
         List<Object> list = new ArrayList<>();
-        // 移除循环外的data定义，改为记录类型
         String dataType = null;
 
         try (BufferedReader inner = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
 
-            // 读取表头并去除所有隐形字符（空格、换行、制表符）
             String format = inner.readLine();
             if (format == null || format.trim().isEmpty()) {
                 log.severe("首行为空!");
                 return null;
             }
-            format = format.trim().replaceAll("\\s", ""); // 移除所有空白字符
-            System.out.println("读取到纯净表头: " + format); // 打印纯净表头，方便排查
+            format = format.trim().replaceAll("\\s", "");
+            System.out.println("读取到纯净表头: " + format);
 
-            // 匹配表头，必须用trim后的字符串对比
             if (format.equals(DATA_FORMAT.pro_format.trim().replaceAll("\\s", ""))) {
                 log.info("数据类型:产品");
                 dataType = "Product";
@@ -122,7 +119,6 @@ public class CSVUtil {
                 if (line.isEmpty()) continue;
 
                 String[] fields = line.split(",");
-                // 关键修复：每次循环新建对象，避免引用重复
                 Object data = switch (dataType) {
                     case "Product" -> new Product();
                     case "Supplier" -> new Supplier();

@@ -15,7 +15,6 @@ public class ProductManageFrame extends JFrame {
     private JTextField prodIdField, prodNameField, priceField, typeField, quantityField;
     private JTextField deleteProdIdField; // 删除产品ID输入框
     private JComboBox<Integer> supIdCombo; // 供应商下拉框
-    // 功能按钮（新增：定义deleteBtn变量，解决“无法解析符号”报错）
     private JButton addBtn, deleteBtn, resetBtn;
 
     // 业务层对象
@@ -27,7 +26,7 @@ public class ProductManageFrame extends JFrame {
     public ProductManageFrame() {
         // 初始化自定义图标
         initCustomIcon();
-        // 统一设置JOptionPane按钮样式（增强：彻底去掉选中框）
+        // 统一设置JOptionPane按钮样式
         initOptionPaneButtonStyle();
 
         // 窗口基础配置
@@ -37,7 +36,7 @@ public class ProductManageFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(null);
 
-        // ========== 1. 表单区域（添加产品） ==========
+        //1. 表单区域（添加产品）
         // 产品ID
         JLabel prodIdLabel = new JLabel("产品ID:");
         prodIdLabel.setBounds(30, 30, 60, 25);
@@ -70,13 +69,13 @@ public class ProductManageFrame extends JFrame {
         supIdCombo.setBounds(520, 80, 120, 25);
         loadSupplierIds(); // 加载供应商ID
 
-        // ========== 2. 删除产品区域 ==========
+        //2. 删除产品区域
         JLabel deleteProdIdLabel = new JLabel("删除产品ID:");
         deleteProdIdLabel.setBounds(30, 130, 80, 25);
         deleteProdIdField = new JTextField();
         deleteProdIdField.setBounds(120, 130, 120, 25);
 
-        // ========== 3. 功能按钮（定义deleteBtn，解决报错） ==========
+        //3. 功能按钮
         addBtn = new JButton("添加产品");
         addBtn.setBounds(270, 130, 100, 30);
         deleteBtn = new JButton("删除产品"); // 关键：定义deleteBtn变量
@@ -84,7 +83,7 @@ public class ProductManageFrame extends JFrame {
         resetBtn = new JButton("重置");
         resetBtn.setBounds(510, 130, 80, 30);
 
-        // ========== 4. 添加所有组件到窗口 ==========
+        //4. 添加所有组件到窗口
         add(prodIdLabel);
         add(prodIdField);
         add(prodNameLabel);
@@ -100,10 +99,10 @@ public class ProductManageFrame extends JFrame {
         add(deleteProdIdLabel);
         add(deleteProdIdField);
         add(addBtn);
-        add(deleteBtn); // 关键：添加deleteBtn到窗口
+        add(deleteBtn);
         add(resetBtn);
 
-        // ========== 5. 按钮事件绑定 ==========
+        //5. 按钮事件绑定
         bindAddBtnEvent();
         bindDeleteBtnEvent();
         bindResetBtnEvent();
@@ -283,7 +282,7 @@ public class ProductManageFrame extends JFrame {
 
 
     /**
-     * 初始化自定义图标（优化：补充资源加载方式）
+     * 初始化自定义图标
      */
     private void initCustomIcon() {
         try {
@@ -301,7 +300,7 @@ public class ProductManageFrame extends JFrame {
 
 
     /**
-     * 统一设置JOptionPane按钮样式（增强：彻底去掉选中框）
+     * 统一设置JOptionPane按钮样式
      */
     private void initOptionPaneButtonStyle() {
         try {

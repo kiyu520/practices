@@ -89,7 +89,7 @@ public class PasswordManagementFrame extends JFrame {
     }
 
     /**
-     * 初始化密码修改面板（使用GridBagLayout实现整齐排版）
+     * 初始化密码修改面板
      */
     private void initPasswordModifyPanel() {
         passwordModifyPanel = new JPanel(new GridBagLayout());
@@ -174,7 +174,7 @@ public class PasswordManagementFrame extends JFrame {
     }
 
     /**
-     * 初始化底部按钮面板（退出按钮）
+     * 初始化底部按钮面板
      */
     private JPanel initBottomButtonPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

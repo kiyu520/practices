@@ -25,7 +25,6 @@ public class SupTablePanel extends JPanel {
         return table;
     }
 
-    // 提供获取表格模型的方法（便于外部操作数据）
     public static SupTableModel getTableModel() {
         return tableModel;
     }
