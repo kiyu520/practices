@@ -10,7 +10,6 @@ import static com.Tools.RoundButtonUtil.loadLocalIcon;
 public class StockOutFrame extends JFrame {
     private JTextField prodIdField;
     private JTextField quantityField;
-    private JTextField customerField;
     private ProductService productService;
 
     public StockOutFrame(JFrame parentFrame, ProductService productService) {
@@ -24,10 +23,10 @@ public class StockOutFrame extends JFrame {
         this.productService = productService;
 
         setTitle("商品出货");
-        setSize(450, 400); // 调整高度，适配新增按钮
+        setSize(450, 400);
         setLocationRelativeTo(parentFrame == null ? null : parentFrame);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new GridLayout(5, 2, 10, 20)); // 4行改为5行，容纳新增按钮
+        setLayout(new GridLayout(5, 2, 10, 20));
         setPadding(20);
 
         initComponents();
@@ -45,14 +44,14 @@ public class StockOutFrame extends JFrame {
         quantityField = new JTextField();
         add(quantityField);
 
-        // 4. 新增：查看库存按钮
+        // 查看库存按钮
         JButton checkStockBtn = new JButton("查看库存", loadLocalIcon("/static/image/img12.png", 20, 20));
         checkStockBtn.setIconTextGap(8);
         add(checkStockBtn);
 
         add(new JLabel());
 
-        // 5. 功能按钮
+        // 功能按钮
         JButton confirmBtn = new JButton("确认出货", loadLocalIcon("/static/image/img10.png", 20, 20));
         confirmBtn.setIconTextGap(8);
         JButton clearBtn = new JButton("清空", loadLocalIcon("/static/image/img11.png", 20, 20));
@@ -65,7 +64,7 @@ public class StockOutFrame extends JFrame {
     private void bindEvents() {
         JButton confirmBtn = null;
         JButton clearBtn = null;
-        JButton checkStockBtn = null; // 新增：查看库存按钮对象
+        JButton checkStockBtn = null;
 
         Component[] components = getContentPane().getComponents();
         for (Component comp : components) {
@@ -75,7 +74,7 @@ public class StockOutFrame extends JFrame {
                     confirmBtn = btn;
                 } else if (btn.getText().equals("清空")) {
                     clearBtn = btn;
-                } else if (btn.getText().equals("查看库存")) { // 匹配新增按钮
+                } else if (btn.getText().equals("查看库存")) {
                     checkStockBtn = btn;
                 }
             }
@@ -132,10 +131,10 @@ public class StockOutFrame extends JFrame {
                 try {
                     String prodIdStr = prodIdField.getText().trim();
                     String quantityStr = quantityField.getText().trim();
-                    String customer = customerField.getText().trim();
 
-                    if (prodIdStr.isEmpty() || quantityStr.isEmpty() || customer.isEmpty()) {
-                        JOptionPane.showMessageDialog(this, "商品ID、数量、客户信息不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
+                    // 移除客户信息的空校验
+                    if (prodIdStr.isEmpty() || quantityStr.isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "商品ID、出货数量不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
@@ -176,7 +175,6 @@ public class StockOutFrame extends JFrame {
     private void clearFields() {
         prodIdField.setText("");
         quantityField.setText("");
-        customerField.setText("");
     }
 
     private void setPadding(int padding) {
