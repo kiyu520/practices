@@ -33,7 +33,7 @@ public class ProductManageFrame extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(null);
 
-        //1. 表单区域（添加产品）
+        //1. 表单区域
         // 产品ID
         JLabel prodIdLabel = new JLabel("产品ID:");
         prodIdLabel.setBounds(30, 30, 60, 25);
@@ -257,10 +257,6 @@ public class ProductManageFrame extends JFrame {
         });
     }
 
-
-    /**
-     * 绑定“重置”按钮事件
-     */
     private void bindResetBtnEvent() {
         resetBtn.addActionListener(new ActionListener() {
             @Override
@@ -270,10 +266,6 @@ public class ProductManageFrame extends JFrame {
         });
     }
 
-
-    /**
-     * 初始化自定义图标
-     */
     private void initCustomIcon() {
         try {
             String imagePath = "/static/image/img13.png";
@@ -288,9 +280,6 @@ public class ProductManageFrame extends JFrame {
     }
 
 
-    /**
-     * 统一设置JOptionPane按钮样式
-     */
     private void initOptionPaneButtonStyle() {
         try {
             UIManager.put("Button.focusPainted", Boolean.FALSE);

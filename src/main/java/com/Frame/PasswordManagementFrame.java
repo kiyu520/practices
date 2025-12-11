@@ -11,26 +11,20 @@ import java.awt.*;
 import java.util.List;
 
 public class PasswordManagementFrame extends JFrame {
-    // 主面板
     private JPanel mainPanel;
-    // 密码修改面板
     private JPanel passwordModifyPanel;
-    // 标签组件
     private JLabel targetUserLabel;
     private JLabel originalPwdLabel;
     private JLabel newPwdLabel;
     private JLabel confirmNewPwdLabel;
-    // 输入组件
     private JComboBox<String> userSelectComboBox;
     private JPasswordField originalPwdField;
     private JPasswordField newPwdField;
     private JPasswordField confirmNewPwdField;
-    // 功能按钮
     private JButton submitModifyBtn;
     private JButton resetInputBtn;
     private JButton closeWindowBtn;
 
-    // 业务逻辑服务
     private final UserService userService = new UserService();
 
     int userrole = LoginFrame.userole;
@@ -51,9 +45,6 @@ public class PasswordManagementFrame extends JFrame {
         }
     }
 
-    /**
-     * 初始化窗口基础配置
-     */
     private void initFrameConfig() {
         this.setTitle("仓库管理系统 - 密码管理");
         this.setSize(500, 350);
@@ -63,9 +54,6 @@ public class PasswordManagementFrame extends JFrame {
         this.setResizable(false); // 禁止调整窗口大小
     }
 
-    /**
-     * 初始化所有组件
-     */
     private void initAllComponents() {
         mainPanel = new JPanel(new BorderLayout(10, 20));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -80,17 +68,14 @@ public class PasswordManagementFrame extends JFrame {
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
-    /**
-     * 初始化密码修改面板
-     */
     private void initPasswordModifyPanel() {
         passwordModifyPanel = new JPanel(new GridBagLayout());
         passwordModifyPanel.setBorder(BorderFactory.createTitledBorder("密码修改（请先选择用户）"));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 15, 10, 15); // 组件间距
-        gbc.fill = GridBagConstraints.HORIZONTAL; // 水平填充
-        gbc.anchor = GridBagConstraints.CENTER; // 组件居中对齐
+        gbc.insets = new Insets(10, 15, 10, 15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         // 1. 目标用户选择
         targetUserLabel = new JLabel("目标用户：");
@@ -101,7 +86,7 @@ public class PasswordManagementFrame extends JFrame {
 
         userSelectComboBox = new JComboBox<>();
         userSelectComboBox.setPreferredSize(new Dimension(220, 30));
-        loadAllSystemUsers(); // 加载系统所有用户到下拉框
+        loadAllSystemUsers();
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -165,9 +150,6 @@ public class PasswordManagementFrame extends JFrame {
         passwordModifyPanel.add(resetInputBtn, gbc);
     }
 
-    /**
-     * 初始化底部按钮面板
-     */
     private JPanel initBottomButtonPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
@@ -178,9 +160,6 @@ public class PasswordManagementFrame extends JFrame {
         return bottomPanel;
     }
 
-    /**
-     * 绑定组件事件监听器
-     */
     private void bindComponentEvents() {
         // 提交密码修改
         submitModifyBtn.addActionListener(e -> submitPasswordModification());
@@ -190,16 +169,12 @@ public class PasswordManagementFrame extends JFrame {
         closeWindowBtn.addActionListener(e -> this.dispose());
     }
 
-    /**
-     * 加载系统所有用户到下拉框
-     */
     private void loadAllSystemUsers() {
-        userSelectComboBox.removeAllItems(); // 清空下拉框
+        userSelectComboBox.removeAllItems();
         try (SqlSession sqlSession = SqlUtil.getSession()) {
             user_mapper userMapper = sqlSession.getMapper(user_mapper.class);
             List<User> userList = userMapper.select_user_all();
 
-            // 添加所有用户名到下拉框
             for (User user : userList) {
                 userSelectComboBox.addItem(user.getUsername());
             }
@@ -211,9 +186,6 @@ public class PasswordManagementFrame extends JFrame {
         }
     }
 
-    /**
-     * 提交密码修改请求
-     */
     private void submitPasswordModification() {
         // 获取输入数据
         String targetUsername = (String) userSelectComboBox.getSelectedItem();
@@ -242,9 +214,6 @@ public class PasswordManagementFrame extends JFrame {
         }
     }
 
-    /**
-     * 校验输入数据合法性
-     */
     private boolean validateInputData(String username, String originalPwd, String newPwd, String confirmPwd) {
         if (username == null || username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "请选择目标用户！", "提示", JOptionPane.WARNING_MESSAGE);

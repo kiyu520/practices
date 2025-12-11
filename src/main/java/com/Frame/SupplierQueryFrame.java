@@ -176,7 +176,6 @@ public class SupplierQueryFrame extends JFrame {
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File saveFile = fileChooser.getSelectedFile();
-            // 调用CSVUtil导出（和产品模块完全一致）
             boolean isSuccess = CSVUtil.CSV_out(saveFile, tableModel.getSuppliers());
             if (isSuccess) {
                 JOptionPane.showMessageDialog(this,
@@ -190,13 +189,9 @@ public class SupplierQueryFrame extends JFrame {
         }
     }
 
-    /**
-     * 导入供应商数据
-     */
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导入供应商数据");
-        // 过滤CSV文件（和产品模块完全一致）
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
