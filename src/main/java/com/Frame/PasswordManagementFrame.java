@@ -10,10 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-/**
- * 密码管理窗口
- * 功能：显示系统所有用户、修改用户密码、退出窗口
- */
 public class PasswordManagementFrame extends JFrame {
     // 主面板
     private JPanel mainPanel;
@@ -71,20 +67,16 @@ public class PasswordManagementFrame extends JFrame {
      * 初始化所有组件
      */
     private void initAllComponents() {
-        // 主面板：边框留白 + 垂直布局
         mainPanel = new JPanel(new BorderLayout(10, 20));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // 初始化密码修改面板（核心内容）
         initPasswordModifyPanel();
-        // 初始化底部按钮面板
+
         initBottomButtonPanel();
 
-       // 组装主面板
         mainPanel.add(passwordModifyPanel, BorderLayout.CENTER);
         mainPanel.add(initBottomButtonPanel(), BorderLayout.SOUTH);
 
-        // 添加主面板到窗口
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
@@ -229,12 +221,11 @@ public class PasswordManagementFrame extends JFrame {
         String newPwd = new String(newPwdField.getPassword());
         String confirmNewPwd = new String(confirmNewPwdField.getPassword());
 
-        // 基础校验（保留原有校验逻辑，保证用户体验）
         if (!validateInputData(targetUsername, originalPwd, newPwd, confirmNewPwd)) {
             return;
         }
 
-        // 调用UserService的changePassword方法处理核心逻辑
+
         try {
             boolean modifyResult = userService.changePassword(targetUsername, originalPwd, newPwd);
             if (modifyResult) {
@@ -255,31 +246,26 @@ public class PasswordManagementFrame extends JFrame {
      * 校验输入数据合法性
      */
     private boolean validateInputData(String username, String originalPwd, String newPwd, String confirmPwd) {
-        // 校验是否选择用户
         if (username == null || username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "请选择目标用户！", "提示", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
-        // 校验输入是否为空
         if (originalPwd.isEmpty() || newPwd.isEmpty() || confirmPwd.isEmpty()) {
             JOptionPane.showMessageDialog(this, "所有密码输入项不能为空！", "提示", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
-        // 校验新密码一致性
         if (!newPwd.equals(confirmPwd)) {
             JOptionPane.showMessageDialog(this, "两次输入的新密码不一致！", "错误", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        // 校验新密码长度
         if (newPwd.length() < 6) {
             JOptionPane.showMessageDialog(this, "新密码长度不能少于6位！", "提示", JOptionPane.WARNING_MESSAGE);
             return false;
         }
 
-        // 校验新密码与原密码是否相同
         if (newPwd.equals(originalPwd)) {
             JOptionPane.showMessageDialog(this, "新密码不能与原密码相同！", "提示", JOptionPane.WARNING_MESSAGE);
             return false;
@@ -288,22 +274,10 @@ public class PasswordManagementFrame extends JFrame {
         return true;
     }
 
-    /**
-     * 重置所有密码输入框
-     */
     private void resetPasswordInputs() {
         originalPwdField.setText("");
         newPwdField.setText("");
         confirmNewPwdField.setText("");
     }
 
-    /**
-     * 测试入口
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            PasswordManagementFrame frame = new PasswordManagementFrame();
-            frame.setVisible(true);
-        });
-    }
 }

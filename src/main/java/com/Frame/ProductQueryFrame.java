@@ -90,9 +90,6 @@ public class ProductQueryFrame extends JFrame {
         loadAllProducts();
     }
 
-    /**
-     * 修复后的多条件查询：支持任意条件组合，空输入忽略该条件
-     */
     private void doQuery() {
         try {
             Integer proId = parseInteger(tfProId.getText().trim());
@@ -202,7 +199,6 @@ public class ProductQueryFrame extends JFrame {
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("导入产品数据");
-        // 过滤CSV文件
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
             public boolean accept(File f) {
@@ -218,7 +214,6 @@ public class ProductQueryFrame extends JFrame {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File importFile = fileChooser.getSelectedFile();
-            // 调用CSVUtil读取数据
             List<Object> importList = CSVUtil.CSV_in(importFile);
             if (importList == null || importList.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -227,13 +222,11 @@ public class ProductQueryFrame extends JFrame {
                 return;
             }
 
-            // 批量导入到数据库并更新表格
             int successCount = 0;
             int failCount = 0;
             for (Object obj : importList) {
                 if (obj instanceof Product product) {
                     try {
-                        // 调用Service添加产品（需包含重复编号校验）
                         if (productService.addProduct(product)) {
                             tableModel.addProduct(product);
                             successCount++;

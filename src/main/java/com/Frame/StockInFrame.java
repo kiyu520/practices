@@ -58,7 +58,6 @@ public class StockInFrame extends JFrame {
         add(new JLabel("供应商ID:"));
         supplierCombo = new JComboBox<>();
         try {
-            // 修正：调用实例的findAllSupplier方法（原代码调用静态方法易出错）
             List<Supplier> suppliers = supplierService.findAllSupplier();
             if (suppliers == null || suppliers.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "暂无供应商数据！", "提示", JOptionPane.WARNING_MESSAGE);

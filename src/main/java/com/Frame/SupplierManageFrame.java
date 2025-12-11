@@ -133,9 +133,6 @@ public class SupplierManageFrame extends JFrame {
         add(resetBtn);
     }
 
-    /**
-     * 绑定按钮事件
-     */
     private void bindEvents() {
         bindAddBtnEvent();
         bindDeleteBtnEvent();
@@ -143,9 +140,6 @@ public class SupplierManageFrame extends JFrame {
         bindResetBtnEvent();
     }
 
-    /**
-     * 绑定"添加供应商"按钮事件
-     */
     private void bindAddBtnEvent() {
         addBtn.addActionListener(new ActionListener() {
             @Override
@@ -194,9 +188,6 @@ public class SupplierManageFrame extends JFrame {
         });
     }
 
-    /**
-     * 绑定"删除供应商"按钮事件
-     */
     private void bindDeleteBtnEvent() {
         deleteBtn.addActionListener(new ActionListener() {
             @Override
@@ -247,9 +238,6 @@ public class SupplierManageFrame extends JFrame {
         });
     }
 
-    /**
-     * 绑定"修改供应商"按钮事件
-     */
     private void bindUpdateBtnEvent() {
         updateBtn.addActionListener(new ActionListener() {
             @Override
@@ -299,9 +287,6 @@ public class SupplierManageFrame extends JFrame {
         });
     }
 
-    /**
-     * 绑定"重置"按钮事件
-     */
     private void bindResetBtnEvent() {
         resetBtn.addActionListener(new ActionListener() {
             @Override
@@ -311,9 +296,6 @@ public class SupplierManageFrame extends JFrame {
         });
     }
 
-    /**
-     * 重置表单字段
-     */
     private void resetFields() {
         supIdField.setText("");
         supNameField.setText("");
@@ -326,9 +308,6 @@ public class SupplierManageFrame extends JFrame {
         deleteSupIdField.setText("");
     }
 
-    /**
-     * 初始化自定义图标
-     */
     private void initCustomIcon() {
         try {
             String imagePath = "/static/image/img13.png";
@@ -341,9 +320,6 @@ public class SupplierManageFrame extends JFrame {
         }
     }
 
-    /**
-     * 统一设置按钮样式
-     */
     private void initOptionPaneButtonStyle() {
         try {
             UIManager.put("Button.focusPainted", Boolean.FALSE);
@@ -356,25 +332,16 @@ public class SupplierManageFrame extends JFrame {
         }
     }
 
-    /**
-     * 显示成功消息
-     */
     private void showSuccessMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg, "成功",
                 JOptionPane.INFORMATION_MESSAGE, customIcon);
     }
 
-    /**
-     * 显示错误消息
-     */
     private void showErrorMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg, "错误",
                 JOptionPane.ERROR_MESSAGE, customIcon);
     }
 
-    /**
-     * 显示警告消息
-     */
     private void showWarnMsg(String msg) {
         JOptionPane.showMessageDialog(this, msg, "提示",
                 JOptionPane.WARNING_MESSAGE, customIcon);

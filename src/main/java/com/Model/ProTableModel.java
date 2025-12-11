@@ -23,7 +23,7 @@ public class ProTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // 根据行号和列号，返回对应实体类的属性
+
         Product pro = ProList.get(rowIndex);
         return switch (columnIndex) {
             case 0 -> pro.getProd_id();
@@ -44,7 +44,6 @@ public class ProTableModel extends AbstractTableModel {
         return true; // 允许编辑所有单元格
     }
 
-    // 可选：编辑表格时，同步修改 List 中的实体类
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Product pro = ProList.get(rowIndex);

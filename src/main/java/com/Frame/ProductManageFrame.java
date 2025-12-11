@@ -24,12 +24,9 @@ public class ProductManageFrame extends JFrame {
     private Icon customIcon;
 
     public ProductManageFrame() {
-        // 初始化自定义图标
         initCustomIcon();
-        // 统一设置JOptionPane按钮样式
         initOptionPaneButtonStyle();
 
-        // 窗口基础配置
         setTitle("商品信息管理");
         setSize(800, 400);
         setLocationRelativeTo(null);
@@ -109,9 +106,6 @@ public class ProductManageFrame extends JFrame {
     }
 
 
-    /**
-     * 绑定“添加产品”按钮事件
-     */
     private void bindAddBtnEvent() {
         addBtn.addActionListener(new ActionListener() {
             @Override
@@ -124,7 +118,6 @@ public class ProductManageFrame extends JFrame {
                     float quantity = Float.parseFloat(quantityField.getText().trim());
                     int supId = (Integer) supIdCombo.getSelectedItem();
 
-                    // 合法性校验
                     if (prodName.isEmpty() || type.isEmpty()) {
                         JOptionPane.showMessageDialog(ProductManageFrame.this,
                                 "名称和种类不能为空！",
@@ -179,9 +172,6 @@ public class ProductManageFrame extends JFrame {
     }
 
 
-    /**
-     * 绑定“删除产品”按钮事件
-     */
     private void bindDeleteBtnEvent() {
         deleteBtn.addActionListener(new ActionListener() {
             @Override
@@ -286,7 +276,6 @@ public class ProductManageFrame extends JFrame {
      */
     private void initCustomIcon() {
         try {
-            // 替换为你的图片路径（示例：项目内资源路径）
             String imagePath = "/static/image/img13.png";
             // 优化：使用getClass().getResource确保路径正确
             ImageIcon originalIcon = new ImageIcon(getClass().getResource(imagePath));
@@ -304,16 +293,11 @@ public class ProductManageFrame extends JFrame {
      */
     private void initOptionPaneButtonStyle() {
         try {
-            // 核心：禁止绘制焦点框（去掉选中框的关键）
             UIManager.put("Button.focusPainted", Boolean.FALSE);
-            // 补充：隐藏焦点边框
             UIManager.put("Button.focusBorder", BorderFactory.createEmptyBorder());
-            // 补充：设置选中色为透明（避免点击后变色）
             UIManager.put("Button.select", new Color(0, 0, 0, 0));
-            // 补充：禁用焦点遍历（可选，防止键盘Tab键触发焦点框）
             UIManager.put("Button.focusTraversalKeysEnabled", Boolean.FALSE);
 
-            // 原有样式保持不变
             UIManager.put("Button.background", new Color(214, 217, 223));
             UIManager.put("Button.foreground", Color.BLACK);
         } catch (Exception e) {
@@ -322,9 +306,6 @@ public class ProductManageFrame extends JFrame {
     }
 
 
-    /**
-     * 加载供应商ID到下拉框
-     */
     private void loadSupplierIds() {
         List<Supplier> suppliers = supplierService.findAllSupplier();
         for (Supplier supplier : suppliers) {
@@ -333,9 +314,6 @@ public class ProductManageFrame extends JFrame {
     }
 
 
-    /**
-     * 重置表单字段
-     */
     private void resetFields() {
         prodIdField.setText("");
         prodNameField.setText("");
